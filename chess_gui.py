@@ -7,24 +7,25 @@ from chess_board.chess_board import ChessBoard
 
 # from pygame import Color
 
+pg.init()
+
 SIZE = 600, 500
 WHITE = 255, 255, 255
 
 
-pg.init()
-
-
 def main():
     screen = pg.display.set_mode(SIZE)
+    pg.display.set_caption("chess clone")
 
     chess_board = ChessBoard(screen)
 
-    FPS = pg.time.Clock()
+    CLOCK = pg.time.Clock()
 
     while True:
         event_list = pg.event.get()
         for event in event_list:
             if event.type == pg.QUIT:
+                pg.quit()
                 sys.exit()
 
         chess_board.update(event_list)
@@ -42,7 +43,7 @@ def main():
         chess_board.draw_white_pawns()
 
         pg.display.flip()
-        FPS.tick(60)
+        CLOCK.tick(60)
 
 
 if __name__ == "__main__":
