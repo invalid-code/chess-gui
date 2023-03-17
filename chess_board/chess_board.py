@@ -9,15 +9,13 @@ IMAGE_SIZE = 57
 
 class Piece(pg.sprite.Sprite):
     def __init__(
-        self, pos: tuple[int, int], board_coordinate: tuple[int, int]
+        self,
+        board_coordinate: tuple[int, int] = (0, 0),
+        pos: tuple[int, int] = (0, 0),
     ) -> None:
         super().__init__()
         self.piece = pg.Surface((50, 50))
-        self.rect = (
-            self.piece.get_rect()
-            if not pos
-            else self.piece.get_rect(topleft=pos)
-        )
+        self.rect = self.piece.get_rect(topleft=pos)
         self.board_coordinate = board_coordinate
         self.clicked = False
         self.is_alive = True
@@ -40,10 +38,18 @@ class Piece(pg.sprite.Sprite):
 
 class Pawn(Piece):
     def __init__(
-        self, pos: tuple[int, int], board_coordinate: tuple[int, int]
+        self,
+        pos: tuple[int, int],
+        board_coordinate: tuple[int, int],
     ) -> None:
-        super().__init__(pos, board_coordinate)
-        self.is_first = True
+        super().__init__(board_coordinate, pos)
+        self.first_move = True
+
+    def __repr__(self) -> str:
+        return f"{__class__}(piece={self.piece}, rect={self.rect}, board_coordinate={self.board_coordinate}, clicked={self.clicked}, is_alive={self.is_alive}, first_move={self.first_move})"
+
+    def __str__(self) -> str:
+        return f"piece is {self.piece}\nrect is{self.rect}\nboard coordinate is{self.board_coordinate}\nclick is {self.clicked}\nalive is {self.is_alive}\nfirst move is {self.first_move}"
 
 
 class BlackPawn(Pawn):
@@ -56,12 +62,18 @@ class BlackPawn(Pawn):
         self.piece = pg.image.load("img/black_pawn.png").convert_alpha()
 
     def allowed_move(self, x: int, y: int):
-        if self.is_first:
+        print(
+            (
+                self.board_coordinate[1] + 2 == y
+                or self.board_coordinate[1] + 1 == y
+            )
+            and self.board_coordinate[0] == x
+        )
+        if self.first_move:
             if (
                 self.board_coordinate[1] + 2 == y
                 or self.board_coordinate[1] + 1 == y
-                and self.board_coordinate[0] == x
-            ):
+            ) and self.board_coordinate[0] == x:
                 return True
         else:
             if (
@@ -72,9 +84,15 @@ class BlackPawn(Pawn):
         return False
 
     def allowed_take(self, x: int, y: int):
-        if (
-            self.board_coordinate[0] + 1 == y
-            and self.board_coordinate[0] + 1 == x
+        print(
+            self.board_coordinate[1] + 1 == y
+            and (
+                self.board_coordinate[0] + 1 == x
+                or self.board_coordinate[0] - 1 == x
+            )
+        )
+        if self.board_coordinate[1] + 1 == y and (
+            self.board_coordinate[0] + 1 == x
             or self.board_coordinate[0] - 1 == x
         ):
             return True
@@ -91,12 +109,11 @@ class WhitePawn(Pawn):
         self.piece = pg.image.load("img/white_pawn.png").convert_alpha()
 
     def allowed_move(self, x: int, y: int):
-        if self.is_first:
+        if self.first_move:
             if (
                 self.board_coordinate[1] - 2 == y
                 or self.board_coordinate[1] - 1 == y
-                and self.board_coordinate[0] == x
-            ):
+            ) and self.board_coordinate[0] == x:
                 return True
         else:
             if (
@@ -107,9 +124,8 @@ class WhitePawn(Pawn):
         return False
 
     def allowed_take(self, x: int, y: int):
-        if (
-            self.board_coordinate[0] + 1 == y
-            and self.board_coordinate[0] + 1 == x
+        if self.board_coordinate[1] - 1 == y and (
+            self.board_coordinate[0] + 1 == x
             or self.board_coordinate[0] - 1 == x
         ):
             return True
@@ -133,7 +149,6 @@ class ChessBoard(pg.sprite.Sprite):
 
     def __init__(self, screen: pg.surface.Surface) -> None:
         super().__init__()
-        # // moving and taking buggy at best
 
         self.screen = screen
         white_square = pg.image.load(
@@ -199,16 +214,16 @@ class ChessBoard(pg.sprite.Sprite):
         for white_pawn in self.white_pawns:
             self.screen.blit(white_pawn.piece, white_pawn.rect)
 
-    def is_moving(self, new_pos: tuple[int, int]) -> bool:
+    def is_moving(self, new_pos: tuple[int, int]):
         if not self.board_repr[new_pos[1]][new_pos[0]]:
             return True
         return False
 
-    def square_pos(self) -> tuple[int, int] | None:
+    def square_pos(self):
         for rowi, row in enumerate(self.board_rect):
             for coli, col in enumerate(row):
                 if col.collidepoint(pg.mouse.get_pos()):
-                    return (coli, rowi)
+                    return coli, rowi
 
     def captured_piece(self):
         for black_pawn, white_pawn in zip(self.black_pawns, self.white_pawns):
@@ -225,10 +240,10 @@ class ChessBoard(pg.sprite.Sprite):
                 return white_pawn
 
     def move(
-        self, new_pos: tuple[int, int], piece: WhitePawn | BlackPawn
+        self, piece: WhitePawn | BlackPawn, new_pos: tuple[int, int]
     ) -> Move:
-        if piece.is_first:
-            piece.is_first = False
+        if piece.first_move:
+            piece.first_move = False
         self.board_repr[piece.board_coordinate[1]][
             piece.board_coordinate[0]
         ] = None
@@ -245,8 +260,8 @@ class ChessBoard(pg.sprite.Sprite):
         piece: WhitePawn | BlackPawn,
         taken_piece: WhitePawn | BlackPawn,
     ) -> Take:
-        if piece.is_first:
-            piece.is_first = False
+        if piece.first_move:
+            piece.first_move = False
         self.board_repr[piece.board_coordinate[1]][
             piece.board_coordinate[0]
         ] = None
@@ -272,53 +287,36 @@ class ChessBoard(pg.sprite.Sprite):
                 return
             taken_piece.piece.fill((0, 0, 0, 0))
         piece.rect.left, piece.rect.top = new_pos
+        piece.clicked = not piece.clicked
 
     def update(self, event_list: list[Event]):
         for event in event_list:
             if event.type == MOUSEBUTTONDOWN:
                 clicked_piece = self.active_piece()
-                clicked_square = self.square_pos()
-                print(clicked_piece)
                 if clicked_piece is None:
                     return
-                print(clicked_square)
+                clicked_square = self.square_pos()
                 if clicked_square is None:
                     return
 
-                print(self.is_moving(clicked_square))
                 if self.is_moving(clicked_square):
-                    print(
-                        not clicked_piece.allowed_move(
-                            clicked_square[0], clicked_square[1]
-                        )
-                    )
                     if not clicked_piece.allowed_move(
                         clicked_square[0], clicked_square[1]
                     ):
                         return
-                    updated_pos = self.move(clicked_square, clicked_piece)
-                    print(updated_pos)
+                    updated_pos = self.move(clicked_piece, clicked_square)
                 else:
-                    print(
-                        not clicked_piece.allowed_take(
-                            clicked_square[0], clicked_square[1]
-                        )
-                    )
                     if not clicked_piece.allowed_take(
                         clicked_square[0], clicked_square[1]
                     ):
                         return
                     taken_piece = self.captured_piece()
-                    print(taken_piece)
                     if taken_piece is None:
                         return
                     updated_pos = self.take(clicked_piece, taken_piece)
-                    print(updated_pos)
                 self.update_piece(
                     updated_pos["updated_pos"],
                     clicked_piece,
                     updated_pos["is_taking"],
                     taken_piece=updated_pos["taken_piece"],
                 )
-                clicked_piece.clicked = not clicked_piece.clicked
-                print(clicked_piece)
