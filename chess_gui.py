@@ -3,9 +3,7 @@ import sys
 
 import pygame as pg
 
-from chess_board.chess_board import ChessBoard
-
-# from pygame import Color
+from chess_board import ChessBoard
 
 pg.init()
 
@@ -27,14 +25,18 @@ def main():
             if event.type == pg.QUIT:
                 pg.quit()
                 sys.exit()
-
-        chess_board.update(event_list)
-
-        for black_pawn in chess_board.black_pawns:
-            black_pawn.update(event_list)
-
-        for white_pawn in chess_board.white_pawns:
-            white_pawn.update(event_list)
+            if event.type == pg.MOUSEBUTTONDOWN:
+                if chess_board.is_moving:
+                    move = chess_board.get_move_pos(event.pos)
+                    chess_board.set_is_taking(move)
+                    if chess_board.is_taking:
+                        chess_board.back_move(event.pos)
+                        chess_board.ui_move(event.pos)
+                    else:
+                        chess_board.back_move(event.pos)
+                        chess_board.ui_move(event.pos)
+                else:
+                    chess_board.get_clicked_piece(event.pos)
 
         screen.fill(WHITE)
 
