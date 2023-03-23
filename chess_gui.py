@@ -28,13 +28,14 @@ def main():
             if event.type == pg.MOUSEBUTTONDOWN:
                 if chess_board.is_moving:
                     move = chess_board.get_move_pos(event.pos)
-                    chess_board.set_is_taking(move)
-                    if chess_board.is_taking:
-                        chess_board.back_move(event.pos)
-                        chess_board.ui_move(event.pos)
-                    else:
-                        chess_board.back_move(event.pos)
-                        chess_board.ui_move(event.pos)
+                    if move:
+                        chess_board.set_is_taking(move)
+                        if chess_board.is_taking:
+                            chess_board.ui_move(move.board_coordinate)
+                            chess_board.back_move(move.board_coordinate)
+                        else:
+                            chess_board.ui_move(move.board_coordinate)
+                            chess_board.back_move(move.board_coordinate)
                 else:
                     chess_board.get_clicked_piece(event.pos)
 

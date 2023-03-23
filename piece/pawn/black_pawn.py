@@ -39,8 +39,3 @@ class BlackPawn(Pawn):
         ):
             return True
         return False
-
-
-class BlackPawns(pg.sprite.Group):
-    def __init__(self):
-        pass

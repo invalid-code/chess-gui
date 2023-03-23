@@ -21,7 +21,7 @@ class WhitePawns(pg.sprite.Group):
         super().__init__()
         self.add(
             [
-                WhitePawn((index * IMAGE_SIZE, 6 * IMAGE_SIZE), (index, 1))
+                WhitePawn((index * IMAGE_SIZE, 6 * IMAGE_SIZE), (index, 6))
                 for index in range(8)
             ]
         )

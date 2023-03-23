@@ -1,7 +1,8 @@
-from typing import TypedDict
+from typing import Any, TypedDict
 
 import pygame as pg
 
+from chess_board.constants import IMAGE_SIZE
 from piece.pawn.black_pawn import BlackPawn
 from piece.pawn.white_pawn import WhitePawn
 
@@ -28,6 +29,17 @@ class MovingPiece(pg.sprite.Group):
     def add_to_moving(self, piece: BlackPawn | WhitePawn):
         self.add(piece)
 
+    def rem_moving(self):
+        self.remove(self.sprites()[0])
+
+
+class TakenPiece(pg.sprite.Group):
+    def __init__(self) -> None:
+        super().__init__()
+
+    def add_to_taken(self, piece: BlackPawn | WhitePawn):
+        self.add(piece)
+
 
 class ChessBoard(pg.sprite.Group):
     def __init__(self, screen: pg.surface.Surface) -> None:
@@ -37,6 +49,7 @@ class ChessBoard(pg.sprite.Group):
         self.black_pawns = BlackPawns()
         self.white_pawns = WhitePawns()
         self.moving_piece = MovingPiece()
+        self.taken_piece = TakenPiece()
         self.is_moving = False
         self.is_taking = False
 
@@ -68,39 +81,41 @@ class ChessBoard(pg.sprite.Group):
             ):
                 if white_pawn.rect.collidepoint(pos):
                     self.moving_piece.add(white_pawn)
-                    self.is_moving = not self.is_moving
+                    self.is_moving = True
                 if black_pawn.rect.collidepoint(pos):
                     self.moving_piece.add(black_pawn)
-                    self.is_moving = not self.is_moving
+                    self.is_moving = True
 
     def get_move_pos(self, pos: tuple[int, int]):
-        if self.is_moving is True:
-            for row in self.board.sprites():
-                for col in row:
-                    if col.rect.collidepoint(pos):
-                        return col
-        return False
+        for row in self.board.sprites():
+            if row.rect.collidepoint(pos):
+                return row
 
     def set_is_taking(self, move):
-        if self.is_moving is True:
-            if move is not False:
-                if (
-                    self.board_repr[move.board_coordinate[1]][
-                        move.board_coordinate[0]
-                    ]
-                    is not None
-                ):
-                    self.is_taking = True
-                else:
-                    self.is_taking = False
+        x, y = move.board_coordinate[0], move.board_coordinate[1]
+        if self.board_repr[y][x]:
+            self.is_taking = True
+        else:
+            self.is_taking = False
 
-    def ui_move(self, move, taken_piece=None):
+    def ui_move(self, pos: tuple[int, int]):
         piece = self.moving_piece.sprites()[0]
-        if taken_piece:
+        if self.taken_piece:
             pass
-        piece.rect.left, piece.rect.top = move.board_coordinate
+        piece.rect.left, piece.rect.top = (
+            pos[0] * IMAGE_SIZE,
+            pos[1] * IMAGE_SIZE,
+        )
 
-    def back_move(self, pos: tuple[int, int], taken_piece=None):
-        if taken_piece:
-            self.board_repr[pos[1]][pos[0]] = None
-        self.board_repr[pos[1]][pos[0]] = self.moving_piece.sprites()[0].name
+    def back_move(self, pos: tuple[int, int]):
+        piece = self.moving_piece.sprites()[0]
+        self.set_board_repr(
+            (piece.board_coordinate[0], piece.board_coordinate[1], None),
+            (pos[0], pos[1], piece.name),
+        )
+        piece.board_coordinate = pos
+        self.moving_piece.rem_moving()
+
+    def set_board_repr(self, *args: tuple[int, int, Any]):
+        for piece in args:
+            self.board_repr[piece[1]][piece[0]] = piece[2]
