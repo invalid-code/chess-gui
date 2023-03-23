@@ -40,6 +40,10 @@ class TakenPiece(pg.sprite.Group):
     def add_to_taken(self, piece: BlackPawn | WhitePawn):
         self.add(piece)
 
+    def hide(self):
+        for sprite in self.sprites():
+            sprite.kill()
+
 
 class ChessBoard(pg.sprite.Group):
     def __init__(self, screen: pg.surface.Surface) -> None:
@@ -95,17 +99,28 @@ class ChessBoard(pg.sprite.Group):
         x, y = move.board_coordinate[0], move.board_coordinate[1]
         if self.board_repr[y][x]:
             self.is_taking = True
+            self.taken_piece.add(self.get_taken_piece(pg.mouse.get_pos()))
         else:
             self.is_taking = False
+
+    def get_taken_piece(self, pos: tuple[int, int]):
+        for black_pawn in self.black_pawns:
+            if black_pawn.rect.collidepoint(pos):
+                return black_pawn
+
+        for white_pawn in self.white_pawns:
+            if white_pawn.rect.collidepoint(pos):
+                return white_pawn
 
     def ui_move(self, pos: tuple[int, int]):
         piece = self.moving_piece.sprites()[0]
         if self.taken_piece:
-            pass
+            self.taken_piece.hide()
         piece.rect.left, piece.rect.top = (
             pos[0] * IMAGE_SIZE,
             pos[1] * IMAGE_SIZE,
         )
+        self.is_moving = False
 
     def back_move(self, pos: tuple[int, int]):
         piece = self.moving_piece.sprites()[0]

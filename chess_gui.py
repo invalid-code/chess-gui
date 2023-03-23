@@ -30,6 +30,7 @@ def main():
                     move = chess_board.get_move_pos(event.pos)
                     if move:
                         chess_board.set_is_taking(move)
+                        print(chess_board.taken_piece.sprites())
                         if chess_board.is_taking:
                             chess_board.ui_move(move.board_coordinate)
                             chess_board.back_move(move.board_coordinate)
