@@ -1,6 +1,4 @@
 import pygame as pg
-# from pygame import MOUSEBUTTONDOWN
-# from pygame.event import Event
 from pygame.sprite import Sprite
 
 
@@ -19,14 +17,6 @@ class Piece(Sprite):
 
     def draw(self, surface: pg.surface.Surface):
         surface.blit(self.image, self.rect)
-
-    # def update(self, event_list: list[Event]):
-    #     for event in event_list:
-    #         if event.type == MOUSEBUTTONDOWN:
-    #             if self.rect.collidepoint(pg.mouse.get_pos()):
-    #                 self.clicked = not self.clicked
-    def is_clicked(self):
-        pass
 
     def __repr__(self) -> str:
         return f"Piece(piece={self.image}, rect={self.rect}, board_coordinate={self.board_coordinate}, clicked={self.clicked}, is_alive={self.is_alive})"

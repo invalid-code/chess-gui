@@ -6,7 +6,9 @@ from chess_board.constants import IMAGE_SIZE
 from piece.pawn.black_pawn import BlackPawn
 from piece.pawn.white_pawn import WhitePawn
 
+from .bishops import BlackBishops, WhiteBishops
 from .board import Board
+from .knights import BlackKnights, WhiteKnights
 from .pawns import BlackPawns, WhitePawns
 
 
@@ -26,7 +28,7 @@ class MovingPiece(pg.sprite.Group):
     def __init__(self) -> None:
         super().__init__()
 
-    def add_to_moving(self, piece: BlackPawn | WhitePawn):
+    def add_to_moving(self, piece):
         self.add(piece)
 
     def rem_moving(self):
@@ -37,8 +39,11 @@ class TakenPiece(pg.sprite.Group):
     def __init__(self) -> None:
         super().__init__()
 
-    def add_to_taken(self, piece: BlackPawn | WhitePawn):
+    def add_to_taken(self, piece):
         self.add(piece)
+
+    def rem_moving(self):
+        self.remove(self.sprites()[-1])
 
     def hide(self):
         for sprite in self.sprites():
@@ -52,6 +57,10 @@ class ChessBoard(pg.sprite.Group):
         self.board = Board()
         self.black_pawns = BlackPawns()
         self.white_pawns = WhitePawns()
+        self.black_knights = BlackKnights()
+        self.white_knights = WhiteKnights()
+        self.black_bishops = BlackBishops()
+        self.white_bishops = WhiteBishops()
         self.moving_piece = MovingPiece()
         self.taken_piece = TakenPiece()
         self.is_moving = False
@@ -78,17 +87,28 @@ class ChessBoard(pg.sprite.Group):
     def draw_white_pawns(self):
         self.white_pawns.draw(self.screen)
 
+    def draw_black_knights(self):
+        self.black_knights.draw(self.screen)
+
+    def draw_white_knights(self):
+        self.white_knights.draw(self.screen)
+
+    def draw_black_bishops(self):
+        self.black_knights.draw(self.screen)
+
+    def draw_white_bishops(self):
+        self.white_knights.draw(self.screen)
+
     def get_clicked_piece(self, pos: tuple[int, int]):
-        if self.is_moving is False:
-            for white_pawn, black_pawn in zip(
-                self.white_pawns.sprites(), self.black_pawns.sprites()
-            ):
-                if white_pawn.rect.collidepoint(pos):
-                    self.moving_piece.add(white_pawn)
-                    self.is_moving = True
-                if black_pawn.rect.collidepoint(pos):
-                    self.moving_piece.add(black_pawn)
-                    self.is_moving = True
+        for white_pawn, black_pawn in zip(
+            self.white_pawns.sprites(), self.black_pawns.sprites()
+        ):
+            if white_pawn.rect.collidepoint(pos):
+                self.moving_piece.add(white_pawn)
+                self.is_moving = True
+            if black_pawn.rect.collidepoint(pos):
+                self.moving_piece.add(black_pawn)
+                self.is_moving = True
 
     def get_move_pos(self, pos: tuple[int, int]):
         for row in self.board.sprites():
@@ -99,6 +119,7 @@ class ChessBoard(pg.sprite.Group):
         x, y = move.board_coordinate[0], move.board_coordinate[1]
         if self.board_repr[y][x]:
             self.is_taking = True
+            self.is_moving = False
             self.taken_piece.add(self.get_taken_piece(pg.mouse.get_pos()))
         else:
             self.is_taking = False
@@ -129,8 +150,25 @@ class ChessBoard(pg.sprite.Group):
             (pos[0], pos[1], piece.name),
         )
         piece.board_coordinate = pos
+        if self.moving_piece.sprites()[0].first_move:
+            self.moving_piece.sprites()[0].first_move = False
         self.moving_piece.rem_moving()
 
     def set_board_repr(self, *args: tuple[int, int, Any]):
         for piece in args:
             self.board_repr[piece[1]][piece[0]] = piece[2]
+
+    def is_piece_allowed_move(self, pos: tuple[int, int]):
+        piece = self.moving_piece.sprites()[0]
+        if self.is_moving:
+            return piece.allowed_move(pos[0], pos[1])
+        if self.is_taking:
+            return piece.allowed_take(pos[0], pos[1])
+
+    def not_allowed_move(self):
+        if self.moving_piece:
+            self.moving_piece.rem_moving()
+            self.is_moving = False
+        if self.is_taking:
+            self.taken_piece.rem_moving()
+            self.is_taking = False

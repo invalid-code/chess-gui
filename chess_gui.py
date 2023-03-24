@@ -28,15 +28,20 @@ def main():
             if event.type == pg.MOUSEBUTTONDOWN:
                 if chess_board.is_moving:
                     move = chess_board.get_move_pos(event.pos)
-                    if move:
-                        chess_board.set_is_taking(move)
-                        print(chess_board.taken_piece.sprites())
-                        if chess_board.is_taking:
-                            chess_board.ui_move(move.board_coordinate)
-                            chess_board.back_move(move.board_coordinate)
-                        else:
-                            chess_board.ui_move(move.board_coordinate)
-                            chess_board.back_move(move.board_coordinate)
+                    if not move:
+                        continue
+                    chess_board.set_is_taking(move)
+                    if not chess_board.is_piece_allowed_move(
+                        move.board_coordinate
+                    ):
+                        chess_board.not_allowed_move()
+                        continue
+                    if chess_board.is_taking:
+                        chess_board.ui_move(move.board_coordinate)
+                        chess_board.back_move(move.board_coordinate)
+                    else:
+                        chess_board.ui_move(move.board_coordinate)
+                        chess_board.back_move(move.board_coordinate)
                 else:
                     chess_board.get_clicked_piece(event.pos)
 
@@ -45,6 +50,10 @@ def main():
         chess_board.draw()
         chess_board.draw_black_pawns()
         chess_board.draw_white_pawns()
+        chess_board.draw_black_knights()
+        chess_board.draw_white_knights()
+        chess_board.draw_black_bishops()
+        chess_board.draw_white_bishops()
 
         pg.display.flip()
         CLOCK.tick(60)
