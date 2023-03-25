@@ -2,35 +2,36 @@ import pygame as pg
 
 from chess_board.constants import IMAGE_SIZE
 
-from . import Pawn
+from . import King
 
 
-class WhitePawn(Pawn):
-    name = "wp"
+class WhiteKing(King):
+    name = "wk"
 
     def __init__(
         self, pos: tuple[int, int], board_coordinate: tuple[int, int]
     ) -> None:
         super().__init__(pos, board_coordinate)
         self.image = pg.transform.scale(
-            pg.image.load("img/white_pawn.png").convert_alpha(),
+            pg.image.load("img/white_king.png").convert_alpha(),
             (IMAGE_SIZE, IMAGE_SIZE),
         )
 
     def allowed_move(self, x: int, y: int):
-        if self.first_move:
-            if (
-                self.board_coordinate[1] - 2 == y
-                or self.board_coordinate[1] - 1 == y
-            ) and self.board_coordinate[0] == x:
-                return True
-        else:
-            if (
-                self.board_coordinate[1] - 1 == y
-                and self.board_coordinate[0] == x
-            ):
-                return True
-        return False
+        # if self.first_move:
+        #     if (
+        #         self.board_coordinate[1] - 2 == y
+        #         or self.board_coordinate[1] - 1 == y
+        #     ) and self.board_coordinate[0] == x:
+        #         return True
+        # else:
+        #     if (
+        #         self.board_coordinate[1] - 1 == y
+        #         and self.board_coordinate[0] == x
+        #     ):
+        #         return True
+        # return False
+        pass
 
     def allowed_take(self, x: int, y: int):
         if self.board_coordinate[1] - 1 == y and (

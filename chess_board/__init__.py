@@ -8,8 +8,11 @@ from piece.pawn.white_pawn import WhitePawn
 
 from .bishops import BlackBishops, WhiteBishops
 from .board import Board
+from .kings import BlackKings, WhiteKings
 from .knights import BlackKnights, WhiteKnights
 from .pawns import BlackPawns, WhitePawns
+from .queens import BlackQueens, WhiteQueens
+from .rooks import BlackRooks, WhiteRooks
 
 
 class Move(TypedDict):
@@ -61,6 +64,12 @@ class ChessBoard(pg.sprite.Group):
         self.white_knights = WhiteKnights()
         self.black_bishops = BlackBishops()
         self.white_bishops = WhiteBishops()
+        self.black_rooks = BlackRooks()
+        self.white_rooks = WhiteRooks()
+        self.black_queens = BlackQueens()
+        self.white_queens = WhiteQueens()
+        self.black_kings = BlackKings()
+        self.white_kings = WhiteKings()
         self.moving_piece = MovingPiece()
         self.taken_piece = TakenPiece()
         self.is_moving = False
@@ -94,10 +103,28 @@ class ChessBoard(pg.sprite.Group):
         self.white_knights.draw(self.screen)
 
     def draw_black_bishops(self):
-        self.black_knights.draw(self.screen)
+        self.black_bishops.draw(self.screen)
 
     def draw_white_bishops(self):
-        self.white_knights.draw(self.screen)
+        self.white_bishops.draw(self.screen)
+
+    def draw_black_rooks(self):
+        self.black_rooks.draw(self.screen)
+
+    def draw_white_rooks(self):
+        self.white_rooks.draw(self.screen)
+
+    def draw_black_queens(self):
+        self.black_queens.draw(self.screen)
+
+    def draw_white_queens(self):
+        self.white_queens.draw(self.screen)
+
+    def draw_black_kings(self):
+        self.black_kings.draw(self.screen)
+
+    def draw_white_kings(self):
+        self.white_kings.draw(self.screen)
 
     def get_clicked_piece(self, pos: tuple[int, int]):
         for white_pawn, black_pawn in zip(

@@ -54,6 +54,12 @@ def main():
         chess_board.draw_white_knights()
         chess_board.draw_black_bishops()
         chess_board.draw_white_bishops()
+        chess_board.draw_black_rooks()
+        chess_board.draw_white_rooks()
+        chess_board.draw_black_queens()
+        chess_board.draw_white_queens()
+        chess_board.draw_black_kings()
+        chess_board.draw_white_kings()
 
         pg.display.flip()
         CLOCK.tick(60)

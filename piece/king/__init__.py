@@ -8,7 +8,6 @@ class King(Piece):
         board_coordinate: tuple[int, int],
     ) -> None:
         super().__init__(board_coordinate, pos)
-        self.first_move = True
 
     def __repr__(self) -> str:
         return f"Pawn(piece={self.image}, rect={self.rect}, board_coordinate={self.board_coordinate}, clicked={self.clicked}, is_alive={self.is_alive}, first_move={self.first_move})"
