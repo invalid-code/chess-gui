@@ -6,7 +6,7 @@ from . import Rook
 
 
 class BlackRook(Rook):
-    name = "bp"
+    name = "br"
 
     def __init__(
         self, pos: tuple[int, int], board_coordinate: tuple[int, int]

@@ -6,7 +6,7 @@ from . import Rook
 
 
 class WhiteRook(Rook):
-    name = "wp"
+    name = "wr"
 
     def __init__(
         self, pos: tuple[int, int], board_coordinate: tuple[int, int]

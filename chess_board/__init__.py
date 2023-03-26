@@ -3,8 +3,18 @@ from typing import Any, TypedDict
 import pygame as pg
 
 from chess_board.constants import IMAGE_SIZE
+from piece.bishop.black_bishop import BlackBishop
+from piece.bishop.white_bishop import WhiteBishop
+from piece.king.black_king import BlackKing
+from piece.king.white_king import WhiteKing
+from piece.knight.black_knight import BlackKnight
+from piece.knight.white_knight import WhiteKnight
 from piece.pawn.black_pawn import BlackPawn
 from piece.pawn.white_pawn import WhitePawn
+from piece.queen.black_queen import BlackQueen
+from piece.queen.white_queen import WhiteQueen
+from piece.rook.black_rook import BlackRook
+from piece.rook.white_rook import WhiteRook
 
 from .bishops import BlackBishops, WhiteBishops
 from .board import Board
@@ -78,8 +88,30 @@ class ChessBoard(pg.sprite.Group):
         self.board_repr: list[list[str | None]] = []
         for rowi in range(8):
             row = []
-            for _ in range(8):
-                if rowi == 1:
+            for coli in range(8):
+                if rowi == 0:
+                    if coli in (0, 7):
+                        row.append(BlackRook.name)
+                    if coli in (1, 6):
+                        row.append(BlackKnight.name)
+                    if coli in (2, 5):
+                        row.append(BlackBishop.name)
+                    if coli == 3:
+                        row.append(BlackKing.name)
+                    if coli == 4:
+                        row.append(BlackQueen.name)
+                elif rowi == 7:
+                    if coli in (0, 7):
+                        row.append(WhiteRook.name)
+                    if coli in (1, 6):
+                        row.append(WhiteKnight.name)
+                    if coli in (2, 5):
+                        row.append(WhiteBishop.name)
+                    if coli == 3:
+                        row.append(WhiteKing.name)
+                    if coli == 4:
+                        row.append(WhiteQueen.name)
+                elif rowi == 1:
                     row.append(BlackPawn.name)
                 elif rowi == 6:
                     row.append(WhitePawn.name)
@@ -209,13 +241,54 @@ class ChessBoard(pg.sprite.Group):
             self.is_taking = False
 
     def get_taken_piece(self, pos: tuple[int, int]):
-        for black_pawn in self.black_pawns:
+        for black_pawn, white_pawn in zip(self.black_pawns, self.white_pawns):
             if black_pawn.rect.collidepoint(pos):
                 return black_pawn
-
-        for white_pawn in self.white_pawns:
             if white_pawn.rect.collidepoint(pos):
                 return white_pawn
+
+        for (
+            black_knight,
+            white_knight,
+            black_bishop,
+            white_bishop,
+            black_rook,
+            white_rook,
+        ) in zip(
+            self.black_knights,
+            self.white_knights,
+            self.black_bishops,
+            self.white_bishops,
+            self.black_rooks,
+            self.white_rooks,
+        ):
+            if black_knight.rect.collidepoint(pos):
+                return black_knight
+            if white_knight.rect.collidepoint(pos):
+                return white_knight
+            if black_bishop.rect.collidepoint(pos):
+                return black_bishop
+            if white_bishop.rect.collidepoint(pos):
+                return white_bishop
+            if black_rook.rect.collidepoint(pos):
+                return black_rook
+            if white_rook.rect.collidepoint(pos):
+                return white_rook
+
+        for black_queen, white_queen, black_queen, white_king in zip(
+            self.black_queens,
+            self.white_queens,
+            self.black_kings,
+            self.white_kings,
+        ):
+            if black_queen.rect.collidepoint(pos):
+                return black_queen
+            if white_queen.rect.collidepoint(pos):
+                return white_queen
+            if black_queen.rect.collidepoint(pos):
+                return black_queen
+            if white_king.rect.collidepoint(pos):
+                return white_king
 
     def ui_move(self, pos: tuple[int, int]):
         piece = self.moving_piece.sprites()[0]
