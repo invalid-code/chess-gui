@@ -84,7 +84,6 @@ class ChessBoard(pg.sprite.Group):
         self.taken_piece = TakenPiece()
         self.is_moving = False
         self.is_taking = False
-
         self.board_repr: list[list[str | None]] = []
         for rowi in range(8):
             row = []
@@ -122,106 +121,77 @@ class ChessBoard(pg.sprite.Group):
     def draw(self):
         self.board.draw(self.screen)
 
-    def draw_black_pawns(self):
+    def draw_pieces(self):
         self.black_pawns.draw(self.screen)
-
-    def draw_white_pawns(self):
         self.white_pawns.draw(self.screen)
-
-    def draw_black_knights(self):
         self.black_knights.draw(self.screen)
-
-    def draw_white_knights(self):
         self.white_knights.draw(self.screen)
-
-    def draw_black_bishops(self):
         self.black_bishops.draw(self.screen)
-
-    def draw_white_bishops(self):
         self.white_bishops.draw(self.screen)
-
-    def draw_black_rooks(self):
         self.black_rooks.draw(self.screen)
-
-    def draw_white_rooks(self):
         self.white_rooks.draw(self.screen)
-
-    def draw_black_queens(self):
         self.black_queens.draw(self.screen)
-
-    def draw_white_queens(self):
         self.white_queens.draw(self.screen)
-
-    def draw_black_kings(self):
         self.black_kings.draw(self.screen)
-
-    def draw_white_kings(self):
         self.white_kings.draw(self.screen)
 
     def get_clicked_piece(self, pos: tuple[int, int]):
-        for (
-            white_pawn,
-            black_pawn,
-        ) in zip(
-            self.white_pawns.sprites(),
-            self.black_pawns.sprites(),
-        ):
+        for white_pawn in self.white_pawns:
             if white_pawn.rect.collidepoint(pos):
                 self.moving_piece.add(white_pawn)
                 self.is_moving = True
+
+        for black_pawn in self.black_pawns:
             if black_pawn.rect.collidepoint(pos):
                 self.moving_piece.add(black_pawn)
                 self.is_moving = True
 
-        for (
-            white_knight,
-            black_knight,
-            white_bishop,
-            black_bishop,
-            white_rook,
-            black_rook,
-        ) in zip(
-            self.white_knights.sprites(),
-            self.black_knights.sprites(),
-            self.white_bishops.sprites(),
-            self.black_bishops.sprites(),
-            self.white_rooks.sprites(),
-            self.black_rooks.sprites(),
-        ):
+        for white_knight in self.white_knights:
             if white_knight.rect.collidepoint(pos):
                 self.moving_piece.add(white_knight)
                 self.is_moving = True
+
+        for black_knight in self.black_knights:
             if black_knight.rect.collidepoint(pos):
                 self.moving_piece.add(black_knight)
                 self.is_moving = True
+
+        for white_bishop in self.white_bishops:
             if white_bishop.rect.collidepoint(pos):
                 self.moving_piece.add(white_bishop)
                 self.is_moving = True
+
+        for black_bishop in self.black_bishops:
             if black_bishop.rect.collidepoint(pos):
                 self.moving_piece.add(black_bishop)
                 self.is_moving = True
+
+        for white_rook in self.white_rooks:
             if white_rook.rect.collidepoint(pos):
                 self.moving_piece.add(white_rook)
                 self.is_moving = True
+
+        for black_rook in self.black_rooks:
             if black_rook.rect.collidepoint(pos):
                 self.moving_piece.add(black_rook)
                 self.is_moving = True
 
-        for white_queen, black_queen, white_king, black_king in zip(
-            self.white_queens.sprites(),
-            self.black_queens.sprites(),
-            self.white_kings.sprites(),
-            self.black_kings.sprites(),
-        ):
+        for white_queen in self.white_queens:
             if white_queen.rect.collidepoint(pos):
                 self.moving_piece.add(white_queen)
                 self.is_moving = True
+
+        for black_queen in self.black_queens:
             if black_queen.rect.collidepoint(pos):
                 self.moving_piece.add(black_queen)
                 self.is_moving = True
+
+        for white_king in self.white_kings:
             if white_king.rect.collidepoint(pos):
                 self.moving_piece.add(white_king)
                 self.is_moving = True
+
+        for black_king in self.black_kings:
             if black_king.rect.collidepoint(pos):
                 self.moving_piece.add(black_king)
                 self.is_moving = True
@@ -241,55 +211,54 @@ class ChessBoard(pg.sprite.Group):
             self.is_taking = False
 
     def get_taken_piece(self, pos: tuple[int, int]):
-        for black_pawn, white_pawn in zip(self.black_pawns, self.white_pawns):
-            if black_pawn.rect.collidepoint(pos):
-                return black_pawn
+        for white_pawn in self.white_pawns:
             if white_pawn.rect.collidepoint(pos):
                 return white_pawn
 
-        for (
-            black_knight,
-            white_knight,
-            black_bishop,
-            white_bishop,
-            black_rook,
-            white_rook,
-        ) in zip(
-            self.black_knights,
-            self.white_knights,
-            self.black_bishops,
-            self.white_bishops,
-            self.black_rooks,
-            self.white_rooks,
-        ):
-            if black_knight.rect.collidepoint(pos):
-                return black_knight
+        for black_pawn in self.black_pawns:
+            if black_pawn.rect.collidepoint(pos):
+                return black_pawn
+
+        for white_knight in self.white_knights:
             if white_knight.rect.collidepoint(pos):
                 return white_knight
-            if black_bishop.rect.collidepoint(pos):
-                return black_bishop
+
+        for black_knight in self.black_knights:
+            if black_knight.rect.collidepoint(pos):
+                return black_knight
+
+        for white_bishop in self.white_bishops:
             if white_bishop.rect.collidepoint(pos):
                 return white_bishop
-            if black_rook.rect.collidepoint(pos):
-                return black_rook
+
+        for black_bishop in self.black_bishops:
+            if black_bishop.rect.collidepoint(pos):
+                return black_bishop
+
+        for white_rook in self.white_rooks:
             if white_rook.rect.collidepoint(pos):
                 return white_rook
 
-        for black_queen, white_queen, black_queen, white_king in zip(
-            self.black_queens,
-            self.white_queens,
-            self.black_kings,
-            self.white_kings,
-        ):
-            if black_queen.rect.collidepoint(pos):
-                return black_queen
+        for black_rook in self.black_rooks:
+            if black_rook.rect.collidepoint(pos):
+                return black_rook
+
+        for white_queen in self.white_queens:
             if white_queen.rect.collidepoint(pos):
                 return white_queen
+
+        for black_queen in self.black_queens:
             if black_queen.rect.collidepoint(pos):
                 return black_queen
+
+        for white_king in self.white_kings:
             if white_king.rect.collidepoint(pos):
                 return white_king
 
+        for black_king in self.black_kings:
+            if black_king.rect.collidepoint(pos):
+                return black_king
+                
     def ui_move(self, pos: tuple[int, int]):
         piece = self.moving_piece.sprites()[0]
         if self.taken_piece:
@@ -318,10 +287,11 @@ class ChessBoard(pg.sprite.Group):
 
     def is_piece_allowed_move(self, pos: tuple[int, int]):
         piece = self.moving_piece.sprites()[0]
+        x, y = pos
         if self.is_moving:
-            return piece.allowed_move(pos[0], pos[1])
+            return piece.allowed_move(x, y)
         if self.is_taking:
-            return piece.allowed_take(pos[0], pos[1])
+            return piece.allowed_take(x, y)
 
     def not_allowed_move(self):
         if self.moving_piece:
