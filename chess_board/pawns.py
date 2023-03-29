@@ -7,21 +7,33 @@ from .constants import IMAGE_SIZE
 
 
 class BlackPawns(pg.sprite.Group):
-    def __init__(self):
+    def __init__(self, pieces: str):
         super().__init__(
             [
-                BlackPawn((index * IMAGE_SIZE, 1 * IMAGE_SIZE), (index, 1))
+                BlackPawn(
+                    (
+                        index * IMAGE_SIZE,
+                        1 * IMAGE_SIZE if pieces[0] == "w" else 6 * IMAGE_SIZE,
+                    ),
+                    (index, 1),
+                )
                 for index in range(8)
             ]
         )
 
 
 class WhitePawns(pg.sprite.Group):
-    def __init__(self):
+    def __init__(self, pieces: str):
         super().__init__()
         self.add(
             [
-                WhitePawn((index * IMAGE_SIZE, 6 * IMAGE_SIZE), (index, 6))
+                WhitePawn(
+                    (
+                        index * IMAGE_SIZE,
+                        6 * IMAGE_SIZE if pieces[0] == "w" else 1 * IMAGE_SIZE,
+                    ),
+                    (index, 6),
+                )
                 for index in range(8)
             ]
         )

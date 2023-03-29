@@ -7,10 +7,16 @@ from .constants import IMAGE_SIZE
 
 
 class BlackBishops(pg.sprite.Group):
-    def __init__(self):
+    def __init__(self, pieces: str):
         super().__init__(
             [
-                BlackBishop((index * IMAGE_SIZE, 0 * IMAGE_SIZE), (index, 0))
+                BlackBishop(
+                    (
+                        index * IMAGE_SIZE,
+                        0 * IMAGE_SIZE if pieces[0] == "w" else 7 * IMAGE_SIZE,
+                    ),
+                    (index, 0),
+                )
                 for index in range(8)
                 if index == 2 or index == 5
             ]
@@ -18,11 +24,17 @@ class BlackBishops(pg.sprite.Group):
 
 
 class WhiteBishops(pg.sprite.Group):
-    def __init__(self):
+    def __init__(self, pieces: str):
         super().__init__()
         self.add(
             [
-                WhiteBishop((index * IMAGE_SIZE, 7 * IMAGE_SIZE), (index, 7))
+                WhiteBishop(
+                    (
+                        index * IMAGE_SIZE,
+                        7 * IMAGE_SIZE if pieces[0] == "w" else 0 * IMAGE_SIZE,
+                    ),
+                    (index, 7),
+                )
                 for index in range(8)
                 if index == 2 or index == 5
             ]

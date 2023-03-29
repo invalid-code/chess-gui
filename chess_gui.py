@@ -5,6 +5,8 @@ import pygame as pg
 
 from chess_board import ChessBoard
 
+# from Players import player
+
 pg.init()
 
 SIZE = 600, 500
@@ -12,11 +14,6 @@ WHITE = 255, 255, 255
 
 
 def main():
-    # TODO make pieces not move over other pieces except knights
-    # TODO make the game turn based
-    # TODO make it so you cant move other pieces except your own
-    # TODO make ui update with allowed moves
-    # TODO check for chess rules
     screen = pg.display.set_mode(SIZE)
     pg.display.set_caption("chess clone")
 
@@ -35,14 +32,21 @@ def main():
                     move = chess_board.get_move_pos(event.pos)
                     if not move:
                         continue
-                    chess_board.set_is_taking(move)
-                    if not chess_board.is_piece_allowed_move(move.board_coordinate):
+                    if not chess_board.is_piece_allowed_move(
+                        move.board_coordinate
+                    ):
                         chess_board.not_allowed_move()
                         continue
+                    if not chess_board.is_taking_own_pieces(move):
+                        chess_board.not_allowed_move()
+                        continue
+                    chess_board.set_is_taking(move)
                     chess_board.ui_move(move.board_coordinate)
                     chess_board.back_move(move.board_coordinate)
+                    chess_board.change_turn()
                 else:
                     chess_board.get_clicked_piece(event.pos)
+                    chess_board.is_player_piece()
 
         screen.fill(WHITE)
 
