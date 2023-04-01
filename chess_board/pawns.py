@@ -15,7 +15,10 @@ class BlackPawns(pg.sprite.Group):
                         index * IMAGE_SIZE,
                         1 * IMAGE_SIZE if pieces[0] == "w" else 6 * IMAGE_SIZE,
                     ),
-                    (index, 1),
+                    (
+                        index,
+                        1 if pieces[0] == "w" else 6,
+                    ),
                 )
                 for index in range(8)
             ]
@@ -32,7 +35,10 @@ class WhitePawns(pg.sprite.Group):
                         index * IMAGE_SIZE,
                         6 * IMAGE_SIZE if pieces[0] == "w" else 1 * IMAGE_SIZE,
                     ),
-                    (index, 6),
+                    (
+                        index,
+                        6 if pieces[0] == "w" else 1,
+                    ),
                 )
                 for index in range(8)
             ]

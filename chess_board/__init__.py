@@ -100,45 +100,66 @@ class ChessBoard(pg.sprite.Group):
         self.turn = "w"
         self.player = Player()
         self.opponent = Opponent(self.player)
-        self.pieces = Pieces("black" if self.player.pieces[0] == "b" else "w")
+        self.pieces = Pieces("b" if self.player.pieces[0] == "b" else "w")
         self.board = Board()
         self.moving_piece = MovingPiece()
         self.taken_piece = TakenPiece()
         self.is_moving = False
         self.is_taking = False
-        self.board_repr: list[list[str | None]] = []
-        for rowi in range(8):
-            row = []
-            for coli in range(8):
-                if rowi == 0:
-                    if coli in (0, 7):
-                        row.append(BlackRook.name)
-                    if coli in (1, 6):
-                        row.append(BlackKnight.name)
-                    if coli in (2, 5):
-                        row.append(BlackBishop.name)
-                    if coli == 3:
-                        row.append(BlackKing.name)
-                    if coli == 4:
-                        row.append(BlackQueen.name)
-                elif rowi == 7:
-                    if coli in (0, 7):
-                        row.append(WhiteRook.name)
-                    if coli in (1, 6):
-                        row.append(WhiteKnight.name)
-                    if coli in (2, 5):
-                        row.append(WhiteBishop.name)
-                    if coli == 3:
-                        row.append(WhiteKing.name)
-                    if coli == 4:
-                        row.append(WhiteQueen.name)
-                elif rowi == 1:
-                    row.append(BlackPawn.name)
-                elif rowi == 6:
-                    row.append(WhitePawn.name)
-                else:
-                    row.append(None)
-            self.board_repr.append(row)
+        self.board_repr: list[list[str | None]] = [
+            [None for _ in range(8)] for _ in range(8)
+        ]
+        self.start_board_repr()
+
+    def start_board_repr(self):
+        x, y, name = None, None, ""
+        for black_pawn in self.pieces.black_pawns:
+            (x, y), name = black_pawn.board_coordinate, black_pawn.name
+            self.set_board_repr((x, y, name))
+
+        for white_pawn in self.pieces.white_pawns:
+            (x, y), name = white_pawn.board_coordinate, white_pawn.name
+            self.set_board_repr((x, y, name))
+
+        for black_pawn in self.pieces.black_knights:
+            (x, y), name = black_pawn.board_coordinate, black_pawn.name
+            self.set_board_repr((x, y, name))
+
+        for white_pawn in self.pieces.white_knights:
+            (x, y), name = white_pawn.board_coordinate, white_pawn.name
+            self.set_board_repr((x, y, name))
+
+        for black_pawn in self.pieces.black_bishops:
+            (x, y), name = black_pawn.board_coordinate, black_pawn.name
+            self.set_board_repr((x, y, name))
+
+        for white_pawn in self.pieces.white_bishops:
+            (x, y), name = white_pawn.board_coordinate, white_pawn.name
+            self.set_board_repr((x, y, name))
+
+        for black_pawn in self.pieces.black_rooks:
+            (x, y), name = black_pawn.board_coordinate, black_pawn.name
+            self.set_board_repr((x, y, name))
+
+        for white_pawn in self.pieces.white_rooks:
+            (x, y), name = white_pawn.board_coordinate, white_pawn.name
+            self.set_board_repr((x, y, name))
+
+        for black_pawn in self.pieces.black_queens:
+            (x, y), name = black_pawn.board_coordinate, black_pawn.name
+            self.set_board_repr((x, y, name))
+
+        for white_pawn in self.pieces.white_queens:
+            (x, y), name = white_pawn.board_coordinate, white_pawn.name
+            self.set_board_repr((x, y, name))
+
+        for black_pawn in self.pieces.black_kings:
+            (x, y), name = black_pawn.board_coordinate, black_pawn.name
+            self.set_board_repr((x, y, name))
+
+        for white_pawn in self.pieces.white_kings:
+            (x, y), name = white_pawn.board_coordinate, white_pawn.name
+            self.set_board_repr((x, y, name))
 
     def draw(self):
         self.board.draw(self.screen)
@@ -356,3 +377,4 @@ class ChessBoard(pg.sprite.Group):
         move_pos = self.board_repr[y][x]
         if move_pos:
             return move_pos[0] == self.moving_piece.sprites()[0].name[0]
+        return True

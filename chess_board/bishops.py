@@ -15,7 +15,10 @@ class BlackBishops(pg.sprite.Group):
                         index * IMAGE_SIZE,
                         0 * IMAGE_SIZE if pieces[0] == "w" else 7 * IMAGE_SIZE,
                     ),
-                    (index, 0),
+                    (
+                        index,
+                        0 if pieces[0] == "w" else 7,
+                    ),
                 )
                 for index in range(8)
                 if index == 2 or index == 5
@@ -33,7 +36,7 @@ class WhiteBishops(pg.sprite.Group):
                         index * IMAGE_SIZE,
                         7 * IMAGE_SIZE if pieces[0] == "w" else 0 * IMAGE_SIZE,
                     ),
-                    (index, 7),
+                    (index, 7 if pieces[0] == "w" else 0),
                 )
                 for index in range(8)
                 if index == 2 or index == 5

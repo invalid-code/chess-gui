@@ -29,6 +29,7 @@ def main():
                 sys.exit()
             if event.type == pg.MOUSEBUTTONDOWN:
                 if chess_board.is_moving:
+                    chess_board.is_player_piece()
                     move = chess_board.get_move_pos(event.pos)
                     if not move:
                         continue
@@ -46,7 +47,6 @@ def main():
                     chess_board.change_turn()
                 else:
                     chess_board.get_clicked_piece(event.pos)
-                    chess_board.is_player_piece()
 
         screen.fill(WHITE)
 

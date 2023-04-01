@@ -15,7 +15,7 @@ class BlackQueens(pg.sprite.Group):
                         4 * IMAGE_SIZE,
                         0 * IMAGE_SIZE if pieces[0] == "w" else 7 * IMAGE_SIZE,
                     ),
-                    (4, 0),
+                    (4, 0 if pieces[0] == "w" else 7),
                 )
             ]
         )
@@ -30,7 +30,10 @@ class WhiteQueens(pg.sprite.Group):
                         4 * IMAGE_SIZE,
                         7 * IMAGE_SIZE if pieces[0] == "w" else 0 * IMAGE_SIZE,
                     ),
-                    (4, 7),
+                    (
+                        4,
+                        7 if pieces[0] == "w" else 0,
+                    ),
                 )
             ]
         )

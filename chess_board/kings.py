@@ -15,7 +15,10 @@ class BlackKings(pg.sprite.Group):
                         3 * IMAGE_SIZE,
                         0 * IMAGE_SIZE if pieces[0] == "w" else 7 * IMAGE_SIZE,
                     ),
-                    (3, 0),
+                    (
+                        3,
+                        0 if pieces[0] == "w" else 7,
+                    ),
                 )
             ]
         )
@@ -31,7 +34,7 @@ class WhiteKings(pg.sprite.Group):
                         3 * IMAGE_SIZE,
                         7 * IMAGE_SIZE if pieces[0] == "w" else 0 * IMAGE_SIZE,
                     ),
-                    (3, 7),
+                    (3, 7 if pieces[0] == "w" else 0),
                 )
             ]
         )
