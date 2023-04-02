@@ -17,16 +17,28 @@ class BlackBishop(Bishop):
             (IMAGE_SIZE, IMAGE_SIZE),
         )
 
-    def allowed_move(self, x: int, y: int):
+    def allowed_move(self, x: int, y: int, board: list[list[None | str]]):
         for i in range(8):
+            if board[i][i]:
+                return False
             if (
                 self.board_coordinate[1] + i == y
                 and self.board_coordinate[0] + i == x
             ):
                 return True
             if (
+                self.board_coordinate[1] + i == y
+                and self.board_coordinate[0] - i == x
+            ):
+                return True
+            if (
                 self.board_coordinate[1] - i == y
                 and self.board_coordinate[0] - i == x
+            ):
+                return True
+            if (
+                self.board_coordinate[1] - i == y
+                and self.board_coordinate[0] + i == x
             ):
                 return True
         return False
@@ -39,8 +51,18 @@ class BlackBishop(Bishop):
             ):
                 return True
             if (
+                self.board_coordinate[1] + i == y
+                and self.board_coordinate[0] - i == x
+            ):
+                return True
+            if (
                 self.board_coordinate[1] - i == y
                 and self.board_coordinate[0] - i == x
+            ):
+                return True
+            if (
+                self.board_coordinate[1] - i == y
+                and self.board_coordinate[0] + i == x
             ):
                 return True
         return False

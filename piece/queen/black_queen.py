@@ -17,16 +17,25 @@ class BlackQueen(Queen):
             (IMAGE_SIZE, IMAGE_SIZE),
         )
 
-    def allowed_move(self, x: int, y: int):
+    def allowed_move(self, x: int, y: int, board: list[list[None | str]]):
         for i in range(8):
+            if board[i][i]:
+                return False
+            if (
+                board[i][self.board_coordinate[0]]
+                or board[self.board_coordinate[1]][i]
+            ):
+                return False
             if self.board_coordinate[1] + i == y:
                 if self.board_coordinate[0] - i == x:
-                    if self.board_coordinate[0] + i == x:
-                        return True
+                    return True
+                if self.board_coordinate[0] + i == x:
                     return True
                 return True
             if self.board_coordinate[1] - i == y:
                 if self.board_coordinate[0] - i == x:
+                    return True
+                if self.board_coordinate[0] + i == x:
                     return True
                 return True
         return False

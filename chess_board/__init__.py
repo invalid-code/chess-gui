@@ -339,6 +339,7 @@ class ChessBoard(pg.sprite.Group):
             if piece.first_move:
                 piece.first_move = False
         self.moving_piece.rem_moving()
+        # self.change_turn()
 
     def set_board_repr(self, *args: tuple[int, int, Any]):
         for piece in args:
@@ -348,7 +349,7 @@ class ChessBoard(pg.sprite.Group):
         piece = self.moving_piece.sprites()[0]
         x, y = pos
         if self.is_moving:
-            return piece.allowed_move(x, y)
+            return piece.allowed_move(x, y, self.board_repr)
         if self.is_taking:
             return piece.allowed_take(x, y)
 
@@ -368,13 +369,17 @@ class ChessBoard(pg.sprite.Group):
 
     def is_player_piece(self):
         moving_piece = self.moving_piece.sprites()
-        if moving_piece:
-            if moving_piece[0].name[0] != self.player.pieces[0]:
-                self.not_allowed_move()
+        if moving_piece[0].name[0] == self.player.pieces[0]:
+            return True
+        return False
 
     def is_taking_own_pieces(self, move) -> bool | None:
         x, y = move.board_coordinate
         move_pos = self.board_repr[y][x]
         if move_pos:
-            return move_pos[0] == self.moving_piece.sprites()[0].name[0]
+            return move_pos[0] != self.moving_piece.sprites()[0].name[0]
         return True
+
+    # def is_jumping_piece(self, move: tuple[int, int]):
+    #     for _ in range(8):
+    #         pass

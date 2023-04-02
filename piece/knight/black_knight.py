@@ -17,7 +17,7 @@ class BlackKnight(Knight):
             (IMAGE_SIZE, IMAGE_SIZE),
         )
 
-    def allowed_move(self, x: int, y: int):
+    def allowed_move(self, x: int, y: int, _):
         if (
             self.board_coordinate[1] - 2 == y
             or self.board_coordinate[1] + 2 == y

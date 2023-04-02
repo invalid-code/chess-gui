@@ -17,7 +17,7 @@ class BlackKing(King):
             (IMAGE_SIZE, IMAGE_SIZE),
         )
 
-    def allowed_move(self, x: int, y: int):
+    def allowed_move(self, x: int, y: int, _):
         if (
             self.board_coordinate[0] - 1 == x
             or self.board_coordinate[0] + 1 == x
