@@ -16,7 +16,7 @@ class Queen(Piece):
         return f"piece is {self.image}\nrect is{self.rect}\nboard coordinate is{self.board_coordinate}\nclick is {self.clicked}\nalive is {self.is_alive}"
 
     def allowed_move(self, x: int, y: int, board: list[list[None | str]]):
-        for i in range(8):
+        for i in range(1, 8):
             # bishop move rules
             if x < self.board_coordinate[0] and y < self.board_coordinate[1]:
                 if board[self.board_coordinate[1] - i][
@@ -66,6 +66,30 @@ class Queen(Piece):
                 ]:
                     return False
 
+            if (
+                self.board_coordinate[1] + i == y
+                and self.board_coordinate[0] + i == x
+            ):
+                return True
+
+            if (
+                self.board_coordinate[1] + i == y
+                and self.board_coordinate[0] - i == x
+            ):
+                return True
+
+            if (
+                self.board_coordinate[1] - i == y
+                and self.board_coordinate[0] - i == x
+            ):
+                return True
+
+            if (
+                self.board_coordinate[1] - i == y
+                and self.board_coordinate[0] + i == x
+            ):
+                return True
+
             if self.board_coordinate[1] + i == y:
                 return True
 
@@ -76,30 +100,6 @@ class Queen(Piece):
                 return True
 
             if self.board_coordinate[0] - i == x:
-                return True
-
-            if (
-                self.board_coordinate[1] + i == y
-                and self.board_coordinate[0] + i == x
-            ):
-                return True
-
-            if (
-                self.board_coordinate[1] + i == y
-                and self.board_coordinate[0] - i == x
-            ):
-                return True
-
-            if (
-                self.board_coordinate[1] - i == y
-                and self.board_coordinate[0] - i == x
-            ):
-                return True
-
-            if (
-                self.board_coordinate[1] - i == y
-                and self.board_coordinate[0] + i == x
-            ):
                 return True
 
         return False
