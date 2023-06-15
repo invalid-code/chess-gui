@@ -1,12 +1,12 @@
- ☐ make pieces not move over other pieces except knights
+Todo:
+ ✔ make pieces not move over other pieces except knights @done(23-04-05 15:48)
  ☐ make the game turn based * not yet
  ☐ check for chess rules
- ☐ fix bishop not moving properly
+ ✔ fix bishop not moving properly @done(23-04-05 15:49)
  ☐ make ui update with allowed moves
-
-＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿
-Archive:
- ✔ make it so you can't move other pieces except your own @done (23-04-02 14:42)
+ 
+ Archive:
+ ✔ make it so you can't move other pieces except your own (23-04-02 14:42) @done(23-04-05 15:48)
  ✔ make it so that the pieces that you get are in your side of the board @done (23-03-29 17:52)
  ✔ fix bug moving break the game @done (23-03-28 20:51)
  ✔ make it so that which color of the pieces that you get is random @done (23-03-27 19:04)

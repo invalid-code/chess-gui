@@ -1,4 +1,3 @@
-# from enum import Enum
 from typing import Any, TypedDict
 
 import pygame as pg
@@ -15,26 +14,12 @@ from piece.queen.black_queen import BlackQueen
 from piece.queen.white_queen import WhiteQueen
 from piece.rook.black_rook import BlackRook
 from piece.rook.white_rook import WhiteRook
-from Players.opponent import Opponent
-from Players.player import Player
+from players.opponent import Opponent
+from players.player import Player
 
 from .board import Board
 from .constants import IMAGE_SIZE
 from .pieces import Pieces
-
-# class PieceEnum(Enum):
-#     BLACK_PAWN = BlackPawn
-#     WHITE_PAWN = WhitePawn
-#     BLACK_KNIGHT = BlackKnight
-#     WHITE_KNIGHT = WhiteKnight
-#     BLACK_BISHOP = BlackBishop
-#     WHITE_BISHOP = WhiteBishop
-#     BLACK_ROOK = BlackRook
-#     WHITE_ROOK = WhiteRook
-#     BLACK_QUEEN = BlackQueen
-#     WHITE_QUEEN = WhiteQueen
-#     BLACK_KING = BlackKing
-#     WHITE_KING = WhiteKing
 
 
 class Move(TypedDict):
@@ -47,6 +32,9 @@ class Take(TypedDict):
     updated_pos: tuple[int, int]
     is_taking: bool
     taken_piece: BlackPawn | WhitePawn | BlackKnight | WhiteKnight | BlackBishop | WhiteBishop | BlackRook | WhiteRook | BlackKing | WhiteKing | BlackQueen | WhiteQueen
+
+
+"""A container group that contains all moving pieces"""
 
 
 class MovingPiece(pg.sprite.Group):
@@ -76,6 +64,9 @@ class MovingPiece(pg.sprite.Group):
         | WhiteQueen
     ]:
         return super().sprites()
+
+
+"""A container group that contains all taken pieces"""
 
 
 class TakenPiece(pg.sprite.Group):
@@ -379,7 +370,3 @@ class ChessBoard(pg.sprite.Group):
         if move_pos:
             return move_pos[0] != self.moving_piece.sprites()[0].name[0]
         return True
-
-    # def is_jumping_piece(self, move: tuple[int, int]):
-    #     for _ in range(8):
-    #         pass

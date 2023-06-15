@@ -5,8 +5,6 @@ import pygame as pg
 
 from chess_board import ChessBoard
 
-# from Players import player
-
 pg.init()
 
 SIZE = 600, 500
@@ -29,16 +27,12 @@ def main():
                 sys.exit()
             if event.type == pg.MOUSEBUTTONDOWN:
                 if chess_board.is_moving:
-                    if not chess_board.is_player_piece():
-                        chess_board.not_allowed_move()
-                        continue
                     move = chess_board.get_move_pos(event.pos)
                     if not move:
+                        chess_board.not_allowed_move()
                         continue
                     chess_board.set_is_taking(move)
-                    if not chess_board.is_piece_allowed_move(
-                        move.board_coordinate
-                    ):
+                    if not chess_board.is_piece_allowed_move(move.board_coordinate):
                         chess_board.not_allowed_move()
                         continue
                     if not chess_board.is_taking_own_pieces(move):
@@ -48,12 +42,17 @@ def main():
                     chess_board.back_move(move.board_coordinate)
                 else:
                     chess_board.get_clicked_piece(event.pos)
-                    # if (
-                    #     chess_board.turn
-                    #     != chess_board.moving_piece.sprites()[0].name[0]
-                    # ):
-                    #     chess_board.not_allowed_move()
-                    #     continue
+                    if len(chess_board.moving_piece.sprites()) <= 0:
+                        continue
+                    if not chess_board.is_player_piece():
+                        chess_board.not_allowed_move()
+                        continue
+                    if (
+                        chess_board.turn
+                        != chess_board.moving_piece.sprites()[0].name[0]
+                    ):
+                        chess_board.not_allowed_move()
+                        continue
 
         screen.fill(WHITE)
 

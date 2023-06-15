@@ -16,91 +16,109 @@ class Queen(Piece):
         return f"piece is {self.image}\nrect is{self.rect}\nboard coordinate is{self.board_coordinate}\nclick is {self.clicked}\nalive is {self.is_alive}"
 
     def allowed_move(self, x: int, y: int, board: list[list[None | str]]):
-        for i in range(1, 8):
-            # bishop move rules
-            if x < self.board_coordinate[0] and y < self.board_coordinate[1]:
+        # bishop move rules
+        if x < self.board_coordinate[0] and y < self.board_coordinate[1]:
+            for i in range(1, 8):
                 if board[self.board_coordinate[1] - i][
                     self.board_coordinate[0] - i
                 ]:
                     return False
 
-            if x > self.board_coordinate[0] and y > self.board_coordinate[1]:
+                if (
+                    self.board_coordinate[1] - i == y
+                    and self.board_coordinate[0] - i == x
+                ):
+                    return True
+
+        if x > self.board_coordinate[0] and y > self.board_coordinate[1]:
+            for i in range(1, 8):
                 if board[self.board_coordinate[1] + i][
                     self.board_coordinate[0] + i
                 ]:
                     return False
 
-            if x < self.board_coordinate[0] and y > self.board_coordinate[1]:
+                if (
+                    self.board_coordinate[1] + i == y
+                    and self.board_coordinate[0] + i == x
+                ):
+                    return True
+
+        if x < self.board_coordinate[0] and y > self.board_coordinate[1]:
+            for i in range(1, 8):
                 if board[self.board_coordinate[1] + i][
                     self.board_coordinate[0] - i
                 ]:
                     return False
 
-            if x > self.board_coordinate[0] and y < self.board_coordinate[1]:
+                if (
+                    self.board_coordinate[1] + i == y
+                    and self.board_coordinate[0] - i == x
+                ):
+                    return True
+
+        if x > self.board_coordinate[0] and y < self.board_coordinate[1]:
+            for i in range(1, 8):
                 if board[self.board_coordinate[1] - i][
                     self.board_coordinate[0] + i
                 ]:
                     return False
 
-            if x == self.board_coordinate[0] and y < self.board_coordinate[1]:
+                if (
+                    self.board_coordinate[1] - i == y
+                    and self.board_coordinate[0] + i == x
+                ):
+                    return True
+
+        # rook move rules
+        if x == self.board_coordinate[0] and y < self.board_coordinate[1]:
+            for i in range(1, 8):
                 if board[self.board_coordinate[1] - i][
                     self.board_coordinate[0]
                 ]:
                     return False
+                if (
+                    self.board_coordinate[1] - i == y
+                    and self.board_coordinate[0] == x
+                ):
+                    return True
 
-            if x == self.board_coordinate[0] and y > self.board_coordinate[1]:
+        if x == self.board_coordinate[0] and y > self.board_coordinate[1]:
+            for i in range(1, 8):
                 if board[self.board_coordinate[1] + i][
                     self.board_coordinate[0]
                 ]:
                     return False
+                if (
+                    self.board_coordinate[1] + i == y
+                    and self.board_coordinate[0] == x
+                ):
+                    return True
 
-            if x < self.board_coordinate[0] and y == self.board_coordinate[1]:
+        if x < self.board_coordinate[0] and y == self.board_coordinate[1]:
+            for i in range(1, 8):
                 if board[self.board_coordinate[1]][
                     self.board_coordinate[0] - i
                 ]:
                     return False
 
-            if x > self.board_coordinate[0] and y == self.board_coordinate[1]:
+                if (
+                    self.board_coordinate[1] == y
+                    and self.board_coordinate[0] - i == x
+                ):
+                    return True
+
+        if x > self.board_coordinate[0] and y == self.board_coordinate[1]:
+            for i in range(1, 8):
                 if board[self.board_coordinate[1]][
                     self.board_coordinate[0] + i
                 ]:
                     return False
 
-            if (
-                self.board_coordinate[1] + i == y
-                and self.board_coordinate[0] + i == x
-            ):
-                return True
-
-            if (
-                self.board_coordinate[1] + i == y
-                and self.board_coordinate[0] - i == x
-            ):
-                return True
-
-            if (
-                self.board_coordinate[1] - i == y
-                and self.board_coordinate[0] - i == x
-            ):
-                return True
-
-            if (
-                self.board_coordinate[1] - i == y
-                and self.board_coordinate[0] + i == x
-            ):
-                return True
-
-            if self.board_coordinate[1] + i == y:
-                return True
-
-            if self.board_coordinate[0] + i == x:
-                return True
-
-            if self.board_coordinate[1] - i == y:
-                return True
-
-            if self.board_coordinate[0] - i == x:
-                return True
+                if (
+                    self.board_coordinate[1] == y
+                    and self.board_coordinate[0] + i == x
+                ):
+                    return True
 
         return False
 
