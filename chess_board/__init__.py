@@ -1,4 +1,4 @@
-from typing import Any, TypedDict
+from typing import Optional, TypedDict
 
 import pygame as pg
 
@@ -18,26 +18,25 @@ from players.opponent import Opponent
 from players.player import Player
 
 from .board import Board
-from .constants import IMAGE_SIZE
+from .constants import IMAGE_SIZE, Piece
 from .pieces import Pieces
 
 
 class Move(TypedDict):
     updated_pos: tuple[int, int]
     is_taking: bool
-    taken_piece: None | BlackPawn | WhitePawn | BlackKnight | WhiteKnight | BlackBishop | WhiteBishop | BlackRook | WhiteRook | BlackKing | WhiteKing | BlackQueen | WhiteQueen
+    taken_piece: Optional[Piece]
 
 
 class Take(TypedDict):
     updated_pos: tuple[int, int]
     is_taking: bool
-    taken_piece: BlackPawn | WhitePawn | BlackKnight | WhiteKnight | BlackBishop | WhiteBishop | BlackRook | WhiteRook | BlackKing | WhiteKing | BlackQueen | WhiteQueen
-
-
-"""A container group that contains all moving pieces"""
+    taken_piece: Piece
 
 
 class MovingPiece(pg.sprite.Group):
+    """A container group that contains all moving pieces"""
+
     def __init__(self) -> None:
         super().__init__()
 
@@ -49,27 +48,13 @@ class MovingPiece(pg.sprite.Group):
 
     def sprites(
         self,
-    ) -> list[
-        BlackPawn
-        | WhitePawn
-        | BlackKnight
-        | WhiteKnight
-        | BlackBishop
-        | WhiteBishop
-        | BlackRook
-        | WhiteRook
-        | BlackKing
-        | WhiteKing
-        | BlackQueen
-        | WhiteQueen
-    ]:
+    ) -> list[Piece]:
         return super().sprites()
 
 
-"""A container group that contains all taken pieces"""
-
-
 class TakenPiece(pg.sprite.Group):
+    """A container group that contains all taken pieces"""
+
     def __init__(self) -> None:
         super().__init__()
 
@@ -84,7 +69,7 @@ class TakenPiece(pg.sprite.Group):
             sprite.kill()
 
 
-class ChessBoard(pg.sprite.Group):
+class ChessBoard:
     def __init__(self, screen: pg.surface.Surface) -> None:
         super().__init__()
         self.screen = screen
@@ -154,6 +139,7 @@ class ChessBoard(pg.sprite.Group):
 
     def draw(self):
         self.board.draw(self.screen)
+        self.draw_pieces()
 
     def draw_pieces(self):
         self.pieces.black_pawns.draw(self.screen)
@@ -244,23 +230,7 @@ class ChessBoard(pg.sprite.Group):
         else:
             self.is_taking = False
 
-    def get_taken_piece(
-        self, pos: tuple[int, int]
-    ) -> (
-        None
-        | WhitePawn
-        | BlackPawn
-        | WhiteKnight
-        | BlackKnight
-        | WhiteBishop
-        | BlackBishop
-        | WhiteRook
-        | BlackRook
-        | WhiteQueen
-        | BlackQueen
-        | WhiteKing
-        | BlackKing
-    ):
+    def get_taken_piece(self, pos: tuple[int, int]) -> Optional[Piece]:
         for white_pawn in self.pieces.white_pawns:
             if white_pawn.rect.collidepoint(pos):
                 return white_pawn
@@ -370,3 +340,31 @@ class ChessBoard(pg.sprite.Group):
         if move_pos:
             return move_pos[0] != self.moving_piece.sprites()[0].name[0]
         return True
+
+    def handle_input(self, event: pg.event.Event):
+        if self.is_moving:
+            move = self.get_move_pos(event.pos)
+            if not move:
+                self.not_allowed_move()
+                return
+            self.set_is_taking(move)
+            if not self.is_piece_allowed_move(move.board_coordinate):
+                self.not_allowed_move()
+                return
+            if not self.is_taking_own_pieces(move):
+                self.not_allowed_move()
+                return
+            self.ui_move(move.board_coordinate)
+            self.back_move(move.board_coordinate)
+        else:
+            if self.turn != Player.name:
+                return
+            self.get_clicked_piece(event.pos)
+            if len(self.moving_piece.sprites()) <= 0:
+                return
+            if not self.is_player_piece():
+                self.not_allowed_move()
+                return
+            if self.turn != self.moving_piece.sprites()[0].name[0]:
+                self.not_allowed_move()
+                return
