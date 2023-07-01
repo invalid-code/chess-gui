@@ -1,9 +1,5 @@
-from typing import Optional
-
-import pygame as pg
-
 from chess_board.constants import IMAGE_SIZE
-from piece import Piece
+from piece import Piece, Pieces
 
 
 class Rook(Piece):
@@ -102,7 +98,7 @@ class BlackRook(Rook):
         super().__init__("img/black_rook.png", pos, board_coordinate)
 
 
-class BlackRooks(pg.sprite.Group):
+class BlackRooks(Pieces):
     def __init__(self, pieces: str):
         super().__init__(
             [
@@ -121,17 +117,8 @@ class BlackRooks(pg.sprite.Group):
             ]
         )
 
-    def sprites(self) -> list[BlackRook]:
-        return super().sprites()
 
-    def is_being_clicked(self, pos: tuple[int, int]) -> Optional[BlackRook]:
-        for black_rook in self.sprites():
-            if black_rook.rect.collidepoint(pos):
-                return black_rook
-        return None
-
-
-class WhiteRooks(pg.sprite.Group):
+class WhiteRooks(Pieces):
     def __init__(self, pieces: str):
         super().__init__()
         self.add(
@@ -147,12 +134,3 @@ class WhiteRooks(pg.sprite.Group):
                 if index == 0 or index == 7
             ]
         )
-
-    def sprites(self) -> list[WhiteRook]:
-        return super().sprites()
-
-    def is_being_clicked(self, pos: tuple[int, int]) -> Optional[WhiteRook]:
-        for white_rook in self.sprites():
-            if white_rook.rect.collidepoint(pos):
-                return white_rook
-        return None

@@ -1,9 +1,5 @@
-from typing import Optional
-
-import pygame as pg
-
 from chess_board.constants import IMAGE_SIZE
-from piece import Piece
+from piece import Piece, Pieces
 
 
 class Bishop(Piece):
@@ -116,7 +112,7 @@ class BlackBishop(Bishop):
         super().__init__("img/black_bishop.png", pos, board_coordinate)
 
 
-class BlackBishops(pg.sprite.Group):
+class BlackBishops(Pieces):
     def __init__(self, pieces: str):
         super().__init__(
             [
@@ -135,17 +131,8 @@ class BlackBishops(pg.sprite.Group):
             ]
         )
 
-    def sprites(self) -> list[BlackBishop]:
-        return super().sprites()
 
-    def is_being_clicked(self, pos: tuple[int, int]) -> Optional[BlackBishop]:
-        for black_bishop in self.sprites():
-            if black_bishop.rect.collidepoint(pos):
-                return black_bishop
-        return None
-
-
-class WhiteBishops(pg.sprite.Group):
+class WhiteBishops(Pieces):
     def __init__(self, pieces: str):
         super().__init__()
         self.add(
@@ -161,12 +148,3 @@ class WhiteBishops(pg.sprite.Group):
                 if index == 2 or index == 5
             ]
         )
-
-    def sprites(self) -> list[WhiteBishop]:
-        return super().sprites()
-
-    def is_being_clicked(self, pos: tuple[int, int]) -> Optional[WhiteBishop]:
-        for white_bishop in self.sprites():
-            if white_bishop.rect.collidepoint(pos):
-                return white_bishop
-        return None

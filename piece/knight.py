@@ -1,10 +1,6 @@
-from typing import Optional
-
-import pygame as pg
-
 from chess_board.constants import IMAGE_SIZE
 
-from . import Piece
+from . import Piece, Pieces
 
 
 class Knight(Piece):
@@ -80,7 +76,7 @@ class WhiteKnight(Knight):
         super().__init__("img/white_knight.png", pos, board_coordinate)
 
 
-class BlackKnights(pg.sprite.Group):
+class BlackKnights(Pieces):
     def __init__(self, pieces: str):
         super().__init__(
             [
@@ -99,17 +95,8 @@ class BlackKnights(pg.sprite.Group):
             ]
         )
 
-    def sprites(self) -> list[BlackKnight]:
-        return super().sprites()
 
-    def is_being_clicked(self, pos: tuple[int, int]) -> Optional[BlackKnight]:
-        for black_knight in self.sprites():
-            if black_knight.rect.collidepoint(pos):
-                return black_knight
-        return None
-
-
-class WhiteKnights(pg.sprite.Group):
+class WhiteKnights(Pieces):
     def __init__(self, pieces: str):
         super().__init__()
         self.add(
@@ -128,12 +115,3 @@ class WhiteKnights(pg.sprite.Group):
                 if index == 1 or index == 6
             ]
         )
-
-    def sprites(self) -> list[WhiteKnight]:
-        return super().sprites()
-
-    def is_being_clicked(self, pos: tuple[int, int]) -> Optional[WhiteKnight]:
-        for white_knight in self.sprites():
-            if white_knight.rect.collidepoint(pos):
-                return white_knight
-        return None

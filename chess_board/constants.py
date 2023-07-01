@@ -9,7 +9,7 @@ from piece.rook import BlackRook, WhiteRook
 
 IMAGE_SIZE = 57
 
-Piece = (
+PieceType = (
     WhitePawn
     | BlackPawn
     | WhiteKnight

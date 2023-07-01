@@ -42,15 +42,24 @@ class ChessBoard:
         self.player = Player()
         self.opponent = Opponent(self.player)
         self.pieces = Pieces("b" if self.player.pieces[0] == "b" else "w")
-        self.board = Board()
+        self._board = Board()
         self.moving_piece = SelectedPiece()
         self.taken_piece = TakenPieces()
         self.is_moving = False
         self.is_taking = False
+        self.pieces.start_board_repr(self.board_repr)
         # self.board_repr: list[list[str | None]] = [
         #     [None for _ in range(8)] for _ in range(8)
         # ]
         # self.start_board_repr()
+
+    @property
+    def board(self):
+        return self._board
+
+    @property
+    def board_repr(self):
+        return self._board.board_repr
 
     # def start_board_repr(self):
     #     x, y, name = None, None, ""
@@ -120,71 +129,72 @@ class ChessBoard:
         self.pieces.black_kings.draw(self.screen)
         self.pieces.white_kings.draw(self.screen)
 
-    def get_clicked_piece(self, pos: tuple[int, int]):
-        for white_pawn in self.pieces.white_pawns:
-            if white_pawn.rect.collidepoint(pos):
-                self.moving_piece.add(white_pawn)
-                self.is_moving = True
+    # def get_clicked_piece(self, pos: tuple[int, int]):
+    #     pass
+    # for white_pawn in self.pieces.white_pawns:
+    #     if white_pawn.rect.collidepoint(pos):
+    #         self.moving_piece.add(white_pawn)
+    #         self.is_moving = True
 
-        for black_pawn in self.pieces.black_pawns:
-            if black_pawn.rect.collidepoint(pos):
-                self.moving_piece.add(black_pawn)
-                self.is_moving = True
+    # for black_pawn in self.pieces.black_pawns:
+    #     if black_pawn.rect.collidepoint(pos):
+    #         self.moving_piece.add(black_pawn)
+    #         self.is_moving = True
 
-        for white_knight in self.pieces.white_knights:
-            if white_knight.rect.collidepoint(pos):
-                self.moving_piece.add(white_knight)
-                self.is_moving = True
+    # for white_knight in self.pieces.white_knights:
+    #     if white_knight.rect.collidepoint(pos):
+    #         self.moving_piece.add(white_knight)
+    #         self.is_moving = True
 
-        for black_knight in self.pieces.black_knights:
-            if black_knight.rect.collidepoint(pos):
-                self.moving_piece.add(black_knight)
-                self.is_moving = True
+    # for black_knight in self.pieces.black_knights:
+    #     if black_knight.rect.collidepoint(pos):
+    #         self.moving_piece.add(black_knight)
+    #         self.is_moving = True
 
-        for white_bishop in self.pieces.white_bishops:
-            if white_bishop.rect.collidepoint(pos):
-                self.moving_piece.add(white_bishop)
-                self.is_moving = True
+    # for white_bishop in self.pieces.white_bishops:
+    #     if white_bishop.rect.collidepoint(pos):
+    #         self.moving_piece.add(white_bishop)
+    #         self.is_moving = True
 
-        for black_bishop in self.pieces.black_bishops:
-            if black_bishop.rect.collidepoint(pos):
-                self.moving_piece.add(black_bishop)
-                self.is_moving = True
+    # for black_bishop in self.pieces.black_bishops:
+    #     if black_bishop.rect.collidepoint(pos):
+    #         self.moving_piece.add(black_bishop)
+    #         self.is_moving = True
 
-        for white_rook in self.pieces.white_rooks:
-            if white_rook.rect.collidepoint(pos):
-                self.moving_piece.add(white_rook)
-                self.is_moving = True
+    # for white_rook in self.pieces.white_rooks:
+    #     if white_rook.rect.collidepoint(pos):
+    #         self.moving_piece.add(white_rook)
+    #         self.is_moving = True
 
-        for black_rook in self.pieces.black_rooks:
-            if black_rook.rect.collidepoint(pos):
-                self.moving_piece.add(black_rook)
-                self.is_moving = True
+    # for black_rook in self.pieces.black_rooks:
+    #     if black_rook.rect.collidepoint(pos):
+    #         self.moving_piece.add(black_rook)
+    #         self.is_moving = True
 
-        for white_queen in self.pieces.white_queens:
-            if white_queen.rect.collidepoint(pos):
-                self.moving_piece.add(white_queen)
-                self.is_moving = True
+    # for white_queen in self.pieces.white_queens:
+    #     if white_queen.rect.collidepoint(pos):
+    #         self.moving_piece.add(white_queen)
+    #         self.is_moving = True
 
-        for black_queen in self.pieces.black_queens:
-            if black_queen.rect.collidepoint(pos):
-                self.moving_piece.add(black_queen)
-                self.is_moving = True
+    # for black_queen in self.pieces.black_queens:
+    #     if black_queen.rect.collidepoint(pos):
+    #         self.moving_piece.add(black_queen)
+    #         self.is_moving = True
 
-        for white_king in self.pieces.white_kings:
-            if white_king.rect.collidepoint(pos):
-                self.moving_piece.add(white_king)
-                self.is_moving = True
+    # for white_king in self.pieces.white_kings:
+    #     if white_king.rect.collidepoint(pos):
+    #         self.moving_piece.add(white_king)
+    #         self.is_moving = True
 
-        for black_king in self.pieces.black_kings:
-            if black_king.rect.collidepoint(pos):
-                self.moving_piece.add(black_king)
-                self.is_moving = True
+    # for black_king in self.pieces.black_kings:
+    #     if black_king.rect.collidepoint(pos):
+    #         self.moving_piece.add(black_king)
+    #         self.is_moving = True
 
-    def get_move_pos(self, pos: tuple[int, int]):
-        for row in self.board.sprites():
-            if row.rect.collidepoint(pos):
-                return row
+    # def get_move_pos(self, pos: tuple[int, int]):
+    #     for row in self.board.sprites():
+    #         if row.rect.collidepoint(pos):
+    #             return row
 
     def set_is_taking(self, move):
         x, y = move.board_coordinate[0], move.board_coordinate[1]
@@ -308,8 +318,9 @@ class ChessBoard:
         return True
 
     def handle_input(self, event: pg.event.Event):
+        pos: tuple[int, int] = event.dict["pos"]
         if self.is_moving:
-            move = self.get_move_pos(event.pos)
+            move = self.get_move_pos(pos)
             if not move:
                 self.not_allowed_move()
                 return
@@ -325,7 +336,7 @@ class ChessBoard:
         else:
             # if self.turn != self.player:
             #     return
-            self.get_clicked_piece(event.dict["pos"])
+            self.pieces.get_clicked_piece(pos)
             if len(self.moving_piece.sprites()) <= 0:
                 return
             if not self.is_player_piece():

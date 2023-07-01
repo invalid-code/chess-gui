@@ -1,9 +1,5 @@
-from typing import Optional
-
-import pygame as pg
-
 from chess_board.constants import IMAGE_SIZE
-from piece import Piece
+from piece import Piece, Pieces
 
 
 class Queen(Piece):
@@ -160,7 +156,7 @@ class WhiteQueen(Queen):
         super().__init__("img/white_queen.png", pos, board_coordinate)
 
 
-class BlackQueens(pg.sprite.Group):
+class BlackQueens(Pieces):
     def __init__(self, pieces: str):
         super().__init__(
             [
@@ -174,17 +170,8 @@ class BlackQueens(pg.sprite.Group):
             ]
         )
 
-    def sprites(self) -> list[BlackQueen]:
-        return super().sprites()
 
-    def is_being_clicked(self, pos: tuple[int, int]) -> Optional[BlackQueen]:
-        for black_queen in self.sprites():
-            if black_queen.rect.collidepoint(pos):
-                return black_queen
-        return None
-
-
-class WhiteQueens(pg.sprite.Group):
+class WhiteQueens(Pieces):
     def __init__(self, pieces: str):
         super().__init__(
             [
@@ -200,12 +187,3 @@ class WhiteQueens(pg.sprite.Group):
                 )
             ]
         )
-
-    def sprites(self) -> list[WhiteQueen]:
-        return super().sprites()
-
-    def is_being_clicked(self, pos: tuple[int, int]) -> Optional[WhiteQueen]:
-        for white_queen in self.sprites():
-            if white_queen.rect.collidepoint(pos):
-                return white_queen
-        return None

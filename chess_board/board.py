@@ -71,6 +71,3 @@ class Board(pg.sprite.Group):
         )
 
         self.board_repr = [["" for _ in range(8)] for _ in range(8)]
-
-    def start_board_repr(self, pieces: Pieces):
-        pass
