@@ -18,7 +18,7 @@ class King(Piece):
     def __repr__(self) -> str:
         return f"King(piece={self.image}, rect={self.rect}, board_coordinate={self.board_coordinate}, clicked={self.clicked}, is_alive={self.is_alive})"
 
-    def allowed_move(self, x: int, y: int, _):
+    def allowed_move(self, x: int, y: int):
         if (
             self.board_coordinate[0] - 1 == x
             or self.board_coordinate[0] + 1 == x

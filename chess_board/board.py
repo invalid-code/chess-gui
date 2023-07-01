@@ -1,6 +1,7 @@
 import pygame as pg
 
 from .constants import IMAGE_SIZE
+from .pieces import Pieces
 
 
 class Square(pg.sprite.Sprite):

@@ -1,9 +1,9 @@
-from .bishops import BlackBishops, WhiteBishops
-from .kings import BlackKings, WhiteKings
-from .knights import BlackKnights, WhiteKnights
-from .pawns import BlackPawns, WhitePawns
-from .queens import BlackQueens, WhiteQueens
-from .rooks import BlackRooks, WhiteRooks
+from piece.bishop import BlackBishops, WhiteBishops
+from piece.king import BlackKings, WhiteKings
+from piece.knight import BlackKnights, WhiteKnights
+from piece.pawn import BlackPawns, WhitePawns
+from piece.queen import BlackQueens, WhiteQueens
+from piece.rook import BlackRooks, WhiteRooks
 
 
 class Pieces:

@@ -18,7 +18,7 @@ class Queen(Piece):
     def __repr__(self) -> str:
         return f"Queen(piece={self.image}, rect={self.rect}, board_coordinate={self.board_coordinate}, clicked={self.clicked}, is_alive={self.is_alive})"
 
-    def allowed_move(self, x: int, y: int, board: list[list[None | str]]):
+    def allowed_move(self, x: int, y: int):
         # bishop move rules
         if x < self.board_coordinate[0] and y < self.board_coordinate[1]:
             for i in range(1, 8):
