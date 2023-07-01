@@ -1,3 +1,5 @@
+from typing import Optional
+
 from chess_board.base import BaseSprite
 
 
@@ -12,12 +14,25 @@ class Piece(BaseSprite):
         super().__init__(img_path, board_coordinate, pos)
         self.piece_color = piece_color
 
-    def set_board_repr(self, board: list[list[str]], name: str):
+    def set_board_repr(
+        self,
+        board: list[list[str]],
+        name: str,
+    ):
         x, y = self.board_coordinate
         board[y][x] = name
 
-    def move(self, dest: tuple[int, int]):
+    def move(
+        self,
+        dest: tuple[int, int],
+    ):
         self.rect.topleft = dest
+
+    def update_board_coordinate(
+        self,
+        board_coordinate: tuple[int, int],
+    ):
+        self.board_coordinate = board_coordinate
 
     def __repr__(self) -> str:
         return f"Piece(piece={self.image}, rect={self.rect}, board_coordinate={self.board_coordinate})"

@@ -1,5 +1,10 @@
+from typing import Optional
+
 from chess_board.base import BaseGroup
+from chess_board.constants import IMAGE_SIZE
 from chess_board.types import Piece
+
+from . import Bishop, King, Knight, Pawn, Queen, Rook
 
 
 class PieceGroup(BaseGroup):
@@ -18,7 +23,53 @@ class PieceGroup(BaseGroup):
 
 
 class PawnGroup(PieceGroup):
-    pass
+    def __init__(self, pieces: str) -> None:
+        super().__init__()
+        if pieces == "white":
+            self.add(
+                [
+                    Pawn(
+                        "w",
+                        "img/white_pawn.png",
+                        (i * IMAGE_SIZE, 6 * IMAGE_SIZE),
+                        (i, 6),
+                    )
+                    for i in range(8)
+                ],
+                [
+                    Pawn(
+                        "b",
+                        "img/black_pawn.png",
+                        (i * IMAGE_SIZE, 1 * IMAGE_SIZE),
+                        (i, 1),
+                    )
+                    for i in range(8)
+                ],
+            )
+        else:
+            self.add(
+                [
+                    Pawn(
+                        "b",
+                        "img/black_pawn.png",
+                        (i * IMAGE_SIZE, 6 * IMAGE_SIZE),
+                        (i, 6),
+                    )
+                    for i in range(8)
+                ],
+                [
+                    Pawn(
+                        "w",
+                        "img/white_pawn.png",
+                        (i * IMAGE_SIZE, 1 * IMAGE_SIZE),
+                        (i, 1),
+                    )
+                    for i in range(8)
+                ],
+            )
+
+    def sprites(self) -> list[Pawn]:
+        return super().sprites()
 
 
 class KnightGroup(PieceGroup):

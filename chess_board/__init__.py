@@ -1,26 +1,37 @@
+from typing import Optional
+
 import pygame as pg
 
 from .board import Board
 from .pieces import Pieces
 from .players import Opponent, Player
-from .types import Turn
+from .types import Piece
 
 
 class ChessBoard:
     def __init__(self, screen: pg.surface.Surface) -> None:
         self.screen = screen
-        self.turn = Turn.WHITE
         self.player = Player()
         self.opponent = Opponent(self.player)
-        self.pieces = Pieces(self.player.pieces)
+        print(f"player pieces: {self.player.pieces}")
+        print(f"opponent pieces: {self.opponent.pieces}")
+        self.turn = "white"
+        print(f"game turn: {self.turn}")
+        self.pieces = Pieces(self.player_piece)
         self.board = Board()
-        self.selected_piece = None
-        self.taken_piece = []
+        self.selected_piece: Optional[Piece] = None
+        self.taken_pieces: list[Piece] = []
+        self.is_moving = False
         self.pieces.start_board_repr(self.board_repr)
+        print(f"starting board representation: {self.board_repr}")
 
     @property
     def board_repr(self):
         return self.board.board_repr
+
+    @property
+    def player_piece(self):
+        return self.player.pieces
 
     def get_clicked_piece(self, pos: tuple[int, int]):
         return self.pieces.get_clicked_piece(pos)
@@ -30,31 +41,50 @@ class ChessBoard:
 
     def handle_input(self, event: pg.event.Event):
         pos: tuple[int, int] = event.dict["pos"]
-        selected_piece = self.get_clicked_piece(pos)
-        if not selected_piece:
-            return
-        selected_square = self.get_clicked_square(pos)
-        if not selected_square:
-            return
-        selected_piece.move(selected_square.rect.topleft)
+        if self.selected_piece:
+            selected_square = self.get_clicked_square(pos)
+            if not selected_square:
+                return
+            x, y = selected_square.board_coordinate
+            if not self.selected_piece.allowed_move(x, y):
+                self.reset()
+                return
+            self.update(
+                self.selected_piece,
+                selected_square.rect.topleft,
+                selected_square.board_coordinate,
+            )
+            print(
+                f"{self.selected_piece.name} has moved to {selected_square.board_coordinate}"
+            )
+            self.reset()
+        else:
+            self.selected_piece = self.get_clicked_piece(pos)
+            if self.selected_piece:
+                print(f"selected piece: {repr(self.selected_piece)}")
+
+    def update(
+        self,
+        piece: Piece,
+        dest: tuple[int, int],
+        board_coordinate: tuple[int, int],
+    ):
+        piece.move(dest)
+        self.board.update_board_repr(
+            piece.board_coordinate, board_coordinate, piece.name
+        )
+        piece.update_board_coordinate(board_coordinate)
+        print(f"board representation: {self.board_repr}")
+
+    def reset(self):
+        self.selected_piece = None
 
     def draw(self):
         self.board.draw(self.screen)
         self.draw_pieces()
 
     def draw_pieces(self):
-        self.pieces.black_pawns.draw(self.screen)
-        self.pieces.white_pawns.draw(self.screen)
-        self.pieces.black_knights.draw(self.screen)
-        self.pieces.white_knights.draw(self.screen)
-        self.pieces.black_bishops.draw(self.screen)
-        self.pieces.white_bishops.draw(self.screen)
-        self.pieces.black_rooks.draw(self.screen)
-        self.pieces.white_rooks.draw(self.screen)
-        self.pieces.black_queens.draw(self.screen)
-        self.pieces.white_queens.draw(self.screen)
-        self.pieces.black_kings.draw(self.screen)
-        self.pieces.white_kings.draw(self.screen)
+        self.pieces.pawns.draw(self.screen)
 
     # def get_move_pos(self, pos: tuple[int, int]):
     #     for row in self.board.sprites():

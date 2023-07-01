@@ -1,6 +1,6 @@
 import pygame as pg
 
-from chess_board.types import IMAGE_SIZE
+from chess_board.constants import IMAGE_SIZE
 
 
 class BaseGroup(pg.sprite.Group):

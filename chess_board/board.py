@@ -1,7 +1,7 @@
 from typing import Optional
 
 from .base import BaseGroup, BaseSprite
-from .types import IMAGE_SIZE
+from .constants import IMAGE_SIZE
 
 
 class Square(BaseSprite):
@@ -21,14 +21,14 @@ class Board(BaseGroup):
                 [
                     Square(
                         "img/chess_board/white_square.png",
-                        (col * IMAGE_SIZE, row * IMAGE_SIZE),
                         (col, row),
+                        (col * IMAGE_SIZE, row * IMAGE_SIZE),
                     )
                     if col % 2 == 0
                     else Square(
                         "img/chess_board/black_square.png",
-                        (col * IMAGE_SIZE, row * IMAGE_SIZE),
                         (col, row),
+                        (col * IMAGE_SIZE, row * IMAGE_SIZE),
                     )
                     for col in range(8)
                 ]
@@ -36,14 +36,14 @@ class Board(BaseGroup):
                 else [
                     Square(
                         "img/chess_board/black_square.png",
-                        (col * IMAGE_SIZE, row * IMAGE_SIZE),
                         (col, row),
+                        (col * IMAGE_SIZE, row * IMAGE_SIZE),
                     )
                     if col % 2 == 0
                     else Square(
                         "img/chess_board/white_square.png",
-                        (col * IMAGE_SIZE, row * IMAGE_SIZE),
                         (col, row),
+                        (col * IMAGE_SIZE, row * IMAGE_SIZE),
                     )
                     for col in range(8)
                 ]
@@ -61,3 +61,17 @@ class Board(BaseGroup):
             if square.rect.collidepoint(pos):
                 return square
         return None
+
+    def update_board_repr(
+        self,
+        piece_board_coordinate: tuple[int, int],
+        board_coordinate: tuple[int, int],
+        name: str,
+    ):
+        x, y = piece_board_coordinate
+        dest_x, dest_y = board_coordinate
+        self.board_repr[y][x] = ""
+        self.board_repr[dest_y][dest_x] = name
+
+    def __str__(self) -> str:
+        return f"{self.board_repr}"
