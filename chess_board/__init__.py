@@ -16,8 +16,6 @@ class ChessBoard:
         self.board = Board()
         self.selected_piece = None
         self.taken_piece = []
-        # self.is_moving = False
-        # self.is_taking = False
         self.pieces.start_board_repr(self.board_repr)
 
     @property

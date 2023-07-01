@@ -1,11 +1,6 @@
 from enum import Enum
 
-from .piece.bishop import BlackBishop, WhiteBishop
-from .piece.king import BlackKing, WhiteKing
-from .piece.knight import BlackKnight, WhiteKnight
-from .piece.pawn import BlackPawn, WhitePawn
-from .piece.queen import BlackQueen, WhiteQueen
-from .piece.rook import BlackRook, WhiteRook
+from .piece import Bishop, King, Knight, Pawn, Queen, Rook
 
 IMAGE_SIZE = 57
 
@@ -15,17 +10,4 @@ class Turn(Enum):
     BLACK = 1
 
 
-Piece = (
-    WhitePawn
-    | BlackPawn
-    | WhiteKnight
-    | BlackKnight
-    | WhiteBishop
-    | BlackBishop
-    | WhiteRook
-    | BlackRook
-    | WhiteQueen
-    | BlackQueen
-    | WhiteKing
-    | BlackKing
-)
+Piece = Pawn | Knight | Bishop | Rook | Queen | King
