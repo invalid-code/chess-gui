@@ -1,47 +1,15 @@
-from typing import Optional, TypedDict
+from typing import Optional
 
 import pygame as pg
 
-from piece.bishop.black_bishop import BlackBishop
-from piece.bishop.white_bishop import WhiteBishop
-from piece.king.black_king import BlackKing
-from piece.king.white_king import WhiteKing
-from piece.knight.black_knight import BlackKnight
-from piece.knight.white_knight import WhiteKnight
-from piece.pawn.black_pawn import BlackPawn
-from piece.pawn.white_pawn import WhitePawn
-from piece.queen.black_queen import BlackQueen
-from piece.queen.white_queen import WhiteQueen
-from piece.rook.black_rook import BlackRook
-from piece.rook.white_rook import WhiteRook
-from players.opponent import Opponent
-from players.player import Player
-
 from .board import Board
-from .constants import IMAGE_SIZE, Piece
+from .constants import IMAGE_SIZE, Piece, Turn
 from .pieces import Pieces
+from .players import Opponent, Player
 
 
-class Move(TypedDict):
-    updated_pos: tuple[int, int]
-    is_taking: bool
-    taken_piece: Optional[Piece]
-
-
-class Take(TypedDict):
-    updated_pos: tuple[int, int]
-    is_taking: bool
-    taken_piece: Piece
-
-
-class MovingPiece(pg.sprite.Group):
+class SelectedPiece(pg.sprite.Group):
     """A container group that contains all moving pieces"""
-
-    def __init__(self) -> None:
-        super().__init__()
-
-    def add_to_moving(self, piece):
-        self.add(piece)
 
     def rem_moving(self):
         self.remove(self.sprites()[0])
@@ -52,11 +20,8 @@ class MovingPiece(pg.sprite.Group):
         return super().sprites()
 
 
-class TakenPiece(pg.sprite.Group):
+class TakenPieces(pg.sprite.Group):
     """A container group that contains all taken pieces"""
-
-    def __init__(self) -> None:
-        super().__init__()
 
     def add_to_taken(self, piece):
         self.add(piece)
@@ -73,69 +38,69 @@ class ChessBoard:
     def __init__(self, screen: pg.surface.Surface) -> None:
         super().__init__()
         self.screen = screen
-        self.turn = "w"
+        self.turn = Turn.WHITE
         self.player = Player()
         self.opponent = Opponent(self.player)
         self.pieces = Pieces("b" if self.player.pieces[0] == "b" else "w")
         self.board = Board()
-        self.moving_piece = MovingPiece()
-        self.taken_piece = TakenPiece()
+        self.moving_piece = SelectedPiece()
+        self.taken_piece = TakenPieces()
         self.is_moving = False
         self.is_taking = False
-        self.board_repr: list[list[str | None]] = [
-            [None for _ in range(8)] for _ in range(8)
-        ]
-        self.start_board_repr()
+        # self.board_repr: list[list[str | None]] = [
+        #     [None for _ in range(8)] for _ in range(8)
+        # ]
+        # self.start_board_repr()
 
-    def start_board_repr(self):
-        x, y, name = None, None, ""
-        for black_pawn in self.pieces.black_pawns:
-            (x, y), name = black_pawn.board_coordinate, black_pawn.name
-            self.set_board_repr((x, y, name))
+    # def start_board_repr(self):
+    #     x, y, name = None, None, ""
+    #     for black_pawn in self.pieces.black_pawns:
+    #         (x, y), name = black_pawn.board_coordinate, black_pawn.name
+    #         self.set_board_repr((x, y, name))
 
-        for white_pawn in self.pieces.white_pawns:
-            (x, y), name = white_pawn.board_coordinate, white_pawn.name
-            self.set_board_repr((x, y, name))
+    #     for white_pawn in self.pieces.white_pawns:
+    #         (x, y), name = white_pawn.board_coordinate, white_pawn.name
+    #         self.set_board_repr((x, y, name))
 
-        for black_pawn in self.pieces.black_knights:
-            (x, y), name = black_pawn.board_coordinate, black_pawn.name
-            self.set_board_repr((x, y, name))
+    #     for black_pawn in self.pieces.black_knights:
+    #         (x, y), name = black_pawn.board_coordinate, black_pawn.name
+    #         self.set_board_repr((x, y, name))
 
-        for white_pawn in self.pieces.white_knights:
-            (x, y), name = white_pawn.board_coordinate, white_pawn.name
-            self.set_board_repr((x, y, name))
+    #     for white_pawn in self.pieces.white_knights:
+    #         (x, y), name = white_pawn.board_coordinate, white_pawn.name
+    #         self.set_board_repr((x, y, name))
 
-        for black_pawn in self.pieces.black_bishops:
-            (x, y), name = black_pawn.board_coordinate, black_pawn.name
-            self.set_board_repr((x, y, name))
+    #     for black_pawn in self.pieces.black_bishops:
+    #         (x, y), name = black_pawn.board_coordinate, black_pawn.name
+    #         self.set_board_repr((x, y, name))
 
-        for white_pawn in self.pieces.white_bishops:
-            (x, y), name = white_pawn.board_coordinate, white_pawn.name
-            self.set_board_repr((x, y, name))
+    #     for white_pawn in self.pieces.white_bishops:
+    #         (x, y), name = white_pawn.board_coordinate, white_pawn.name
+    #         self.set_board_repr((x, y, name))
 
-        for black_pawn in self.pieces.black_rooks:
-            (x, y), name = black_pawn.board_coordinate, black_pawn.name
-            self.set_board_repr((x, y, name))
+    #     for black_pawn in self.pieces.black_rooks:
+    #         (x, y), name = black_pawn.board_coordinate, black_pawn.name
+    #         self.set_board_repr((x, y, name))
 
-        for white_pawn in self.pieces.white_rooks:
-            (x, y), name = white_pawn.board_coordinate, white_pawn.name
-            self.set_board_repr((x, y, name))
+    #     for white_pawn in self.pieces.white_rooks:
+    #         (x, y), name = white_pawn.board_coordinate, white_pawn.name
+    #         self.set_board_repr((x, y, name))
 
-        for black_pawn in self.pieces.black_queens:
-            (x, y), name = black_pawn.board_coordinate, black_pawn.name
-            self.set_board_repr((x, y, name))
+    #     for black_pawn in self.pieces.black_queens:
+    #         (x, y), name = black_pawn.board_coordinate, black_pawn.name
+    #         self.set_board_repr((x, y, name))
 
-        for white_pawn in self.pieces.white_queens:
-            (x, y), name = white_pawn.board_coordinate, white_pawn.name
-            self.set_board_repr((x, y, name))
+    #     for white_pawn in self.pieces.white_queens:
+    #         (x, y), name = white_pawn.board_coordinate, white_pawn.name
+    #         self.set_board_repr((x, y, name))
 
-        for black_pawn in self.pieces.black_kings:
-            (x, y), name = black_pawn.board_coordinate, black_pawn.name
-            self.set_board_repr((x, y, name))
+    #     for black_pawn in self.pieces.black_kings:
+    #         (x, y), name = black_pawn.board_coordinate, black_pawn.name
+    #         self.set_board_repr((x, y, name))
 
-        for white_pawn in self.pieces.white_kings:
-            (x, y), name = white_pawn.board_coordinate, white_pawn.name
-            self.set_board_repr((x, y, name))
+    #     for white_pawn in self.pieces.white_kings:
+    #         (x, y), name = white_pawn.board_coordinate, white_pawn.name
+    #         self.set_board_repr((x, y, name))
 
     def draw(self):
         self.board.draw(self.screen)
@@ -302,7 +267,7 @@ class ChessBoard:
         self.moving_piece.rem_moving()
         # self.change_turn()
 
-    def set_board_repr(self, *args: tuple[int, int, Any]):
+    def set_board_repr(self, *args: tuple[int, int]):
         for piece in args:
             self.board_repr[piece[1]][piece[0]] = piece[2]
 
@@ -323,10 +288,11 @@ class ChessBoard:
             self.is_taking = False
 
     def change_turn(self):
-        if self.turn == "w":
-            self.turn = "b"
-            return
-        self.turn = "w"
+        match self.turn:
+            case 0:
+                self.turn = Turn.BLACK
+            case 1:
+                self.turn = Turn.WHITE
 
     def is_player_piece(self):
         moving_piece = self.moving_piece.sprites()
@@ -357,9 +323,9 @@ class ChessBoard:
             self.ui_move(move.board_coordinate)
             self.back_move(move.board_coordinate)
         else:
-            if self.turn != Player.name:
-                return
-            self.get_clicked_piece(event.pos)
+            # if self.turn != self.player:
+            #     return
+            self.get_clicked_piece(event.dict["pos"])
             if len(self.moving_piece.sprites()) <= 0:
                 return
             if not self.is_player_piece():
