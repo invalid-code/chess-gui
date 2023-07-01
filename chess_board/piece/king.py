@@ -1,5 +1,5 @@
 from chess_board.constants import IMAGE_SIZE
-from piece import Piece, Pieces
+from piece import Piece, PieceGroup
 
 
 class King(Piece):
@@ -80,7 +80,7 @@ class WhiteKing(King):
         super().__init__("img/white_king.png", pos, board_coordinate)
 
 
-class BlackKings(Pieces):
+class BlackKings(PieceGroup):
     def __init__(self, pieces: str):
         super().__init__(
             [
@@ -98,7 +98,7 @@ class BlackKings(Pieces):
         )
 
 
-class WhiteKings(Pieces):
+class WhiteKings(PieceGroup):
     def __init__(self, pieces: str):
         super().__init__()
         self.add(

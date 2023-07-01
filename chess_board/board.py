@@ -1,20 +1,19 @@
+from typing import Optional
+
 import pygame as pg
 
-from .constants import IMAGE_SIZE
-from .pieces import Pieces
+from .base import BaseGroup, BaseSprite
+from .types import IMAGE_SIZE
 
 
-class Square(pg.sprite.Sprite):
+class Square(BaseSprite):
     def __init__(
         self,
-        pos: tuple[int, int],
-        square: pg.Surface,
+        img_path: str,
         board_coordinate: tuple[int, int],
+        pos: tuple[int, int],
     ) -> None:
-        super().__init__()
-        self.image = square
-        self.rect = self.image.get_rect(topleft=pos)
-        self.board_coordinate = board_coordinate
+        super().__init__(img_path, board_coordinate, pos)
 
 
 class WhiteSquare(Square):
@@ -41,7 +40,7 @@ class BlackSquare(Square):
         super().__init__(pos, black_square, board_coordinate)
 
 
-class Board(pg.sprite.Group):
+class Board(BaseGroup):
     def __init__(self):
         super().__init__(
             [
@@ -71,3 +70,14 @@ class Board(pg.sprite.Group):
         )
 
         self.board_repr = [["" for _ in range(8)] for _ in range(8)]
+
+    def sprites(self) -> list[WhiteSquare | BlackSquare]:
+        return super().sprites()
+
+    def get_clicked_square(
+        self, pos: tuple[int, int]
+    ) -> Optional[WhiteSquare | BlackSquare]:
+        for square in self.sprites():
+            if square.rect.collidepoint(pos):
+                return square
+        return None
