@@ -30,8 +30,10 @@ class Piece(BaseSprite):
         self.rect.topleft = dest
         self.board_coordinate = board_coordinate
 
-    def taken(self):
-        self.kill()
+    def is_player_piece(self, name: str, other: str) -> bool:
+        if other[0] == name[0]:
+            return True
+        return False
 
     def __repr__(self) -> str:
         return f"Piece(piece={self.image}, rect={self.rect}, board_coordinate={self.board_coordinate})"

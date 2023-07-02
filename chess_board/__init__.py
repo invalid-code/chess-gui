@@ -50,6 +50,10 @@ class ChessBoard:
                 taken_piece = self.get_clicked_piece(pos)
                 if not taken_piece:
                     return
+                if taken_piece.is_player_piece(
+                    taken_piece.name, self.selected_piece.name
+                ):
+                    return
                 if not self.selected_piece.allowed_take(x, y):
                     return
                 self.add_to_taken_pieces(taken_piece)
