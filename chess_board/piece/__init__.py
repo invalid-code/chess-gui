@@ -1,5 +1,3 @@
-from typing import Optional
-
 from chess_board.base import BaseSprite
 
 
@@ -30,7 +28,8 @@ class Piece(BaseSprite):
         self.rect.topleft = dest
         self.board_coordinate = board_coordinate
 
-    def is_player_piece(self, name: str, other: str) -> bool:
+    @staticmethod
+    def is_player_piece(name: str, other: str) -> bool:
         if other[0] == name[0]:
             return True
         return False

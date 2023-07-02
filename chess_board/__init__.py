@@ -42,11 +42,16 @@ class ChessBoard:
     def handle_input(self, event: pg.event.Event):
         pos: tuple[int, int] = event.dict["pos"]
         if self.selected_piece:
+            if not self.selected_piece.is_player_piece(
+                self.selected_piece.name, self.player_piece
+            ):
+                self.reset()
+                return
             selected_square = self.get_clicked_square(pos)
             if not selected_square:
                 return
             x, y = selected_square.board_coordinate
-            if self.board.has_piece(selected_square.board_coordinate):
+            if self.board.has_piece(x, y):
                 taken_piece = self.get_clicked_piece(pos)
                 if not taken_piece:
                     return
@@ -58,7 +63,7 @@ class ChessBoard:
                     return
                 self.add_to_taken_pieces(taken_piece)
                 print(
-                    f"{self.selected_piece.name} has taken to {taken_piece.name}({taken_piece.board_coordinate})"
+                    f"{self.selected_piece.name} has taken {taken_piece.name}({taken_piece.board_coordinate})"
                 )
             else:
                 if not self.selected_piece.allowed_move(x, y):
@@ -103,15 +108,6 @@ class ChessBoard:
 
     def draw_pieces(self):
         self.pieces.pawns.draw(self.screen)
-
-    # def set_is_taking(self, move):
-    #     x, y = move.board_coordinate[0], move.board_coordinate[1]
-    #     if self.board_repr[y][x]:
-    #         self.is_moving = False
-    #         self.is_taking = True
-    #         self.taken_piece.add(self.get_taken_piece(pg.mouse.get_pos()))
-    #     else:
-    #         self.is_taking = False
 
     # def change_turn(self):
     #     match self.turn:
