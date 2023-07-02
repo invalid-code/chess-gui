@@ -93,13 +93,41 @@ class KingGroup(PieceGroup):
         super().__init__()
         if pieces == "white":
             self.add(
-                [King("w", "img/white_king.png", (5, 7 * IMAGE_SIZE), (5, 7))],
-                [King("b", "img/black_king.png", (5, 0 * IMAGE_SIZE), (5, 0))],
+                [
+                    King(
+                        "w",
+                        "img/white_king.png",
+                        (4 * IMAGE_SIZE, 7 * IMAGE_SIZE),
+                        (4, 7),
+                    )
+                ],
+                [
+                    King(
+                        "b",
+                        "img/black_king.png",
+                        (4 * IMAGE_SIZE, 0 * IMAGE_SIZE),
+                        (4, 0),
+                    )
+                ],
             )
         else:
             self.add(
-                [King("b", "img/black_king.png", (5, 7 * IMAGE_SIZE), (5, 7))],
-                [King("w", "img/white_king.png", (5, 0 * IMAGE_SIZE), (5, 0))],
+                [
+                    King(
+                        "b",
+                        "img/black_king.png",
+                        (5 * IMAGE_SIZE, 7 * IMAGE_SIZE),
+                        (5, 7),
+                    )
+                ],
+                [
+                    King(
+                        "w",
+                        "img/white_king.png",
+                        (5 * IMAGE_SIZE, 0 * IMAGE_SIZE),
+                        (5, 0),
+                    )
+                ],
             )
 
     def sprites(self) -> list[King]:

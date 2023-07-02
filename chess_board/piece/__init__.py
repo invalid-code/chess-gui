@@ -34,6 +34,11 @@ class Piece(BaseSprite):
             return True
         return False
 
+    def is_king(self, name: str):
+        if name[1] == "k":
+            return True
+        return False
+
     def __repr__(self) -> str:
         return f"Piece(piece={self.image}, rect={self.rect}, board_coordinate={self.board_coordinate})"
 
@@ -51,6 +56,10 @@ class Pawn(Piece):
     ) -> None:
         super().__init__(piece_color, img_path, board_coordinate, pos)
         self.first_move = True
+
+    def move(self, dest: tuple[int, int], board_coordinate: tuple[int, int]):
+        self.first_move = False
+        return super().move(dest, board_coordinate)
 
     def __repr__(self) -> str:
         return f"Pawn(piece={self.image}, rect={self.rect}, board_coordinate={self.board_coordinate}, first_move={self.first_move})"

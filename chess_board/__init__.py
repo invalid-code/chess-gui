@@ -55,6 +55,8 @@ class ChessBoard:
                 taken_piece = self.get_clicked_piece(pos)
                 if not taken_piece:
                     return
+                if taken_piece.is_king(taken_piece.name):
+                    return
                 if taken_piece.is_player_piece(
                     taken_piece.name, self.selected_piece.name
                 ):
@@ -108,29 +110,4 @@ class ChessBoard:
 
     def draw_pieces(self):
         self.pieces.pawns.draw(self.screen)
-
-    # def change_turn(self):
-    #     match self.turn:
-    #         case 0:
-    #             self.turn = Turn.BLACK
-    #         case 1:
-    #             self.turn = Turn.WHITE
-
-    # def is_player_piece(self):
-    #     moving_piece = self.selected_piece.sprites()
-    #     if moving_piece[0].name[0] == self.player.pieces[0]:
-    #         return True
-    #     return False
-
-    # def is_taking_own_pieces(self, move) -> bool | None:
-    #     x, y = move.board_coordinate
-    #     move_pos = self.board_repr[y][x]
-    #     if move_pos:
-    #         return move_pos[0] != self.selected_piece.sprites()[0].name[0]
-    #     return True
-
-    # def update(self):
-    #     # self.ui_move(move.board_coordinate)
-    #     # self.back_move(move.board_coordinate)
-    #     # self.board.
-    #     pass
+        self.pieces.kings.draw(self.screen)
