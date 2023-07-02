@@ -25,14 +25,13 @@ class Piece(BaseSprite):
     def move(
         self,
         dest: tuple[int, int],
-    ):
-        self.rect.topleft = dest
-
-    def update_board_coordinate(
-        self,
         board_coordinate: tuple[int, int],
     ):
+        self.rect.topleft = dest
         self.board_coordinate = board_coordinate
+
+    def taken(self):
+        self.kill()
 
     def __repr__(self) -> str:
         return f"Piece(piece={self.image}, rect={self.rect}, board_coordinate={self.board_coordinate})"

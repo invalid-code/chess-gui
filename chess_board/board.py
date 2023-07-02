@@ -73,5 +73,11 @@ class Board(BaseGroup):
         self.board_repr[y][x] = ""
         self.board_repr[dest_y][dest_x] = name
 
+    def has_piece(self, board_coordinate: tuple[int, int]) -> bool:
+        x, y = board_coordinate
+        if self.board_repr[y][x] != "":
+            return True
+        return False
+
     def __str__(self) -> str:
         return f"{self.board_repr}"
