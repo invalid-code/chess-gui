@@ -53,16 +53,19 @@ class ChessBoard:
                 if not self.selected_piece.allowed_take(x, y):
                     return
                 self.add_to_taken_pieces(taken_piece)
+                print(
+                    f"{self.selected_piece.name} has taken to {taken_piece.name}({taken_piece.board_coordinate})"
+                )
             else:
                 if not self.selected_piece.allowed_move(x, y):
                     return
+                print(
+                    f"{self.selected_piece.name} has moved to {selected_square.board_coordinate}"
+                )
             self.update(
                 self.selected_piece,
                 selected_square.rect.topleft,
                 selected_square.board_coordinate,
-            )
-            print(
-                f"{self.selected_piece.name} has moved to {selected_square.board_coordinate}"
             )
             self.reset()
         else:
@@ -70,7 +73,7 @@ class ChessBoard:
             print(f"selected piece: {repr(self.selected_piece)}")
 
     def add_to_taken_pieces(self, piece: Piece):
-        piece.taken()
+        piece.kill()
         self.taken_pieces.append(piece)
 
     def update(
