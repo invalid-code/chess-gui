@@ -2,10 +2,12 @@ from typing import Optional
 
 import pygame as pg
 
+from chess_board.piece import King
+
 from .board import Board
 from .pieces import Pieces
 from .players import Opponent, Player
-from .types import Piece
+from .types import Check, Piece
 
 
 class ChessBoard:
@@ -13,15 +15,13 @@ class ChessBoard:
         self.screen = screen
         self.player = Player()
         self.opponent = Opponent(self.player)
-        print(f"player pieces: {self.player.pieces}")
+        print(f"player pieces: {self.player_pieces}")
         print(f"opponent pieces: {self.opponent.pieces}")
-        self.turn = "white"
-        print(f"game turn: {self.turn}")
-        self.pieces = Pieces(self.player_piece)
+        self.pieces = Pieces(self.player_pieces)
         self.board = Board()
         self.selected_piece: Optional[Piece] = None
         self.taken_pieces: list[Piece] = []
-        self.is_moving = False
+        self.is_check: Check = {"is_check": False, "pieces": None}
         self.pieces.start_board_repr(self.board_repr)
         print(f"starting board representation: {self.board_repr}")
 
@@ -30,7 +30,7 @@ class ChessBoard:
         return self.board.board_repr
 
     @property
-    def player_piece(self):
+    def player_pieces(self):
         return self.player.pieces
 
     def get_clicked_piece(self, pos: tuple[int, int]):
@@ -42,36 +42,38 @@ class ChessBoard:
     def handle_input(self, event: pg.event.Event):
         pos: tuple[int, int] = event.dict["pos"]
         if self.selected_piece:
-            if not self.selected_piece.is_player_piece(
-                self.selected_piece.name, self.player_piece
-            ):
-                self.reset()
-                return
             selected_square = self.get_clicked_square(pos)
             if not selected_square:
                 return
-            x, y = selected_square.board_coordinate
-            if self.board.has_piece(x, y):
+            print(self.pieces.is_check())
+            if self.pieces.is_check():
+                self.reset()
+                return
+            if self.board.has_piece(*selected_square.board_coordinate):
                 taken_piece = self.get_clicked_piece(pos)
                 if not taken_piece:
                     return
-                if taken_piece.is_king(taken_piece.name):
+                if isinstance(taken_piece, King):
+                    self.reset()
                     return
-                if taken_piece.is_player_piece(
-                    taken_piece.name, self.selected_piece.name
+                if taken_piece.is_same_piece(taken_piece.is_player_piece):
+                    self.reset()
+                    return
+                if not self.selected_piece.allowed_take(
+                    *selected_square.board_coordinate
                 ):
-                    return
-                if not self.selected_piece.allowed_take(x, y):
+                    self.reset()
                     return
                 self.add_to_taken_pieces(taken_piece)
-                print(
-                    f"{self.selected_piece.name} has taken {taken_piece.name}({taken_piece.board_coordinate})"
-                )
+                print(f"{repr(self.selected_piece)} has taken {taken_piece}")
             else:
-                if not self.selected_piece.allowed_move(x, y):
+                if not self.selected_piece.allowed_move(
+                    *selected_square.board_coordinate
+                ):
+                    self.reset()
                     return
                 print(
-                    f"{self.selected_piece.name} has moved to {selected_square.board_coordinate}"
+                    f"{repr(self.selected_piece)} has moved to {selected_square.board_coordinate}"
                 )
             self.update(
                 self.selected_piece,
@@ -99,6 +101,14 @@ class ChessBoard:
         piece.move(
             dest, board_coordinate
         )  # update piece ui and board coordinate
+        self.is_check = {
+            "is_check": self.pieces.is_check(),
+            "pieces": "b" if piece.name[0] == "w" else "w",
+        }
+        if self.is_check["is_check"]:
+            print(
+                f"{'white' if self.is_check['pieces'] == 'w' else 'black'} is check"
+            )
         print(f"board representation: {self.board_repr}")
 
     def reset(self):

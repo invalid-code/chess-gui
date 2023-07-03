@@ -33,6 +33,7 @@ class PawnGroup(PieceGroup):
                         "img/white_pawn.png",
                         (i * IMAGE_SIZE, 6 * IMAGE_SIZE),
                         (i, 6),
+                        True,
                     )
                     for i in range(8)
                 ],
@@ -42,6 +43,7 @@ class PawnGroup(PieceGroup):
                         "img/black_pawn.png",
                         (i * IMAGE_SIZE, 1 * IMAGE_SIZE),
                         (i, 1),
+                        False,
                     )
                     for i in range(8)
                 ],
@@ -54,6 +56,7 @@ class PawnGroup(PieceGroup):
                         "img/black_pawn.png",
                         (i * IMAGE_SIZE, 6 * IMAGE_SIZE),
                         (i, 6),
+                        True,
                     )
                     for i in range(8)
                 ],
@@ -63,6 +66,7 @@ class PawnGroup(PieceGroup):
                         "img/white_pawn.png",
                         (i * IMAGE_SIZE, 1 * IMAGE_SIZE),
                         (i, 1),
+                        False,
                     )
                     for i in range(8)
                 ],
@@ -99,6 +103,7 @@ class KingGroup(PieceGroup):
                         "img/white_king.png",
                         (4 * IMAGE_SIZE, 7 * IMAGE_SIZE),
                         (4, 7),
+                        True,
                     )
                 ],
                 [
@@ -107,6 +112,7 @@ class KingGroup(PieceGroup):
                         "img/black_king.png",
                         (4 * IMAGE_SIZE, 0 * IMAGE_SIZE),
                         (4, 0),
+                        False,
                     )
                 ],
             )
@@ -116,16 +122,18 @@ class KingGroup(PieceGroup):
                     King(
                         "b",
                         "img/black_king.png",
-                        (5 * IMAGE_SIZE, 7 * IMAGE_SIZE),
-                        (5, 7),
+                        (4 * IMAGE_SIZE, 7 * IMAGE_SIZE),
+                        (4, 7),
+                        True,
                     )
                 ],
                 [
                     King(
                         "w",
                         "img/white_king.png",
-                        (5 * IMAGE_SIZE, 0 * IMAGE_SIZE),
-                        (5, 0),
+                        (4 * IMAGE_SIZE, 0 * IMAGE_SIZE),
+                        (4, 0),
+                        False,
                     )
                 ],
             )

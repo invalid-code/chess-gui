@@ -1,5 +1,6 @@
 from .piece.groups import (BishopGroup, KingGroup, KnightGroup, PawnGroup,
                            QueenGroup, RookGroup)
+from .types import Piece
 
 
 class Pieces:
@@ -31,3 +32,11 @@ class Pieces:
         for king in self.kings.sprites():
             x, y = king.board_coordinate
             board[y][x] = king.name
+
+    def is_check(self):
+        for pawn in self.pawns.sprites():
+            if pawn.is_player_piece:
+                return pawn.allowed_take(
+                    *self.kings.sprites()[1].board_coordinate
+                )
+        return False

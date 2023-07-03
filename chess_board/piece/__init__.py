@@ -6,11 +6,13 @@ class Piece(BaseSprite):
         self,
         piece_color: str,
         img_path: str,
-        board_coordinate: tuple[int, int] = (0, 0),
-        pos: tuple[int, int] = (0, 0),
+        board_coordinate: tuple[int, int],
+        pos: tuple[int, int],
+        is_player_piece: bool,
     ) -> None:
         super().__init__(img_path, board_coordinate, pos)
         self.piece_color = piece_color
+        self.is_player_piece = is_player_piece
 
     def set_board_repr(
         self,
@@ -29,21 +31,16 @@ class Piece(BaseSprite):
         self.board_coordinate = board_coordinate
 
     @staticmethod
-    def is_player_piece(name: str, other: str) -> bool:
-        if other[0] == name[0]:
-            return True
-        return False
-
-    def is_king(self, name: str):
-        if name[1] == "k":
+    def is_same_piece(identifier: bool) -> bool:
+        if identifier:
             return True
         return False
 
     def __repr__(self) -> str:
-        return f"Piece(piece={self.image}, rect={self.rect}, board_coordinate={self.board_coordinate})"
+        return f"Piece(board_coordinate={self.board_coordinate})"
 
     def __str__(self) -> str:
-        return f"piece is {self.image}\nrect is{self.rect}\nboard coordinate is{self.board_coordinate}"
+        return f"board coordinate is{self.board_coordinate}"
 
 
 class Pawn(Piece):
@@ -53,8 +50,11 @@ class Pawn(Piece):
         img_path: str,
         pos: tuple[int, int],
         board_coordinate: tuple[int, int],
+        is_player_piece: bool,
     ) -> None:
-        super().__init__(piece_color, img_path, board_coordinate, pos)
+        super().__init__(
+            piece_color, img_path, board_coordinate, pos, is_player_piece
+        )
         self.first_move = True
 
     def move(self, dest: tuple[int, int], board_coordinate: tuple[int, int]):
@@ -62,10 +62,10 @@ class Pawn(Piece):
         return super().move(dest, board_coordinate)
 
     def __repr__(self) -> str:
-        return f"Pawn(piece={self.image}, rect={self.rect}, board_coordinate={self.board_coordinate}, first_move={self.first_move})"
+        return f"Pawn(board_coordinate={self.board_coordinate}, first_move={self.first_move})"
 
     def __str__(self) -> str:
-        return f"piece is {self.image}\nrect is{self.rect}\nboard coordinate is{self.board_coordinate}\n\nfirst move is {self.first_move}"
+        return f"board coordinate is{self.board_coordinate}\nfirst move is {self.first_move}"
 
     def allowed_move(self, x: int, y: int):
         if self.board_coordinate[0] == x:
@@ -101,7 +101,7 @@ class Knight(Piece):
         super().__init__(piece_color, img_path, board_coordinate, pos)
 
     def __repr__(self) -> str:
-        return f"Knight(piece={self.image}, rect={self.rect}, board_coordinate={self.board_coordinate})"
+        return f"Knight(board_coordinate={self.board_coordinate})"
 
     def allowed_move(self, x: int, y: int):
         if (
@@ -258,7 +258,7 @@ class Rook(Piece):
         super().__init__(piece_color, img_path, board_coordinate, pos)
 
     def __repr__(self) -> str:
-        return f"Rook(piece={self.image}, rect={self.rect}, board_coordinate={self.board_coordinate})"
+        return f"Rook(board_coordinate={self.board_coordinate})"
 
     def allowed_move(self, x: int, y: int):
         if x == self.board_coordinate[0] and y < self.board_coordinate[1]:
@@ -341,7 +341,7 @@ class Queen(Piece):
         super().__init__(piece_color, img_path, board_coordinate, pos)
 
     def __repr__(self) -> str:
-        return f"Queen(piece={self.image}, rect={self.rect}, board_coordinate={self.board_coordinate})"
+        return f"Queen(board_coordinate={self.board_coordinate})"
 
     def allowed_move(self, x: int, y: int):
         # bishop move rules
@@ -478,11 +478,14 @@ class King(Piece):
         img_path: str,
         pos: tuple[int, int],
         board_coordinate: tuple[int, int],
+        is_player_piece: bool,
     ) -> None:
-        super().__init__(piece_color, img_path, board_coordinate, pos)
+        super().__init__(
+            piece_color, img_path, board_coordinate, pos, is_player_piece
+        )
 
     def __repr__(self) -> str:
-        return f"King(piece={self.image}, rect={self.rect}, board_coordinate={self.board_coordinate})"
+        return f"King(board_coordinate={self.board_coordinate})"
 
     def allowed_move(self, x: int, y: int):
         if (
