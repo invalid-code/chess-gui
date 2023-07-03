@@ -45,7 +45,6 @@ class ChessBoard:
             selected_square = self.get_clicked_square(pos)
             if not selected_square:
                 return
-            print(self.pieces.is_check())
             if self.pieces.is_check():
                 self.reset()
                 return
