@@ -56,27 +56,5 @@ class Board(BaseGroup):
     def sprites(self) -> list[Square]:
         return super().sprites()
 
-    def get_clicked_square(self, pos: tuple[int, int]) -> Optional[Square]:
-        for square in self.sprites():
-            if square.rect.collidepoint(pos):
-                return square
-        return None
-
-    def update_board_repr(
-        self,
-        piece_board_coordinate: tuple[int, int],
-        board_coordinate: tuple[int, int],
-        name: str,
-    ):
-        x, y = piece_board_coordinate
-        dest_x, dest_y = board_coordinate
-        self.board_repr[y][x] = ""
-        self.board_repr[dest_y][dest_x] = name
-
-    def has_piece(self, x: int, y: int) -> bool:
-        if self.board_repr[y][x] != "":
-            return True
-        return False
-
     def __str__(self) -> str:
         return f"{self.board_repr}"
