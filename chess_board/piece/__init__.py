@@ -1,37 +1,83 @@
+import pygame as pg
 from chess_board.base import BaseSprite
 
 
 class Piece(BaseSprite):
     def __init__(
         self,
+        piece_color: str,
         img_path: str,
         board_coordinate: tuple[int, int],
         pos: tuple[int, int],
+        is_player_piece: bool,
     ) -> None:
         super().__init__(img_path, board_coordinate, pos)
+        self.piece_color = piece_color
+        self.is_player_piece = is_player_piece
+
+    def move(
+        self,
+        dest: tuple[int, int],
+        board_coordinate: tuple[int, int],
+    ):
+        self.rect.topleft = dest
+        self.board_coordinate = board_coordinate
+
+    def allowed_move(self, x: int, y: int):
+        if (
+            self.board_coordinate[0] - 1 == x
+            or self.board_coordinate[0] + 1 == x
+        ):
+            if (
+                self.board_coordinate[1] - 1 == y
+                or self.board_coordinate[1] + 1 == y
+            ):
+                return True
+            return True
+        if (
+            self.board_coordinate[1] - 1 == y
+            or self.board_coordinate[1] + 1 == y
+        ):
+            if (
+                self.board_coordinate[0] - 1 == x
+                or self.board_coordinate[0] + 1 == x
+            ):
+                return True
+            return True
+        return False
+
+    def allowed_take(self, x: int, y: int):
+        self.allowed_move(x, y)
+
+    @property
+    def name(self):
+        return f"{self.piece_color}"
 
     def __repr__(self) -> str:
-        return f"Piece(board_coordinate={self.board_coordinate})"
-
-    def __str__(self) -> str:
-        return f"board coordinate is{self.board_coordinate}"
+        return f"Piece(name={self.name}, board_coordinate={self.board_coordinate})"
 
 
 class Pawn(Piece):
     def __init__(
         self,
+        piece_color: str,
         img_path: str,
         pos: tuple[int, int],
         board_coordinate: tuple[int, int],
+        is_player_piece: bool,
     ) -> None:
-        super().__init__(img_path, board_coordinate, pos)
+        super().__init__(
+            piece_color, img_path, board_coordinate, pos, is_player_piece
+        )
         self.first_move = True
 
-    def __repr__(self) -> str:
-        return f"Pawn(board_coordinate={self.board_coordinate}, first_move={self.first_move})"
-
-    def __str__(self) -> str:
-        return f"board coordinate is{self.board_coordinate}\nfirst move is {self.first_move}"
+    def move(
+        self,
+        dest: tuple[int, int],
+        board_coordinate: tuple[int, int],
+    ):
+        super().move(dest, board_coordinate)
+        self.first_move = False
 
     def allowed_move(self, x: int, y: int):
         if self.board_coordinate[0] == x:
@@ -51,18 +97,23 @@ class Pawn(Piece):
                 return True
         return False
 
+    @property
+    def name(self):
+        return f"{self.piece_color}p"
+
 
 class Knight(Piece):
     def __init__(
         self,
+        piece_color: str,
         img_path: str,
         pos: tuple[int, int],
         board_coordinate: tuple[int, int],
+        is_player_piece: bool,
     ) -> None:
-        super().__init__(img_path, board_coordinate, pos)
-
-    def __repr__(self) -> str:
-        return f"Knight(board_coordinate={self.board_coordinate})"
+        super().__init__(
+            piece_color, img_path, board_coordinate, pos, is_player_piece
+        )
 
     def allowed_move(self, x: int, y: int):
         if (
@@ -85,26 +136,9 @@ class Knight(Piece):
                 return True
         return False
 
-    def allowed_take(self, x: int, y: int):
-        if (
-            self.board_coordinate[1] - 2 == y
-            or self.board_coordinate[1] + 2 == y
-        ):
-            if (
-                self.board_coordinate[0] - 1 == x
-                or self.board_coordinate[0] + 1 == x
-            ):
-                return True
-        if (
-            self.board_coordinate[0] - 2 == x
-            or self.board_coordinate[0] + 2 == x
-        ):
-            if (
-                self.board_coordinate[1] - 1 == y
-                or self.board_coordinate[1] + 1 == y
-            ):
-                return True
-        return False
+    @property
+    def name(self):
+        return f"{self.piece_color}h"
 
 
 class Bishop(Piece):
@@ -114,308 +148,75 @@ class Bishop(Piece):
         img_path: str,
         pos: tuple[int, int],
         board_coordinate: tuple[int, int],
+        is_player_piece: bool,
     ) -> None:
-        super().__init__(piece_color, img_path, board_coordinate, pos)
-
-    def __repr__(self) -> str:
-        return f"Bishop(piece={self.image}, rect={self.rect}, board_coordinate={self.board_coordinate})"
+        super().__init__(
+            piece_color, img_path, board_coordinate, pos, is_player_piece
+        )
 
     def allowed_move(self, x: int, y: int):
-        if x < self.board_coordinate[0] and y < self.board_coordinate[1]:
-            for i in range(1, 8):
-                if board[self.board_coordinate[1] - i][
-                    self.board_coordinate[0] - i
-                ]:
-                    return False
+        pass
 
-                if (
-                    self.board_coordinate[1] - i == y
-                    and self.board_coordinate[0] - i == x
-                ):
-                    return True
-
-        if x > self.board_coordinate[0] and y > self.board_coordinate[1]:
-            for i in range(1, 8):
-                if board[self.board_coordinate[1] + i][
-                    self.board_coordinate[0] + i
-                ]:
-                    return False
-
-                if (
-                    self.board_coordinate[1] + i == y
-                    and self.board_coordinate[0] + i == x
-                ):
-                    return True
-
-        if x < self.board_coordinate[0] and y > self.board_coordinate[1]:
-            for i in range(1, 8):
-                if board[self.board_coordinate[1] + i][
-                    self.board_coordinate[0] - i
-                ]:
-                    return False
-
-                if (
-                    self.board_coordinate[1] + i == y
-                    and self.board_coordinate[0] - i == x
-                ):
-                    return True
-
-        if x > self.board_coordinate[0] and y < self.board_coordinate[1]:
-            for i in range(1, 8):
-                if board[self.board_coordinate[1] - i][
-                    self.board_coordinate[0] + i
-                ]:
-                    return False
-
-                if (
-                    self.board_coordinate[1] - i == y
-                    and self.board_coordinate[0] + i == x
-                ):
-                    return True
-
-        return False
-
-    def allowed_take(self, x: int, y: int):
-        for i in range(8):
-            if (
-                self.board_coordinate[1] + i == y
-                and self.board_coordinate[0] + i == x
-            ):
-                return True
-            if (
-                self.board_coordinate[1] + i == y
-                and self.board_coordinate[0] - i == x
-            ):
-                return True
-            if (
-                self.board_coordinate[1] - i == y
-                and self.board_coordinate[0] - i == x
-            ):
-                return True
-            if (
-                self.board_coordinate[1] - i == y
-                and self.board_coordinate[0] + i == x
-            ):
-                return True
-        return False
+    @property
+    def name(self):
+        return f"{self.piece_color}b"
 
 
 class Rook(Piece):
     def __init__(
         self,
+        piece_color: str,
         img_path: str,
         pos: tuple[int, int],
         board_coordinate: tuple[int, int],
+        is_player_piece: bool,
     ) -> None:
-        super().__init__(img_path, board_coordinate, pos)
-
-    def __repr__(self) -> str:
-        return f"Rook(board_coordinate={self.board_coordinate})"
+        super().__init__(
+            piece_color, img_path, board_coordinate, pos, is_player_piece
+        )
 
     def allowed_move(self, x: int, y: int):
-        if x != self.board_coordinate[0]:
-            return False
-        if y != self.board_coordinate[1]:
-            return False
-        return True
+        pass
 
-    def allowed_take(self, x: int, y: int):
-        if x != self.board_coordinate[0]:
-            return False
-        if y != self.board_coordinate[1]:
-            return False
-        return True
+    @property
+    def name(self):
+        return f"{self.piece_color}r"
 
 
 class Queen(Piece):
     def __init__(
         self,
+        piece_color: str,
         img_path: str,
         pos: tuple[int, int],
         board_coordinate: tuple[int, int],
+        is_player_piece: bool,
     ) -> None:
-        super().__init__(img_path, board_coordinate, pos)
-
-    def __repr__(self) -> str:
-        return f"Queen(board_coordinate={self.board_coordinate})"
+        super().__init__(
+            piece_color, img_path, board_coordinate, pos, is_player_piece
+        )
 
     def allowed_move(self, x: int, y: int):
-        # bishop move rules
-        if x < self.board_coordinate[0] and y < self.board_coordinate[1]:
-            for i in range(1, 8):
-                if board[self.board_coordinate[1] - i][
-                    self.board_coordinate[0] - i
-                ]:
-                    return False
+        pass
 
-                if (
-                    self.board_coordinate[1] - i == y
-                    and self.board_coordinate[0] - i == x
-                ):
-                    return True
-
-        if x > self.board_coordinate[0] and y > self.board_coordinate[1]:
-            for i in range(1, 8):
-                if board[self.board_coordinate[1] + i][
-                    self.board_coordinate[0] + i
-                ]:
-                    return False
-
-                if (
-                    self.board_coordinate[1] + i == y
-                    and self.board_coordinate[0] + i == x
-                ):
-                    return True
-
-        if x < self.board_coordinate[0] and y > self.board_coordinate[1]:
-            for i in range(1, 8):
-                if board[self.board_coordinate[1] + i][
-                    self.board_coordinate[0] - i
-                ]:
-                    return False
-
-                if (
-                    self.board_coordinate[1] + i == y
-                    and self.board_coordinate[0] - i == x
-                ):
-                    return True
-
-        if x > self.board_coordinate[0] and y < self.board_coordinate[1]:
-            for i in range(1, 8):
-                if board[self.board_coordinate[1] - i][
-                    self.board_coordinate[0] + i
-                ]:
-                    return False
-
-                if (
-                    self.board_coordinate[1] - i == y
-                    and self.board_coordinate[0] + i == x
-                ):
-                    return True
-
-        # rook move rules
-        if x != self.board_coordinate[0]:
-            return False
-        if y != self.board_coordinate[1]:
-            return False
-        return True
-
-    def allowed_take(self, x: int, y: int):
-        # bishop move rules
-        if x < self.board_coordinate[0] and y < self.board_coordinate[1]:
-            for i in range(1, 8):
-                if board[self.board_coordinate[1] - i][
-                    self.board_coordinate[0] - i
-                ]:
-                    return False
-
-                if (
-                    self.board_coordinate[1] - i == y
-                    and self.board_coordinate[0] - i == x
-                ):
-                    return True
-
-        if x > self.board_coordinate[0] and y > self.board_coordinate[1]:
-            for i in range(1, 8):
-                if board[self.board_coordinate[1] + i][
-                    self.board_coordinate[0] + i
-                ]:
-                    return False
-
-                if (
-                    self.board_coordinate[1] + i == y
-                    and self.board_coordinate[0] + i == x
-                ):
-                    return True
-
-        if x < self.board_coordinate[0] and y > self.board_coordinate[1]:
-            for i in range(1, 8):
-                if board[self.board_coordinate[1] + i][
-                    self.board_coordinate[0] - i
-                ]:
-                    return False
-
-                if (
-                    self.board_coordinate[1] + i == y
-                    and self.board_coordinate[0] - i == x
-                ):
-                    return True
-
-        if x > self.board_coordinate[0] and y < self.board_coordinate[1]:
-            for i in range(1, 8):
-                if board[self.board_coordinate[1] - i][
-                    self.board_coordinate[0] + i
-                ]:
-                    return False
-
-                if (
-                    self.board_coordinate[1] - i == y
-                    and self.board_coordinate[0] + i == x
-                ):
-                    return True
-
-        # rook move rules
-        if x != self.board_coordinate[0]:
-            return False
-        if y != self.board_coordinate[1]:
-            return False
-        return True
+    @property
+    def name(self):
+        return f"{self.piece_color}q"
 
 
 class King(Piece):
     def __init__(
         self,
+        piece_color: str,
         img_path: str,
         pos: tuple[int, int],
         board_coordinate: tuple[int, int],
+        is_player_piece: bool,
     ) -> None:
-        super().__init__(img_path, board_coordinate, pos)
+        super().__init__(
+            piece_color, img_path, board_coordinate, pos, is_player_piece
+        )
 
-    def __repr__(self) -> str:
-        return f"King(board_coordinate={self.board_coordinate})"
-
-    def allowed_move(self, x: int, y: int):
-        if (
-            self.board_coordinate[0] - 1 == x
-            or self.board_coordinate[0] + 1 == x
-        ):
-            if (
-                self.board_coordinate[1] - 1 == y
-                or self.board_coordinate[1] + 1 == y
-            ):
-                return True
-            return True
-        if (
-            self.board_coordinate[1] - 1 == y
-            or self.board_coordinate[1] + 1 == y
-        ):
-            if (
-                self.board_coordinate[0] - 1 == x
-                or self.board_coordinate[0] + 1 == x
-            ):
-                return True
-            return True
-        return False
-
-    def allowed_take(self, x: int, y: int):
-        if (
-            self.board_coordinate[0] - 1 == x
-            or self.board_coordinate[0] + 1 == x
-        ):
-            if (
-                self.board_coordinate[1] - 1 == y
-                or self.board_coordinate[1] + 1 == y
-            ):
-                return True
-            return True
-        if (
-            self.board_coordinate[1] - 1 == y
-            or self.board_coordinate[1] + 1 == y
-        ):
-            if (
-                self.board_coordinate[0] - 1 == x
-                or self.board_coordinate[0] + 1 == x
-            ):
-                return True
-            return True
-        return False
+    @property
+    def name(self):
+        return f"{self.piece_color}k"

@@ -1,7 +1,8 @@
-from typing import Optional
+from chess_board.piece import Piece
 
 from .base import BaseGroup, BaseSprite
 from .constants import IMAGE_SIZE
+from .pieces import Pieces
 
 
 class Square(BaseSprite):
@@ -12,6 +13,10 @@ class Square(BaseSprite):
         pos: tuple[int, int],
     ) -> None:
         super().__init__(img_path, board_coordinate, pos)
+    
+    @property
+    def pixel_coordinate(self):
+        return self.rect.topleft
 
 
 class Board(BaseGroup):
@@ -56,5 +61,30 @@ class Board(BaseGroup):
     def sprites(self) -> list[Square]:
         return super().sprites()
 
-    def __str__(self) -> str:
-        return f"{self.board_repr}"
+    def get_clicked_square(self, pos: tuple[int, int]):
+        for square in self.sprites():
+            if square.rect.collidepoint(pos):
+                return square
+
+    def start_board_repr(self, pieces: Pieces):
+        for pawn in pieces.pawns.sprites():
+            self.board_repr[pawn.board_coordinate[1]][
+                pawn.board_coordinate[0]
+            ] = pawn.name
+        for king in pieces.kings.sprites():
+            self.board_repr[king.board_coordinate[1]][
+                king.board_coordinate[0]
+            ] = king.name
+        print(f"starting board representation: {self.board_repr}")
+
+    def update_board_repr(
+        self, board_coordinate: tuple[int, int], piece: Piece
+    ):
+        self.board_repr[piece.board_coordinate[1]][
+            piece.board_coordinate[0]
+        ] = ""
+        self.board_repr[board_coordinate[1]][board_coordinate[0]] = piece.name
+        print(f"updated board representation: {self.board_repr}")
+
+    def has_piece(self, board_coordinate: tuple[int, int]):
+        return self.board_repr[board_coordinate[1]][board_coordinate[0]] != ""

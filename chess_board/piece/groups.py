@@ -1,5 +1,3 @@
-from typing import Optional
-
 from chess_board.base import BaseGroup
 from chess_board.constants import IMAGE_SIZE
 from chess_board.types import Piece
@@ -10,16 +8,6 @@ from . import Bishop, King, Knight, Pawn, Queen, Rook
 class PieceGroup(BaseGroup):
     def sprites(self) -> list[Piece]:
         return super().sprites()
-
-    def start_board_repr(self, board: list[list[str]]):
-        for piece in self.sprites():
-            piece.set_board_repr(board, piece.name)
-
-    def is_clicked(self, pos: tuple[int, int]) -> Optional[Piece]:
-        for piece in self.sprites():
-            if piece.rect.collidepoint(pos):
-                return piece
-        return None
 
 
 class PawnGroup(PieceGroup):
@@ -97,45 +85,37 @@ class KingGroup(PieceGroup):
         super().__init__()
         if pieces == "white":
             self.add(
-                [
-                    King(
-                        "w",
-                        "img/white_king.png",
-                        (4 * IMAGE_SIZE, 7 * IMAGE_SIZE),
-                        (4, 7),
-                        True,
-                    )
-                ],
-                [
-                    King(
-                        "b",
-                        "img/black_king.png",
-                        (4 * IMAGE_SIZE, 0 * IMAGE_SIZE),
-                        (4, 0),
-                        False,
-                    )
-                ],
+                King(
+                    "w",
+                    "img/white_king.png",
+                    (4 * IMAGE_SIZE, 7 * IMAGE_SIZE),
+                    (4, 7),
+                    True,
+                ),
+                King(
+                    "b",
+                    "img/black_king.png",
+                    (4 * IMAGE_SIZE, 0 * IMAGE_SIZE),
+                    (4, 0),
+                    False,
+                ),
             )
         else:
             self.add(
-                [
-                    King(
-                        "b",
-                        "img/black_king.png",
-                        (4 * IMAGE_SIZE, 7 * IMAGE_SIZE),
-                        (4, 7),
-                        True,
-                    )
-                ],
-                [
-                    King(
-                        "w",
-                        "img/white_king.png",
-                        (4 * IMAGE_SIZE, 0 * IMAGE_SIZE),
-                        (4, 0),
-                        False,
-                    )
-                ],
+                King(
+                    "b",
+                    "img/black_king.png",
+                    (4 * IMAGE_SIZE, 7 * IMAGE_SIZE),
+                    (4, 7),
+                    True,
+                ),
+                King(
+                    "w",
+                    "img/white_king.png",
+                    (4 * IMAGE_SIZE, 0 * IMAGE_SIZE),
+                    (4, 0),
+                    False,
+                ),
             )
 
     def sprites(self) -> list[King]:

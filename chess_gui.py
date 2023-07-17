@@ -19,7 +19,7 @@ def main():
 
     CLOCK = pg.time.Clock()
 
-    while True:
+    while True:                
         event_list = pg.event.get()
         for event in event_list:
             if event.type == pg.QUIT:
