@@ -31,7 +31,7 @@ class Pieces:
                     return True
         return False
 
-    def is_checkmate(self):
+    def is_checkmate(self, board_repr: list[list[str]]):
         opponent_king = self.kings.sprites()[1]
         x, y = opponent_king.board_coordinate
         move_spots: list[bool] = []
@@ -49,6 +49,10 @@ class Pieces:
                 if (
                     king_board_coordinate[0] < 0
                     or king_board_coordinate[1] < 0
+                    or board_repr[king_board_coordinate[1]][
+                        king_board_coordinate[0]
+                    ]
+                    != ""
                 ):
                     continue
                 for pawn in self.pawns.sprites():
@@ -62,6 +66,6 @@ class Pieces:
                 move_spots.append(False)
             except StopIteration as _:
                 move_spots.append(True)
-        if move_spots.count(False) != 0:
+        if move_spots.count(False) > 0:
             return False
         return True
