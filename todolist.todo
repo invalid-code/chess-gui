@@ -1,11 +1,23 @@
 Todo:
- ✔ make pieces not move over other pieces except knights @done(23-04-05 15:48)
- ☐ make the game turn based * not yet
+ ☐ handle pawn promotion
+   ✔ open window @done (23-07-23 21:17)
+     ✔ choose which piece to promote to @done (23-07-23 21:18)
+   ☐ delete pawn @not until I add other pieces
+   ☐ add new piece to pieces group
+ ☐ handle en passant
+ ☐ handle castling
+ ☐ handle pin
+ ☐ organize code @always
+ ☐ fix not being able to take the piece thats checking you
+ ☐ fix not being able to block check
+ ☐ fix not being able to move other pieces except opponent king when check
+ ☐ make the game turn based @not yet
  ☐ check for chess rules
- ✔ fix bishop not moving properly @done(23-04-05 15:49)
  ☐ make ui update with allowed moves
  
  Archive:
+ ✔ fix bishop not moving properly @done(23-04-05 15:49) @project(Todo)
+ ✔ make pieces not move over other pieces except knights @done(23-04-05 15:48) @project(Todo)
  ✔ make it so you can't move other pieces except your own (23-04-02 14:42) @done(23-04-05 15:48)
  ✔ make it so that the pieces that you get are in your side of the board @done (23-03-29 17:52)
  ✔ fix bug moving break the game @done (23-03-28 20:51)

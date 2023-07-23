@@ -1,4 +1,5 @@
-import pygame as pg
+from pygame._sdl2 import messagebox
+
 from chess_board.base import BaseSprite
 
 
@@ -97,9 +98,30 @@ class Pawn(Piece):
                 return True
         return False
 
+    def promote(self):
+        if self.board_coordinate[1] != 0:
+            return
+        promote_window = messagebox(
+            "promote window", "", buttons=("H", "B", "R", "Q")
+        )
+        # self.kill()
+        match promote_window:
+            case 0:
+                pass
+            case 1:
+                pass
+            case 2:
+                pass
+            case 3:
+                pass
+
     @property
     def name(self):
         return f"{self.piece_color}p"
+
+    @name.setter
+    def name(self, val: str):
+        self.name = val
 
 
 class Knight(Piece):
