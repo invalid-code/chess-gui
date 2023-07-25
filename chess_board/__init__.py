@@ -2,7 +2,6 @@ from typing import Optional
 
 import pygame as pg
 
-from chess_board.piece import Pawn
 from chess_board.pieces import Pieces
 
 from .board import Board
@@ -39,13 +38,13 @@ class ChessBoard:
             if not selected_square:
                 return
             dest_board_coordinate = selected_square.board_coordinate
-            if self.board.has_piece(selected_square.board_coordinate):
+            if self.board.has_piece(dest_board_coordinate):
                 taken_piece = self.get_clicked_piece(
                     selected_square.rect.center
                 )
                 if not taken_piece:
                     return
-                if taken_piece.name[0] == self.selected_piece.name[0]:
+                if taken_piece.is_player_piece:
                     print("can't take own pieces")
                     return self.reset()
                 if taken_piece.name[1] == "k":
@@ -67,18 +66,46 @@ class ChessBoard:
                 ):
                     print("piece not allowed move")
                     return self.reset()
+                if self.selected_piece.name[1] == "k":
+                    if (
+                        self.selected_piece.board_coordinate[0] + 2
+                        == dest_board_coordinate[0]
+                    ):
+                        rook = self.pieces.rooks.sprites()[1]
+                        if not rook.first_move:
+                            print("rook cant castle")
+                            return self.reset()
+                        rook.move(
+                            (
+                                rook.board_coordinate[0] - 2,
+                                rook.board_coordinate[1],
+                            )
+                        )
+                    elif (
+                        self.selected_piece.board_coordinate[0] - 2
+                        == dest_board_coordinate[0]
+                    ):
+                        rook = self.pieces.rooks.sprites()[0]
+                        if not rook.first_move:
+                            print("rook cant castle")
+                            return self.reset()
+                        rook.move(
+                            (
+                                rook.board_coordinate[0] + 3,
+                                rook.board_coordinate[1],
+                            )
+                        )
                 print(
-                    f"{repr(self.selected_piece)} has moved to {selected_square.board_coordinate}"
+                    f"{repr(self.selected_piece)} has moved to {dest_board_coordinate}"
                 )
             self.board.update_board_repr(
                 dest_board_coordinate,
                 self.selected_piece,
             )
             self.selected_piece.move(
-                selected_square.pixel_coordinate,
                 dest_board_coordinate,
             )
-            if isinstance(self.selected_piece, Pawn):
+            if self.selected_piece.name[1] == "p":
                 self.selected_piece.promote()
             self.reset()
             self.is_check = self.pieces.is_check()
@@ -97,8 +124,8 @@ class ChessBoard:
         self.pieces.draw(self.screen)
 
     def reset(self):
-        print("piece has now been reseted")
         self.selected_piece = None
+        print("piece has now been reseted")
 
     def get_clicked_piece(self, pos: tuple[int, int]):
         return self.pieces.get_clicked_piece(pos)

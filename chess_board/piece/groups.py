@@ -6,8 +6,7 @@ from . import Bishop, King, Knight, Pawn, Queen, Rook
 
 
 class PieceGroup(BaseGroup):
-    def sprites(self) -> list[Piece]:
-        return super().sprites()
+    pass
 
 
 class PawnGroup(PieceGroup):
@@ -73,7 +72,58 @@ class BishopGroup(PieceGroup):
 
 
 class RookGroup(PieceGroup):
-    pass
+    def __init__(self, pieces: str) -> None:
+        super().__init__()
+        x_pos = [0, 7]
+        if pieces == "white":
+            self.add(
+                [
+                    Rook(
+                        "w",
+                        "img/white_rook.png",
+                        (i * IMAGE_SIZE, 7 * IMAGE_SIZE),
+                        (i, 7),
+                        True,
+                    )
+                    for i in x_pos
+                ],
+                [
+                    Rook(
+                        "b",
+                        "img/black_rook.png",
+                        (i * IMAGE_SIZE, 0 * IMAGE_SIZE),
+                        (i, 0),
+                        False,
+                    )
+                    for i in x_pos
+                ],
+            )
+        else:
+            self.add(
+                [
+                    Rook(
+                        "b",
+                        "img/black_rook.png",
+                        (i * IMAGE_SIZE, 7 * IMAGE_SIZE),
+                        (i, 7),
+                        True,
+                    )
+                    for i in x_pos
+                ],
+                [
+                    Rook(
+                        "w",
+                        "img/white_rook.png",
+                        (i * IMAGE_SIZE, 0 * IMAGE_SIZE),
+                        (i, 0),
+                        False,
+                    )
+                    for i in x_pos
+                ],
+            )
+
+    def sprites(self) -> list[Rook]:
+        return super().sprites()
 
 
 class QueenGroup(PieceGroup):

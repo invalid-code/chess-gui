@@ -1,6 +1,7 @@
 from pygame._sdl2 import messagebox
 
 from chess_board.base import BaseSprite
+from chess_board.constants import IMAGE_SIZE
 
 
 class Piece(BaseSprite):
@@ -18,10 +19,12 @@ class Piece(BaseSprite):
 
     def move(
         self,
-        dest: tuple[int, int],
         board_coordinate: tuple[int, int],
     ):
-        self.rect.topleft = dest
+        self.rect.topleft = (
+            board_coordinate[0] * IMAGE_SIZE,
+            board_coordinate[1] * IMAGE_SIZE,
+        )
         self.board_coordinate = board_coordinate
 
     def allowed_move(self, x: int, y: int):
@@ -71,31 +74,45 @@ class Pawn(Piece):
             piece_color, img_path, board_coordinate, pos, is_player_piece
         )
         self.first_move = True
+        self.can_en_passant = False
 
     def move(
         self,
-        dest: tuple[int, int],
         board_coordinate: tuple[int, int],
     ):
-        super().move(dest, board_coordinate)
         self.first_move = False
+        super().move(board_coordinate)
 
     def allowed_move(self, x: int, y: int):
         if self.board_coordinate[0] == x:
-            if self.first_move:
-                if self.board_coordinate[1] - 2 == y:
+            if self.is_player_piece:
+                if self.first_move and self.board_coordinate[1] - 2 == y:
                     return True
-            if self.board_coordinate[1] - 1 == y:
-                return True
+                if self.board_coordinate[1] - 1 == y:
+                    return True
+            else:
+                if self.first_move and self.board_coordinate[1] + 2 == y:
+                    return True
+                if self.board_coordinate[1] + 1 == y:
+                    return True
         return False
 
     def allowed_take(self, x: int, y: int):
-        if self.board_coordinate[1] - 1 == y:
-            if (
-                self.board_coordinate[0] + 1 == x
-                or self.board_coordinate[0] - 1 == x
-            ):
-                return True
+        if self.is_player_piece:
+            if self.board_coordinate[1] - 1 == y:
+                pass
+            else:
+                return False
+        else:
+            if self.board_coordinate[1] + 1 == y:
+                pass
+            else:
+                return False
+        if (
+            self.board_coordinate[0] + 1 == x
+            or self.board_coordinate[0] - 1 == x
+        ):
+            return True
         return False
 
     def promote(self):
@@ -196,6 +213,11 @@ class Rook(Piece):
         super().__init__(
             piece_color, img_path, board_coordinate, pos, is_player_piece
         )
+        self.first_move = True
+
+    def move(self, board_coordinate: tuple[int, int]):
+        self.first_move = False
+        super().move(board_coordinate)
 
     def allowed_move(self, x: int, y: int):
         pass
@@ -238,6 +260,20 @@ class King(Piece):
         super().__init__(
             piece_color, img_path, board_coordinate, pos, is_player_piece
         )
+        self.first_move = True
+
+    def move(self, board_coordinate: tuple[int, int]):
+        self.first_move = False
+        super().move(board_coordinate)
+
+    def allowed_move(self, x: int, y: int):
+        if self.first_move:
+            if (
+                x + 2 == self.board_coordinate[0]
+                or x - 2 == self.board_coordinate[0]
+            ):
+                return True
+        return super().allowed_move(x, y)
 
     @property
     def name(self):

@@ -5,7 +5,9 @@ Todo:
    ☐ delete pawn @not until I add other pieces
    ☐ add new piece to pieces group
  ☐ handle en passant
- ☐ handle castling
+ ✔ handle castling @done (23-07-25 21:28)
+   ✔ move rook @done (23-07-25 21:28)
+   ✔ check if rook first move @done (23-07-25 21:28)
  ☐ handle pin
  ☐ organize code @always
  ☐ fix not being able to take the piece thats checking you
