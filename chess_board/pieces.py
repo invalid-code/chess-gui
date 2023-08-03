@@ -79,7 +79,7 @@ class Pieces:
                         if king.allowed_take(*king_board_coordinate):
                             raise StopIteration
                 move_spots.append(False)
-            except StopIteration as _:
+            except StopIteration:
                 move_spots.append(True)
         if move_spots.count(False) > 0:
             return False

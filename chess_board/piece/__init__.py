@@ -74,7 +74,7 @@ class Pawn(Piece):
             piece_color, img_path, board_coordinate, pos, is_player_piece
         )
         self.first_move = True
-        self.can_en_passant = False
+        self.en_passant = False
 
     def move(
         self,

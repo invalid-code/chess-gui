@@ -13,7 +13,7 @@ class Square(BaseSprite):
         pos: tuple[int, int],
     ) -> None:
         super().__init__(img_path, board_coordinate, pos)
-    
+
     @property
     def pixel_coordinate(self):
         return self.rect.topleft
@@ -71,11 +71,14 @@ class Board(BaseGroup):
             self.board_repr[pawn.board_coordinate[1]][
                 pawn.board_coordinate[0]
             ] = pawn.name
+        for rook in pieces.rooks.sprites():
+            self.board_repr[rook.board_coordinate[1]][
+                rook.board_coordinate[0]
+            ] = rook.name
         for king in pieces.kings.sprites():
             self.board_repr[king.board_coordinate[1]][
                 king.board_coordinate[0]
             ] = king.name
-        print(f"starting board representation: {self.board_repr}")
 
     def update_board_repr(
         self, board_coordinate: tuple[int, int], piece: Piece
@@ -84,7 +87,6 @@ class Board(BaseGroup):
             piece.board_coordinate[0]
         ] = ""
         self.board_repr[board_coordinate[1]][board_coordinate[0]] = piece.name
-        print(f"updated board representation: {self.board_repr}")
 
     def has_piece(self, board_coordinate: tuple[int, int]):
         return self.board_repr[board_coordinate[1]][board_coordinate[0]] != ""
