@@ -29,12 +29,6 @@ class ChessBoard:
                 return
             return
         if self.selected_piece:
-            if (
-                self.is_check
-                and self.selected_piece.name
-                != f"{self.opponent.piece_color[0]}k"
-            ):
-                return self.reset()
             selected_square = self.board.get_clicked_square(pos)
             if not selected_square:
                 return
@@ -45,12 +39,12 @@ class ChessBoard:
                 )
                 if not taken_piece:
                     return
-                if taken_piece.is_player_piece:
-                    return self.reset()
-                if taken_piece.name[1] == "k":
-                    return self.reset()
-                if not self.selected_piece.allowed_take(
-                    *taken_piece.board_coordinate
+                if (
+                    taken_piece.is_player_piece
+                    or taken_piece.name[1] == "k"
+                    or not self.selected_piece.allowed_take(
+                        *taken_piece.board_coordinate
+                    )
                 ):
                     return self.reset()
                 self.take(taken_piece)
@@ -63,20 +57,29 @@ class ChessBoard:
                 == f"{self.player.piece_color[0]}p"
             ):
                 for pawn in self.pieces.pawns.sprites():
-                    if pawn.is_player_piece:
-                        return self.reset()
-                    if not pawn.board_coordinate == (
-                        dest_board_coordinate[0],
-                        dest_board_coordinate[1] + 1,
+                    if (
+                        (pawn.is_player_piece)
+                        or (
+                            not pawn.board_coordinate
+                            == (
+                                dest_board_coordinate[0],
+                                dest_board_coordinate[1] + 1,
+                            )
+                        )
+                        or (not pawn.en_passant)
+                        or (
+                            not self.selected_piece.allowed_take(
+                                *dest_board_coordinate
+                            )
+                        )
                     ):
-                        return self.reset()
-                    if not pawn.en_passant:
-                        return self.reset()
-                    if not self.selected_piece.allowed_take(
-                        *dest_board_coordinate
-                    ):
-                        return self.reset()
-                    self.take(pawn)
+                        pass
+                    else:
+                        self.board_repr[pawn.board_coordinate[1]][
+                            pawn.board_coordinate[0]
+                        ] = ""
+                        self.take(pawn)
+                        break
             else:
                 if not self.selected_piece.allowed_move(
                     *dest_board_coordinate
@@ -84,21 +87,23 @@ class ChessBoard:
                     return self.reset()
                 match self.selected_piece.name[1]:
                     case "p":
-                        if not self.selected_piece.first_move:
-                            return
-                        if not (
-                            self.board_repr[
-                                self.selected_piece.board_coordinate[1]
-                            ][self.selected_piece.board_coordinate[0] - 1]
-                            == "wp"
-                        ) or (
-                            self.board_repr[
-                                self.selected_piece.board_coordinate[1]
-                            ][self.selected_piece.board_coordinate[0] + 1]
-                            == "wp"
+                        if (not self.selected_piece.first_move) or not (
+                            (
+                                self.board_repr[dest_board_coordinate[1]][
+                                    dest_board_coordinate[0] - 1
+                                ]
+                                == f"{self.player.piece_color[0]}p"
+                            )
+                            or (
+                                self.board_repr[dest_board_coordinate[1]][
+                                    dest_board_coordinate[0] + 1
+                                ]
+                                == f"{self.player.piece_color[0]}p"
+                            )
                         ):
-                            return
-                        self.selected_piece.en_passant = True
+                            pass
+                        else:
+                            self.selected_piece.en_passant = True
                     case "k":
                         if (
                             self.selected_piece.board_coordinate[0] + 2
@@ -133,7 +138,6 @@ class ChessBoard:
                 self.is_checkmate = self.pieces.is_checkmate(self.board_repr)
         else:
             self.selected_piece = self.get_clicked_piece(pos)
-            print(self.selected_piece)
 
     def draw(self):
         self.board.draw(self.screen)

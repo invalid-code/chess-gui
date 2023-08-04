@@ -58,7 +58,7 @@ class Piece(BaseSprite):
         return f"{self.piece_color}"
 
     def __repr__(self) -> str:
-        return f"Piece(name={self.name}, board_coordinate={self.board_coordinate})"
+        return f"Piece(name={self.name}, board_coordinate={self.board_coordinate}, is_player_piece={self.is_player_piece})"
 
 
 class Pawn(Piece):
@@ -131,6 +131,9 @@ class Pawn(Piece):
                 pass
             case 3:
                 pass
+
+    def __repr__(self):
+        return f"Piece(name={self.name}, board_coordinate={self.board_coordinate}, is_player_piece={self.is_player_piece}, first_move={self.first_move}, en_passant={self.en_passant})"
 
     @property
     def name(self):
