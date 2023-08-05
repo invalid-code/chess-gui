@@ -4,7 +4,7 @@ Todo:
      ✔ choose which piece to promote to @done (23-07-23 21:18)
    ☐ delete pawn @not until I add other pieces
    ☐ add new piece to pieces group
- ☐ handle en passant
+ ✔ handle en passant @done(23-08-11 19:30)
  ✔ handle castling @done (23-07-25 21:28)
    ✔ move rook @done (23-07-25 21:28)
    ✔ check if rook first move @done (23-07-25 21:28)

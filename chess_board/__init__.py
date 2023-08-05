@@ -47,39 +47,35 @@ class ChessBoard:
                     )
                 ):
                     return self.reset()
-                self.take(taken_piece)
+                self.remove_piece(taken_piece)
             elif (
-                self.board_repr[dest_board_coordinate[1] + 1][
-                    dest_board_coordinate[0]
-                ]
-                == f"{self.opponent.piece_color[0]}p"
-                and self.selected_piece.name
-                == f"{self.player.piece_color[0]}p"
+                self.selected_piece.name == f"{self.player.piece_color[0]}p"
+                and self.selected_piece.allowed_take(*dest_board_coordinate)
             ):
-                for pawn in self.pieces.pawns.sprites():
-                    if (
-                        (pawn.is_player_piece)
-                        or (
-                            not pawn.board_coordinate
+                if (
+                    self.board_repr[dest_board_coordinate[1] + 1][
+                        dest_board_coordinate[0]
+                    ]
+                    != f"{self.opponent.piece_color[0]}p"
+                ):
+                    return self.reset()
+                else:
+                    for pawn in self.pieces.pawns.sprites():
+                        if (pawn.is_player_piece) or not (
+                            pawn.board_coordinate
                             == (
                                 dest_board_coordinate[0],
                                 dest_board_coordinate[1] + 1,
                             )
-                        )
-                        or (not pawn.en_passant)
-                        or (
-                            not self.selected_piece.allowed_take(
-                                *dest_board_coordinate
-                            )
-                        )
-                    ):
-                        pass
-                    else:
-                        self.board_repr[pawn.board_coordinate[1]][
-                            pawn.board_coordinate[0]
-                        ] = ""
-                        self.take(pawn)
-                        break
+                            or pawn.en_passant
+                        ):
+                            pass
+                        else:
+                            self.board_repr[pawn.board_coordinate[1]][
+                                pawn.board_coordinate[0]
+                            ] = ""
+                            self.remove_piece(pawn)
+                            break
             else:
                 if not self.selected_piece.allowed_move(
                     *dest_board_coordinate
@@ -87,8 +83,9 @@ class ChessBoard:
                     return self.reset()
                 match self.selected_piece.name[1]:
                     case "p":
-                        if (not self.selected_piece.first_move) or not (
-                            (
+                        if not (
+                            self.selected_piece.first_move
+                            or (
                                 self.board_repr[dest_board_coordinate[1]][
                                     dest_board_coordinate[0] - 1
                                 ]
@@ -116,7 +113,7 @@ class ChessBoard:
                                 rook.board_coordinate[0] - 2,
                                 rook.board_coordinate[1],
                             )
-                            self.move(rook, board_coordinate)
+                            self.update(rook, board_coordinate)
                         elif (
                             self.selected_piece.board_coordinate[0] - 2
                             == dest_board_coordinate[0]
@@ -128,8 +125,8 @@ class ChessBoard:
                                 rook.board_coordinate[0] + 3,
                                 rook.board_coordinate[1],
                             )
-                            self.move(rook, board_coordinate)
-            self.move(self.selected_piece, dest_board_coordinate)
+                            self.update(rook, board_coordinate)
+            self.update(self.selected_piece, dest_board_coordinate)
             if self.selected_piece.name[1] == "p":
                 self.selected_piece.promote()
             self.reset()
@@ -149,11 +146,11 @@ class ChessBoard:
     def get_clicked_piece(self, pos: tuple[int, int]):
         return self.pieces.get_clicked_piece(pos)
 
-    def take(self, taken_piece: Piece):
+    def remove_piece(self, taken_piece: Piece):
         self.taken_pieces.append(taken_piece)
         taken_piece.kill()
 
-    def move(
+    def update(
         self, moving_piece: Piece, dest_board_coordinate: tuple[int, int]
     ):
         self.board.update_board_repr(
