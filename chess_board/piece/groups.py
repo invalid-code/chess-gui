@@ -64,11 +64,113 @@ class PawnGroup(PieceGroup):
 
 
 class KnightGroup(PieceGroup):
-    pass
+    def __init__(self, pieces: str) -> None:
+        super().__init__()
+        x_pos = [1, 6]
+        if pieces == "white":
+            self.add(
+                [
+                    Knight(
+                        "w",
+                        "img/white_knight.png",
+                        (i * IMAGE_SIZE, 7 * IMAGE_SIZE),
+                        (i, 7),
+                        True,
+                    )
+                    for i in x_pos
+                ],
+                [
+                    Knight(
+                        "b",
+                        "img/black_knight.png",
+                        (i * IMAGE_SIZE, 0 * IMAGE_SIZE),
+                        (i, 0),
+                        False,
+                    )
+                    for i in x_pos
+                ],
+            )
+        else:
+            self.add(
+                [
+                    Knight(
+                        "b",
+                        "img/black_knight.png",
+                        (i * IMAGE_SIZE, 7 * IMAGE_SIZE),
+                        (i, 7),
+                        True,
+                    )
+                    for i in x_pos
+                ],
+                [
+                    Knight(
+                        "w",
+                        "img/white_knight.png",
+                        (i * IMAGE_SIZE, 0 * IMAGE_SIZE),
+                        (i, 0),
+                        False,
+                    )
+                    for i in x_pos
+                ],
+            )
+
+    def sprites(self) -> list[Rook]:
+        return super().sprites()
 
 
 class BishopGroup(PieceGroup):
-    pass
+    def __init__(self, pieces: str) -> None:
+        super().__init__()
+        x_pos = [2, 5]
+        if pieces == "white":
+            self.add(
+                [
+                    Bishop(
+                        "w",
+                        "img/white_bishop.png",
+                        (i * IMAGE_SIZE, 7 * IMAGE_SIZE),
+                        (i, 7),
+                        True,
+                    )
+                    for i in x_pos
+                ],
+                [
+                    Bishop(
+                        "b",
+                        "img/black_bishop.png",
+                        (i * IMAGE_SIZE, 0 * IMAGE_SIZE),
+                        (i, 0),
+                        False,
+                    )
+                    for i in x_pos
+                ],
+            )
+        else:
+            self.add(
+                [
+                    Bishop(
+                        "b",
+                        "img/black_bishop.png",
+                        (i * IMAGE_SIZE, 7 * IMAGE_SIZE),
+                        (i, 7),
+                        True,
+                    )
+                    for i in x_pos
+                ],
+                [
+                    Bishop(
+                        "w",
+                        "img/white_bishop.png",
+                        (i * IMAGE_SIZE, 0 * IMAGE_SIZE),
+                        (i, 0),
+                        False,
+                    )
+                    for i in x_pos
+                ],
+            )
+
+    def sprites(self) -> list[Bishop]:
+        return super().sprites()
 
 
 class RookGroup(PieceGroup):
@@ -127,7 +229,45 @@ class RookGroup(PieceGroup):
 
 
 class QueenGroup(PieceGroup):
-    pass
+    def __init__(self, pieces: str) -> None:
+        super().__init__()
+        if pieces == "white":
+            self.add(
+                Queen(
+                    "w",
+                    "img/white_queen.png",
+                    (3 * IMAGE_SIZE, 7 * IMAGE_SIZE),
+                    (3, 7),
+                    True,
+                ),
+                Queen(
+                    "b",
+                    "img/black_queen.png",
+                    (3 * IMAGE_SIZE, 0 * IMAGE_SIZE),
+                    (3, 0),
+                    False,
+                ),
+            )
+        else:
+            self.add(
+                Queen(
+                    "b",
+                    "img/black_queen.png",
+                    (3 * IMAGE_SIZE, 7 * IMAGE_SIZE),
+                    (3, 7),
+                    True,
+                ),
+                Queen(
+                    "w",
+                    "img/white_queen.png",
+                    (3 * IMAGE_SIZE, 0 * IMAGE_SIZE),
+                    (3, 0),
+                    False,
+                ),
+            )
+
+    def sprites(self) -> list[Queen]:
+        return super().sprites()
 
 
 class KingGroup(PieceGroup):

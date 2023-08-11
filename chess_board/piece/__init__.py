@@ -181,7 +181,7 @@ class Bishop(Piece):
         )
 
     def allowed_move(self, x: int, y: int):
-        pass
+        return abs(x - self.board_coordinate[0]) == abs(y - self.board_coordinate[1])
 
     @property
     def name(self):

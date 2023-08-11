@@ -2,12 +2,13 @@
 
 import pygame as pg
 
-from .piece.groups import KingGroup, PawnGroup, RookGroup
+from .piece.groups import BishopGroup, KingGroup, PawnGroup, RookGroup
 
 
 class Pieces:
     def __init__(self, pieces: str) -> None:
         self.pawns = PawnGroup(pieces)
+        self.bishops = BishopGroup(pieces)
         self.rooks = RookGroup(pieces)
         self.kings = KingGroup(pieces)
 
@@ -15,6 +16,10 @@ class Pieces:
         for pawn in self.pawns.sprites():
             if pawn.rect.collidepoint(pos):
                 return pawn
+
+        for bishop in self.bishops.sprites():
+            if bishop.rect.collidepoint(pos):
+                return bishop
 
         for rook in self.rooks.sprites():
             if rook.rect.collidepoint(pos):
@@ -26,6 +31,7 @@ class Pieces:
 
     def draw(self, screen: pg.surface.Surface):
         self.pawns.draw(screen)
+        self.bishops.draw(screen)
         self.rooks.draw(screen)
         self.kings.draw(screen)
 
@@ -35,6 +41,10 @@ class Pieces:
         for pawn in self.pawns.sprites():
             if pawn.is_player_piece:
                 if pawn.allowed_take(*board_coordinate):
+                    return True
+        for bishop in self.bishops.sprites():
+            if bishop.is_player_piece:
+                if bishop.allowed_take(*board_coordinate):
                     return True
         for rook in self.rooks.sprites():
             if rook.is_player_piece:
@@ -69,6 +79,10 @@ class Pieces:
                 for pawn in self.pawns.sprites():
                     if pawn.is_player_piece:
                         if pawn.allowed_take(*king_board_coordinate):
+                            raise StopIteration
+                for bishop in self.bishops.sprites():
+                    if bishop.is_player_piece:
+                        if bishop.allowed_take(*king_board_coordinate):
                             raise StopIteration
                 for rook in self.rooks.sprites():
                     if rook.is_player_piece:
