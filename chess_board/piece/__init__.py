@@ -16,6 +16,7 @@ class Piece(BaseSprite):
         super().__init__(img_path, board_coordinate, pos)
         self.piece_color = piece_color
         self.is_player_piece = is_player_piece
+        self.is_pinned = False
 
     def move(
         self,
@@ -181,7 +182,9 @@ class Bishop(Piece):
         )
 
     def allowed_move(self, x: int, y: int):
-        return abs(x - self.board_coordinate[0]) == abs(y - self.board_coordinate[1])
+        return abs(x - self.board_coordinate[0]) == abs(
+            y - self.board_coordinate[1]
+        )
 
     @property
     def name(self):

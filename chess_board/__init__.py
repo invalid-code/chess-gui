@@ -24,9 +24,7 @@ class ChessBoard:
 
     def handle_input(self, event: pg.event.Event):
         pos: tuple[int, int] = event.dict["pos"]
-        if self.is_check:
-            if self.is_checkmate:
-                return
+        if self.is_checkmate:
             return
         if self.selected_piece:
             selected_square = self.board.get_clicked_square(pos)
@@ -58,7 +56,7 @@ class ChessBoard:
                     ]
                     != f"{self.opponent.piece_color[0]}p"
                 ):
-                    return self.reset()
+                    pass
                 else:
                     for pawn in self.pieces.pawns.sprites():
                         if (pawn.is_player_piece) or not (
@@ -135,6 +133,8 @@ class ChessBoard:
                 self.is_checkmate = self.pieces.is_checkmate(self.board_repr)
         else:
             self.selected_piece = self.get_clicked_piece(pos)
+        if self.is_checkmate:
+            return
 
     def draw(self):
         self.board.draw(self.screen)
