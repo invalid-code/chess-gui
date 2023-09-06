@@ -1,6 +1,7 @@
 from typing import Optional
 
 import pygame as pg
+from .piece import King, Pawn
 
 from chess_board.pieces import Pieces
 
@@ -37,12 +38,12 @@ class ChessBoard:
                 )
                 if not taken_piece:
                     return
-                if (
-                    taken_piece.is_player_piece
-                    or taken_piece.name[1] == "k"
-                    or not self.selected_piece.allowed_take(
-                        *taken_piece.board_coordinate
-                    )
+                if taken_piece.is_player_piece:
+                    return self.reset()
+                if isinstance(taken_piece, King):
+                    return self.reset()
+                if not self.selected_piece.allowed_take(
+                    *taken_piece.board_coordinate
                 ):
                     return self.reset()
                 self.remove_piece(taken_piece)
@@ -59,14 +60,17 @@ class ChessBoard:
                     pass
                 else:
                     for pawn in self.pieces.pawns.sprites():
-                        if (pawn.is_player_piece) or not (
+                        if pawn.is_player_piece:
+                            pass
+                        elif not (
                             pawn.board_coordinate
                             == (
                                 dest_board_coordinate[0],
                                 dest_board_coordinate[1] + 1,
                             )
-                            or pawn.en_passant
                         ):
+                            pass
+                        elif pawn.en_passant:
                             pass
                         else:
                             self.board_repr[pawn.board_coordinate[1]][
@@ -79,53 +83,56 @@ class ChessBoard:
                     *dest_board_coordinate
                 ):
                     return self.reset()
-                match self.selected_piece.name[1]:
-                    case "p":
-                        if not (
-                            self.selected_piece.first_move
-                            or (
-                                self.board_repr[dest_board_coordinate[1]][
-                                    dest_board_coordinate[0] - 1
-                                ]
-                                == f"{self.player.piece_color[0]}p"
-                            )
-                            or (
-                                self.board_repr[dest_board_coordinate[1]][
-                                    dest_board_coordinate[0] + 1
-                                ]
-                                == f"{self.player.piece_color[0]}p"
-                            )
-                        ):
-                            pass
-                        else:
-                            self.selected_piece.en_passant = True
-                    case "k":
-                        if (
-                            self.selected_piece.board_coordinate[0] + 2
-                            == dest_board_coordinate[0]
-                        ):
-                            rook = self.pieces.rooks.sprites()[1]
-                            if not rook.first_move:
-                                return self.reset()
-                            board_coordinate = (
+                if isinstance(self.selected_piece, Pawn):
+                    if not self.selected_piece.first_move:
+                        pass
+                    elif not (
+                        self.board_repr[dest_board_coordinate[1]][
+                            dest_board_coordinate[0] - 1
+                        ]
+                        == f"{self.player.piece_color[0]}p"
+                    ):
+                        pass
+                    elif not (
+                        self.board_repr[dest_board_coordinate[1]][
+                            dest_board_coordinate[0] + 1
+                        ]
+                        == f"{self.player.piece_color[0]}p"
+                    ):
+                        pass
+                    else:
+                        self.selected_piece.en_passant = True
+                if isinstance(self.selected_piece, King):
+                    if (
+                        self.selected_piece.board_coordinate[0] + 2
+                        == dest_board_coordinate[0]
+                    ):
+                        rook = self.pieces.rooks.sprites()[1]
+                        if not rook.first_move:
+                            return self.reset()
+                        self.update(
+                            rook,
+                            (
                                 rook.board_coordinate[0] - 2,
                                 rook.board_coordinate[1],
-                            )
-                            self.update(rook, board_coordinate)
-                        elif (
-                            self.selected_piece.board_coordinate[0] - 2
-                            == dest_board_coordinate[0]
-                        ):
-                            rook = self.pieces.rooks.sprites()[0]
-                            if not rook.first_move:
-                                return self.reset()
-                            board_coordinate = (
+                            ),
+                        )
+                    if (
+                        self.selected_piece.board_coordinate[0] - 2
+                        == dest_board_coordinate[0]
+                    ):
+                        rook = self.pieces.rooks.sprites()[0]
+                        if not rook.first_move:
+                            return self.reset()
+                        self.update(
+                            rook,
+                            (
                                 rook.board_coordinate[0] + 3,
                                 rook.board_coordinate[1],
-                            )
-                            self.update(rook, board_coordinate)
+                            ),
+                        )
             self.update(self.selected_piece, dest_board_coordinate)
-            if self.selected_piece.name[1] == "p":
+            if isinstance(self.selected_piece, Pawn):
                 self.selected_piece.promote()
             self.reset()
             self.is_check = self.pieces.is_check()
