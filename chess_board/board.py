@@ -20,7 +20,7 @@ class Square(BaseSprite):
 
 
 class Board(BaseGroup):
-    def __init__(self):
+    def __init__(self, pieces: Pieces):
         super().__init__(
             [
                 [
@@ -57,6 +57,7 @@ class Board(BaseGroup):
         )
 
         self.board_repr = [["" for _ in range(8)] for _ in range(8)]
+        self.init_board(pieces)
 
     def sprites(self) -> list[Square]:
         return super().sprites()
@@ -66,7 +67,7 @@ class Board(BaseGroup):
             if square.rect.collidepoint(pos):
                 return square
 
-    def start_board_repr(self, pieces: Pieces):
+    def init_board(self, pieces: Pieces):
         for pawn in pieces.pawns.sprites():
             self.board_repr[pawn.board_coordinate[1]][
                 pawn.board_coordinate[0]
@@ -84,12 +85,10 @@ class Board(BaseGroup):
                 king.board_coordinate[0]
             ] = king.name
 
-    def update_board_repr(
-        self, board_coordinate: tuple[int, int], piece: Piece
-    ):
+    def update_board(self, board_coordinate: tuple[int, int], piece: Piece):
         self.board_repr[piece.board_coordinate[1]][
             piece.board_coordinate[0]
-        ] = ""
+        ] = ""  # previous position
         self.board_repr[board_coordinate[1]][board_coordinate[0]] = piece.name
 
     def has_piece(self, board_coordinate: tuple[int, int]):

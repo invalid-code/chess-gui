@@ -1,6 +1,5 @@
 from chess_board.base import BaseGroup
 from chess_board.constants import IMAGE_SIZE
-from chess_board.types import Piece
 
 from . import Bishop, King, Knight, Pawn, Queen, Rook
 
@@ -18,7 +17,6 @@ class PawnGroup(PieceGroup):
                     Pawn(
                         "w",
                         "img/white_pawn.png",
-                        (i * IMAGE_SIZE, 6 * IMAGE_SIZE),
                         (i, 6),
                         True,
                     )
@@ -28,7 +26,6 @@ class PawnGroup(PieceGroup):
                     Pawn(
                         "b",
                         "img/black_pawn.png",
-                        (i * IMAGE_SIZE, 1 * IMAGE_SIZE),
                         (i, 1),
                         False,
                     )
@@ -41,7 +38,6 @@ class PawnGroup(PieceGroup):
                     Pawn(
                         "b",
                         "img/black_pawn.png",
-                        (i * IMAGE_SIZE, 6 * IMAGE_SIZE),
                         (i, 6),
                         True,
                     )
@@ -51,7 +47,6 @@ class PawnGroup(PieceGroup):
                     Pawn(
                         "w",
                         "img/white_pawn.png",
-                        (i * IMAGE_SIZE, 1 * IMAGE_SIZE),
                         (i, 1),
                         False,
                     )
@@ -73,7 +68,6 @@ class KnightGroup(PieceGroup):
                     Knight(
                         "w",
                         "img/white_knight.png",
-                        (i * IMAGE_SIZE, 7 * IMAGE_SIZE),
                         (i, 7),
                         True,
                     )
@@ -83,7 +77,6 @@ class KnightGroup(PieceGroup):
                     Knight(
                         "b",
                         "img/black_knight.png",
-                        (i * IMAGE_SIZE, 0 * IMAGE_SIZE),
                         (i, 0),
                         False,
                     )
@@ -96,7 +89,6 @@ class KnightGroup(PieceGroup):
                     Knight(
                         "b",
                         "img/black_knight.png",
-                        (i * IMAGE_SIZE, 7 * IMAGE_SIZE),
                         (i, 7),
                         True,
                     )
@@ -106,7 +98,6 @@ class KnightGroup(PieceGroup):
                     Knight(
                         "w",
                         "img/white_knight.png",
-                        (i * IMAGE_SIZE, 0 * IMAGE_SIZE),
                         (i, 0),
                         False,
                     )
@@ -128,7 +119,6 @@ class BishopGroup(PieceGroup):
                     Bishop(
                         "w",
                         "img/white_bishop.png",
-                        (i * IMAGE_SIZE, 7 * IMAGE_SIZE),
                         (i, 7),
                         True,
                     )
@@ -138,7 +128,6 @@ class BishopGroup(PieceGroup):
                     Bishop(
                         "b",
                         "img/black_bishop.png",
-                        (i * IMAGE_SIZE, 0 * IMAGE_SIZE),
                         (i, 0),
                         False,
                     )
@@ -151,7 +140,6 @@ class BishopGroup(PieceGroup):
                     Bishop(
                         "b",
                         "img/black_bishop.png",
-                        (i * IMAGE_SIZE, 7 * IMAGE_SIZE),
                         (i, 7),
                         True,
                     )
@@ -161,7 +149,6 @@ class BishopGroup(PieceGroup):
                     Bishop(
                         "w",
                         "img/white_bishop.png",
-                        (i * IMAGE_SIZE, 0 * IMAGE_SIZE),
                         (i, 0),
                         False,
                     )
@@ -183,7 +170,6 @@ class RookGroup(PieceGroup):
                     Rook(
                         "w",
                         "img/white_rook.png",
-                        (i * IMAGE_SIZE, 7 * IMAGE_SIZE),
                         (i, 7),
                         True,
                     )
@@ -193,7 +179,6 @@ class RookGroup(PieceGroup):
                     Rook(
                         "b",
                         "img/black_rook.png",
-                        (i * IMAGE_SIZE, 0 * IMAGE_SIZE),
                         (i, 0),
                         False,
                     )
@@ -206,7 +191,6 @@ class RookGroup(PieceGroup):
                     Rook(
                         "b",
                         "img/black_rook.png",
-                        (i * IMAGE_SIZE, 7 * IMAGE_SIZE),
                         (i, 7),
                         True,
                     )
@@ -216,7 +200,6 @@ class RookGroup(PieceGroup):
                     Rook(
                         "w",
                         "img/white_rook.png",
-                        (i * IMAGE_SIZE, 0 * IMAGE_SIZE),
                         (i, 0),
                         False,
                     )
@@ -236,14 +219,12 @@ class QueenGroup(PieceGroup):
                 Queen(
                     "w",
                     "img/white_queen.png",
-                    (3 * IMAGE_SIZE, 7 * IMAGE_SIZE),
                     (3, 7),
                     True,
                 ),
                 Queen(
                     "b",
                     "img/black_queen.png",
-                    (3 * IMAGE_SIZE, 0 * IMAGE_SIZE),
                     (3, 0),
                     False,
                 ),
@@ -253,14 +234,12 @@ class QueenGroup(PieceGroup):
                 Queen(
                     "b",
                     "img/black_queen.png",
-                    (3 * IMAGE_SIZE, 7 * IMAGE_SIZE),
                     (3, 7),
                     True,
                 ),
                 Queen(
                     "w",
                     "img/white_queen.png",
-                    (3 * IMAGE_SIZE, 0 * IMAGE_SIZE),
                     (3, 0),
                     False,
                 ),
@@ -278,14 +257,12 @@ class KingGroup(PieceGroup):
                 King(
                     "w",
                     "img/white_king.png",
-                    (4 * IMAGE_SIZE, 7 * IMAGE_SIZE),
                     (4, 7),
                     True,
                 ),
                 King(
                     "b",
                     "img/black_king.png",
-                    (4 * IMAGE_SIZE, 0 * IMAGE_SIZE),
                     (4, 0),
                     False,
                 ),
@@ -295,14 +272,12 @@ class KingGroup(PieceGroup):
                 King(
                     "b",
                     "img/black_king.png",
-                    (4 * IMAGE_SIZE, 7 * IMAGE_SIZE),
                     (4, 7),
                     True,
                 ),
                 King(
                     "w",
                     "img/white_king.png",
-                    (4 * IMAGE_SIZE, 0 * IMAGE_SIZE),
                     (4, 0),
                     False,
                 ),

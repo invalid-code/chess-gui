@@ -3,7 +3,7 @@ import sys
 
 import pygame as pg
 
-from chess_board import ChessBoard
+from chess_board import ChessBoard, WinningScreen
 
 pg.init()
 pg.font.init()
@@ -17,6 +17,7 @@ def main():
     pg.display.set_caption("chess clone")
 
     chess_board = ChessBoard(screen)
+    # winning_screen: WinningScreen | None = None
 
     CLOCK = pg.time.Clock()
 

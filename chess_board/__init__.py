@@ -1,11 +1,12 @@
 from typing import Optional
 
 import pygame as pg
-from .piece import King, Pawn
+from pygame._sdl2 import messagebox
 
 from chess_board.pieces import Pieces
 
 from .board import Board
+from .piece import King, Pawn
 from .players import Opponent, Player
 from .types import Piece
 
@@ -16,23 +17,23 @@ class ChessBoard:
         self.player = Player()
         self.opponent = Opponent(self.player)
         self.pieces = Pieces(self.player.piece_color)
-        self.board = Board()
+        self.board = Board(self.pieces)
         self.taken_pieces: list[Piece] = []
         self.selected_piece: Optional[Piece] = None
         self.is_check = False
         self.is_checkmate = False
-        self.board.start_board_repr(self.pieces)
 
     def handle_input(self, event: pg.event.Event):
         pos: tuple[int, int] = event.dict["pos"]
-        if self.is_checkmate:
-            return
+        # if self.is_checkmate:
+        #     return
         if self.selected_piece:
             selected_square = self.board.get_clicked_square(pos)
             if not selected_square:
                 return
-            dest_board_coordinate = selected_square.board_coordinate
-            if self.board.has_piece(dest_board_coordinate):
+            dest_coordinate = selected_square.board_coordinate
+            if self.board.has_piece(dest_coordinate):
+                # taking
                 taken_piece = self.get_clicked_piece(
                     selected_square.rect.center
                 )
@@ -49,12 +50,11 @@ class ChessBoard:
                 self.remove_piece(taken_piece)
             elif (
                 self.selected_piece.name == f"{self.player.piece_color[0]}p"
-                and self.selected_piece.allowed_take(*dest_board_coordinate)
+                and self.selected_piece.allowed_take(*dest_coordinate)
             ):
+                # en passant taking
                 if (
-                    self.board_repr[dest_board_coordinate[1] + 1][
-                        dest_board_coordinate[0]
-                    ]
+                    self.board_repr[dest_coordinate[1] + 1][dest_coordinate[0]]
                     != f"{self.opponent.piece_color[0]}p"
                 ):
                     pass
@@ -65,8 +65,8 @@ class ChessBoard:
                         elif not (
                             pawn.board_coordinate
                             == (
-                                dest_board_coordinate[0],
-                                dest_board_coordinate[1] + 1,
+                                dest_coordinate[0],
+                                dest_coordinate[1] + 1,
                             )
                         ):
                             pass
@@ -77,40 +77,40 @@ class ChessBoard:
                                 pawn.board_coordinate[0]
                             ] = ""
                             self.remove_piece(pawn)
-                            break
             else:
-                if not self.selected_piece.allowed_move(
-                    *dest_board_coordinate
-                ):
+                # moving
+                if not self.selected_piece.allowed_move(*dest_coordinate):
                     return self.reset()
                 if isinstance(self.selected_piece, Pawn):
+                    # update opponent pawn that is that can be taken with en passant
                     if not self.selected_piece.first_move:
                         pass
-                    elif not (
-                        self.board_repr[dest_board_coordinate[1]][
-                            dest_board_coordinate[0] - 1
+                    elif (
+                        self.board_repr[dest_coordinate[1]][
+                            dest_coordinate[0] - 1
                         ]
-                        == f"{self.player.piece_color[0]}p"
+                        != f"{self.player.piece_color[0]}p"
                     ):
                         pass
-                    elif not (
-                        self.board_repr[dest_board_coordinate[1]][
-                            dest_board_coordinate[0] + 1
+                    elif (
+                        self.board_repr[dest_coordinate[1]][
+                            dest_coordinate[0] + 1
                         ]
-                        == f"{self.player.piece_color[0]}p"
+                        != f"{self.player.piece_color[0]}p"
                     ):
                         pass
                     else:
                         self.selected_piece.en_passant = True
                 if isinstance(self.selected_piece, King):
+                    # update rooks if it was a castle move
                     if (
                         self.selected_piece.board_coordinate[0] + 2
-                        == dest_board_coordinate[0]
+                        == dest_coordinate[0]
                     ):
                         rook = self.pieces.rooks.sprites()[1]
                         if not rook.first_move:
                             return self.reset()
-                        self.update(
+                        self.update_piece(
                             rook,
                             (
                                 rook.board_coordinate[0] - 2,
@@ -119,29 +119,48 @@ class ChessBoard:
                         )
                     if (
                         self.selected_piece.board_coordinate[0] - 2
-                        == dest_board_coordinate[0]
+                        == dest_coordinate[0]
                     ):
                         rook = self.pieces.rooks.sprites()[0]
                         if not rook.first_move:
                             return self.reset()
-                        self.update(
+                        self.update_piece(
                             rook,
                             (
                                 rook.board_coordinate[0] + 3,
                                 rook.board_coordinate[1],
                             ),
                         )
-            self.update(self.selected_piece, dest_board_coordinate)
+            self.update_piece(self.selected_piece, dest_coordinate)
             if isinstance(self.selected_piece, Pawn):
-                self.selected_piece.promote()
+                # check if we can promote
+                if self.selected_piece.board_coordinate[1] != 0:
+                    pass
+                else:
+                    promote_window = messagebox(
+                        "promote window", "", buttons=("H", "B", "R", "Q")
+                    )
+                    self.selected_piece.kill()
+                    match promote_window:
+                        case 0:
+                            # self.pieces.knights.add()
+                            pass
+                        case 1:
+                            # self.pieces.bishops.add(Knight(""))
+                            pass
+                        case 2:
+                            # self.pieces.rooks.add(Rook())
+                            pass
+                        case 3:
+                            # self.pieces.queens.add()
+                            pass
+
             self.reset()
             self.is_check = self.pieces.is_check()
             if self.is_check:
                 self.is_checkmate = self.pieces.is_checkmate(self.board_repr)
         else:
             self.selected_piece = self.get_clicked_piece(pos)
-        if self.is_checkmate:
-            return
 
     def draw(self):
         self.board.draw(self.screen)
@@ -157,17 +176,20 @@ class ChessBoard:
         self.taken_pieces.append(taken_piece)
         taken_piece.kill()
 
-    def update(
-        self, moving_piece: Piece, dest_board_coordinate: tuple[int, int]
-    ):
-        self.board.update_board_repr(
-            dest_board_coordinate,
-            moving_piece,
+    def update_piece(self, piece: Piece, dest: tuple[int, int]):
+        self.board.update_board(
+            dest,
+            piece,
         )
-        moving_piece.move(
-            dest_board_coordinate,
+        piece.move(
+            dest,
         )
 
     @property
     def board_repr(self):
         return self.board.board_repr
+
+
+class WinningScreen:
+    def __init__(self, won: bool):
+        self.won = won

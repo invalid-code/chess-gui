@@ -1,7 +1,10 @@
-from pygame._sdl2 import messagebox
-
 from chess_board.base import BaseSprite
 from chess_board.constants import IMAGE_SIZE
+
+
+class Pinnable:
+    def __init__(self) -> None:
+        self.pinned = False
 
 
 class Piece(BaseSprite):
@@ -10,13 +13,18 @@ class Piece(BaseSprite):
         piece_color: str,
         img_path: str,
         board_coordinate: tuple[int, int],
-        pos: tuple[int, int],
         is_player_piece: bool,
     ) -> None:
-        super().__init__(img_path, board_coordinate, pos)
+        super().__init__(
+            img_path,
+            board_coordinate,
+            (
+                board_coordinate[0] * IMAGE_SIZE,
+                board_coordinate[1] * IMAGE_SIZE,
+            ),
+        )
         self.piece_color = piece_color
         self.is_player_piece = is_player_piece
-        self.is_pinned = False
 
     def move(
         self,
@@ -48,17 +56,16 @@ class Piece(BaseSprite):
         return f"Piece(name={self.name}, board_coordinate={self.board_coordinate}, is_player_piece={self.is_player_piece})"
 
 
-class Pawn(Piece):
+class Pawn(Piece, Pinnable):
     def __init__(
         self,
         piece_color: str,
         img_path: str,
-        pos: tuple[int, int],
         board_coordinate: tuple[int, int],
         is_player_piece: bool,
     ) -> None:
         super().__init__(
-            piece_color, img_path, board_coordinate, pos, is_player_piece
+            piece_color, img_path, board_coordinate, is_player_piece
         )
         self.first_move = True
         self.en_passant = False
@@ -100,23 +107,6 @@ class Pawn(Piece):
             )
         )
 
-    def promote(self):
-        if self.board_coordinate[1] != 0:
-            return
-        promote_window = messagebox(
-            "promote window", "", buttons=("H", "B", "R", "Q")
-        )
-        # self.kill()
-        match promote_window:
-            case 0:
-                pass
-            case 1:
-                pass
-            case 2:
-                pass
-            case 3:
-                pass
-
     def __repr__(self):
         return f"Piece(name={self.name}, board_coordinate={self.board_coordinate}, is_player_piece={self.is_player_piece}, first_move={self.first_move}, en_passant={self.en_passant})"
 
@@ -129,17 +119,16 @@ class Pawn(Piece):
         self.name = val
 
 
-class Knight(Piece):
+class Knight(Piece, Pinnable):
     def __init__(
         self,
         piece_color: str,
         img_path: str,
-        pos: tuple[int, int],
         board_coordinate: tuple[int, int],
         is_player_piece: bool,
     ) -> None:
         super().__init__(
-            piece_color, img_path, board_coordinate, pos, is_player_piece
+            piece_color, img_path, board_coordinate, is_player_piece
         )
 
     def allowed_move(self, x: int, y: int):
@@ -168,17 +157,16 @@ class Knight(Piece):
         return f"{self.piece_color}h"
 
 
-class Bishop(Piece):
+class Bishop(Piece, Pinnable):
     def __init__(
         self,
         piece_color: str,
         img_path: str,
-        pos: tuple[int, int],
         board_coordinate: tuple[int, int],
         is_player_piece: bool,
     ) -> None:
         super().__init__(
-            piece_color, img_path, board_coordinate, pos, is_player_piece
+            piece_color, img_path, board_coordinate, is_player_piece
         )
 
     def allowed_move(self, x: int, y: int):
@@ -191,17 +179,16 @@ class Bishop(Piece):
         return f"{self.piece_color}b"
 
 
-class Rook(Piece):
+class Rook(Piece, Pinnable):
     def __init__(
         self,
         piece_color: str,
         img_path: str,
-        pos: tuple[int, int],
         board_coordinate: tuple[int, int],
         is_player_piece: bool,
     ) -> None:
         super().__init__(
-            piece_color, img_path, board_coordinate, pos, is_player_piece
+            piece_color, img_path, board_coordinate, is_player_piece
         )
         self.first_move = True
 
@@ -219,24 +206,23 @@ class Rook(Piece):
         return f"{self.piece_color}r"
 
 
-class Queen(Rook, Bishop):
+class Queen(Rook, Bishop, Pinnable):
     def __init__(
         self,
         piece_color: str,
         img_path: str,
-        pos: tuple[int, int],
         board_coordinate: tuple[int, int],
         is_player_piece: bool,
     ) -> None:
         super().__init__(
-            piece_color, img_path, board_coordinate, pos, is_player_piece
+            piece_color, img_path, board_coordinate, is_player_piece
         )
         print(super())
 
     def allowed_move(self, x: int, y: int):
-        return super(Rook, self).allowed_move(x, y) or super(
-            Bishop, self
-        ).allowed_move(x, y)
+        return super(Rook).allowed_move(x, y) or super(Bishop).allowed_move(
+            x, y
+        )
 
     @property
     def name(self):
@@ -248,12 +234,11 @@ class King(Piece):
         self,
         piece_color: str,
         img_path: str,
-        pos: tuple[int, int],
         board_coordinate: tuple[int, int],
         is_player_piece: bool,
     ) -> None:
         super().__init__(
-            piece_color, img_path, board_coordinate, pos, is_player_piece
+            piece_color, img_path, board_coordinate, is_player_piece
         )
         self.first_move = True
 

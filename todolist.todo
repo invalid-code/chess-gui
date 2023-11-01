@@ -13,10 +13,12 @@ Todo:
  ☐ fix not being able to take the piece thats checking you
  ☐ fix not being able to block check
  ☐ fix not being able to move other pieces except opponent king when check
+ ☐ fix only your pieces being able to checkmate opponent
  ☐ make the game turn based @not yet
- ☐ check for chess rules
+ ☐ check for chess rules @deleted
  ☐ make ui update with allowed moves
- 
+ ☐ add tests so that I can find out if code breaks
+
  Archive:
  ✔ fix bishop not moving properly @done(23-04-05 15:49) @project(Todo)
  ✔ make pieces not move over other pieces except knights @done(23-04-05 15:48) @project(Todo)
