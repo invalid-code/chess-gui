@@ -2,11 +2,6 @@ from chess_board.base import BaseSprite
 from chess_board.constants import IMAGE_SIZE
 
 
-class Pinnable:
-    def __init__(self) -> None:
-        self.pinned = False
-
-
 class Piece(BaseSprite):
     def __init__(
         self,
@@ -56,7 +51,7 @@ class Piece(BaseSprite):
         return f"Piece(name={self.name}, board_coordinate={self.board_coordinate}, is_player_piece={self.is_player_piece})"
 
 
-class Pawn(Piece, Pinnable):
+class Pawn(Piece):
     def __init__(
         self,
         piece_color: str,
@@ -67,6 +62,7 @@ class Pawn(Piece, Pinnable):
         super().__init__(
             piece_color, img_path, board_coordinate, is_player_piece
         )
+        self.pinned = False
         self.first_move = True
         self.en_passant = False
 
@@ -119,7 +115,7 @@ class Pawn(Piece, Pinnable):
         self.name = val
 
 
-class Knight(Piece, Pinnable):
+class Knight(Piece):
     def __init__(
         self,
         piece_color: str,
@@ -130,6 +126,7 @@ class Knight(Piece, Pinnable):
         super().__init__(
             piece_color, img_path, board_coordinate, is_player_piece
         )
+        self.pinned = False
 
     def allowed_move(self, x: int, y: int):
         if (
@@ -157,7 +154,7 @@ class Knight(Piece, Pinnable):
         return f"{self.piece_color}h"
 
 
-class Bishop(Piece, Pinnable):
+class Bishop(Piece):
     def __init__(
         self,
         piece_color: str,
@@ -168,6 +165,7 @@ class Bishop(Piece, Pinnable):
         super().__init__(
             piece_color, img_path, board_coordinate, is_player_piece
         )
+        self.pinned = False
 
     def allowed_move(self, x: int, y: int):
         return abs(x - self.board_coordinate[0]) == abs(
@@ -179,7 +177,7 @@ class Bishop(Piece, Pinnable):
         return f"{self.piece_color}b"
 
 
-class Rook(Piece, Pinnable):
+class Rook(Piece):
     def __init__(
         self,
         piece_color: str,
@@ -190,6 +188,7 @@ class Rook(Piece, Pinnable):
         super().__init__(
             piece_color, img_path, board_coordinate, is_player_piece
         )
+        self.pinned = False
         self.first_move = True
 
     def move(self, board_coordinate: tuple[int, int]):
@@ -206,7 +205,7 @@ class Rook(Piece, Pinnable):
         return f"{self.piece_color}r"
 
 
-class Queen(Rook, Bishop, Pinnable):
+class Queen(Rook, Bishop):
     def __init__(
         self,
         piece_color: str,
@@ -217,7 +216,6 @@ class Queen(Rook, Bishop, Pinnable):
         super().__init__(
             piece_color, img_path, board_coordinate, is_player_piece
         )
-        print(super())
 
     def allowed_move(self, x: int, y: int):
         return super(Rook).allowed_move(x, y) or super(Bishop).allowed_move(
