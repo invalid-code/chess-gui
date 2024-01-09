@@ -46,7 +46,7 @@ class Piece(BaseSprite):
         )
 
     def allowed_take(self, x: int, y: int):
-        self.allowed_move(x, y)
+        return self.allowed_move(x, y)
 
     @property
     def name(self):

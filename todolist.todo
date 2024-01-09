@@ -8,14 +8,15 @@ Todo:
  ✔ handle castling @done (23-07-25 21:28)
    ✔ move rook @done (23-07-25 21:28)
    ✔ check if rook first move @done (23-07-25 21:28)
+   ☐ check if there are pieces obstructing
  ☐ handle pin
+  ☐ handle pin for rook and queen
  ☐ organize code @always
  ☐ fix not being able to take the piece thats checking you
- ☐ fix not being able to block check
+ ☐ fix only moving the king when in check
  ☐ fix not being able to move other pieces except opponent king when check
  ☐ fix only your pieces being able to checkmate opponent
  ☐ make the game turn based @not yet
- ☐ check for chess rules @deleted
  ☐ make ui update with allowed moves
  ☐ add tests so that I can find out if code breaks
 

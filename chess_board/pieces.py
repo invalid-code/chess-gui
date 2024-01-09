@@ -1,5 +1,3 @@
-# from typing import Literal
-
 from typing import Optional
 
 import pygame as pg
@@ -106,68 +104,101 @@ class Pieces:
         for bishop in self.bishops.sprites():
             if bishop.is_player_piece:
                 board_coordinate = bishop.board_coordinate
-                # pinnable_pieces = []
-                for i in range(0, 8):
+                for i in range(1, 8):
+                    possible_move = (0, 0)
                     if (
                         board_coordinate[0] + i < 8
-                        or board_coordinate[0] - i < 1
+                        and board_coordinate[1] + i < 8
+                    ):
+                        possible_move = (
+                            board_coordinate[0] + i,
+                            board_coordinate[1] + i,
+                        )
+                    elif (
+                        board_coordinate[0] - i > -1
+                        and board_coordinate[1] - i > -1
+                    ):
+                        possible_move = (
+                            board_coordinate[0] - i,
+                            board_coordinate[1] - i,
+                        )
+                    elif (
+                        board_coordinate[0] + i < 8
+                        and board_coordinate[1] - i < 8
+                    ):
+                        possible_move = (
+                            board_coordinate[0] + i,
+                            board_coordinate[1] - i,
+                        )
+                    elif (
+                        board_coordinate[0] - i > -1
+                        and board_coordinate[1] + i < 8
+                    ):
+                        possible_move = (
+                            board_coordinate[0] - i,
+                            board_coordinate[1] + i,
+                        )
+                    else:
+                        continue
+                    if board_repr[possible_move[1]][possible_move[0]] == "":
+                        continue
+                    pinned_piece = board_repr[possible_move[1]][
+                        possible_move[0]
+                    ]
+                    # wrong
+                    if (
+                        board_repr[possible_move[1] + 1][possible_move[0] + 1]
+                        != f"{'w' if bishop.is_player_piece else 'b'}k"
                     ):
                         continue
                     if (
-                        board_repr[board_coordinate[1] + i][
-                            board_coordinate[0] + i
-                        ]
-                        != ""
+                        board_repr[possible_move[1] - 1][possible_move[0] - 1]
+                        != f"{'w' if bishop.is_player_piece else 'b'}k"
                     ):
-                        pinned_piece = board_repr[board_coordinate[1] + i][
-                            board_coordinate[0] + i
-                        ]
-                        if (
-                            board_repr[board_coordinate[1] + i + 1][
-                                board_coordinate[0] + i + 1
-                            ]
-                            != f"{'w' if bishop.is_player_piece else 'b'}k"
-                        ):
-                            if pinned_piece[1] == "p":
-                                for pinned_pawn in self.pawns.sprites():
-                                    if (
-                                        pinned_pawn.board_coordinate
-                                        == board_coordinate
-                                    ):
-                                        pinned_pawn.pinned = True
-                            elif pinned_piece[1] == "n":
-                                for pinned_knight in self.pawns.sprites():
-                                    if (
-                                        pinned_knight.board_coordinate
-                                        == board_coordinate
-                                    ):
-                                        pinned_knight.pinned = True
-                            elif pinned_piece[1] == "b":
-                                for pinned_bishop in self.pawns.sprites():
-                                    if (
-                                        pinned_bishop.board_coordinate
-                                        == board_coordinate
-                                    ):
-                                        pinned_bishop.pinned = True
-                            elif pinned_piece[1] == "r":
-                                for pinned_rook in self.pawns.sprites():
-                                    if (
-                                        pinned_rook.board_coordinate
-                                        == board_coordinate
-                                    ):
-                                        pinned_rook.pinned = True
-                            elif pinned_piece[1] == "q":
-                                for pinned_queen in self.pawns.sprites():
-                                    if (
-                                        pinned_queen.board_coordinate
-                                        == board_coordinate
-                                    ):
-                                        pinned_queen.pinned = True
-                            return
+                        continue
+                    if (
+                        board_repr[possible_move[1] + 1][possible_move[0] - 1]
+                        != f"{'w' if bishop.is_player_piece else 'b'}k"
+                    ):
+                        continue
+                    if (
+                        board_repr[possible_move[1] - 1][possible_move[0] + 1]
+                        != f"{'w' if bishop.is_player_piece else 'b'}k"
+                    ):
+                        continue
+                        #
+                    # right
+                    if pinned_piece[1] == "p":
+                        for pinned_pawn in self.pawns.sprites():
+                            if pinned_pawn.board_coordinate == possible_move:
+                                pinned_pawn.pinned = True
+                    # elif pinned_piece[1] == "n":
+                    #     for pinned_knight in self.knights.sprites():
+                    #         if (
+                    #             pinned_knight.board_coordinate
+                    #             == board_coordinate
+                    #         ):
+                    #             pinned_knight.pinned = True
+                    elif pinned_piece[1] == "b":
+                        for pinned_bishop in self.bishops.sprites():
+                            if pinned_bishop.board_coordinate == possible_move:
+                                pinned_bishop.pinned = True
+                    elif pinned_piece[1] == "r":
+                        for pinned_rook in self.rooks.sprites():
+                            if pinned_rook.board_coordinate == possible_move:
+                                pinned_rook.pinned = True
+                    # elif pinned_piece[1] == "q":
+                    #     for pinned_queen in self.queens.sprites():
+                    #         if (
+                    #             pinned_queen.board_coordinate
+                    #             == board_coordinate
+                    #         ):
+                    #             pinned_queen.pinned = True
+                    #
 
-        for rook in self.rooks.sprites():
-            if rook.is_player_piece:
-                pass
+        # for rook in self.rooks.sprites():
+        #     if rook.is_player_piece:
+        #         pass
 
         # for queen in self.queens.sprites():
         #     if queen.is_player_piece:

@@ -1,9 +1,12 @@
 from random import choice
+from typing import Literal
 
 
 class Player:
     def __init__(self) -> None:
-        self.piece_color = choice(["white", "black"])
+        self.piece_color: Literal["white", "black"] = choice(
+            ["white", "black"]
+        )
 
 
 class Opponent:
