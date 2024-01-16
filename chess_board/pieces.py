@@ -1,23 +1,37 @@
 from typing import Optional
 
 import pygame as pg
+from .piece import Bishop, Queen, Rook
 
 from chess_board.types import Piece
 
-from .piece.groups import BishopGroup, KingGroup, PawnGroup, RookGroup
+from .piece.groups import (
+    BishopGroup,
+    KingGroup,
+    KnightGroup,
+    PawnGroup,
+    QueenGroup,
+    RookGroup,
+)
 
 
 class Pieces:
     def __init__(self, pieces: str) -> None:
         self.pawns = PawnGroup(pieces)
         self.bishops = BishopGroup(pieces)
+        self.knights = KnightGroup(pieces)
         self.rooks = RookGroup(pieces)
+        self.queens = QueenGroup(pieces)
         self.kings = KingGroup(pieces)
 
     def get_clicked_piece(self, pos: tuple[int, int]) -> Optional[Piece]:
         for pawn in self.pawns.sprites():
             if pawn.rect.collidepoint(pos):
                 return pawn
+
+        for knight in self.knights.sprites():
+            if knight.rect.collidepoint(pos):
+                return knight
 
         for bishop in self.bishops.sprites():
             if bishop.rect.collidepoint(pos):
@@ -27,14 +41,20 @@ class Pieces:
             if rook.rect.collidepoint(pos):
                 return rook
 
+        for queen in self.queens.sprites():
+            if queen.rect.collidepoint(pos):
+                return queen
+
         for king in self.kings.sprites():
             if king.rect.collidepoint(pos):
                 return king
 
     def draw(self, screen: pg.surface.Surface):
         self.pawns.draw(screen)
+        self.knights.draw(screen)
         self.bishops.draw(screen)
         self.rooks.draw(screen)
+        self.queens.draw(screen)
         self.kings.draw(screen)
 
     def is_check(self) -> bool:
@@ -44,6 +64,10 @@ class Pieces:
             if pawn.is_player_piece:
                 if pawn.allowed_take(*board_coordinate):
                     return True
+        for knight in self.knights.sprites():
+            if knight.is_player_piece:
+                if knight.allowed_take(*board_coordinate):
+                    return True
         for bishop in self.bishops.sprites():
             if bishop.is_player_piece:
                 if bishop.allowed_take(*board_coordinate):
@@ -51,6 +75,10 @@ class Pieces:
         for rook in self.rooks.sprites():
             if rook.is_player_piece:
                 if rook.allowed_take(*board_coordinate):
+                    return True
+        for queen in self.queens.sprites():
+            if queen.is_player_piece:
+                if queen.allowed_take(*board_coordinate):
                     return True
         return False
 
@@ -83,6 +111,10 @@ class Pieces:
                     if pawn.is_player_piece:
                         if pawn.allowed_take(*king_board_coordinate):
                             raise StopIteration
+                for knight in self.knights.sprites():
+                    if knight.is_player_piece:
+                        if knight.allowed_take(*king_board_coordinate):
+                            raise StopIteration
                 for bishop in self.bishops.sprites():
                     if bishop.is_player_piece:
                         if bishop.allowed_take(*king_board_coordinate):
@@ -90,6 +122,10 @@ class Pieces:
                 for rook in self.rooks.sprites():
                     if rook.is_player_piece:
                         if rook.allowed_take(*king_board_coordinate):
+                            raise StopIteration
+                for queen in self.queens.sprites():
+                    if queen.is_player_piece:
+                        if queen.allowed_take(*king_board_coordinate):
                             raise StopIteration
                 for king in self.kings.sprites():
                     if king.is_player_piece:
@@ -102,54 +138,138 @@ class Pieces:
 
     def check_pin(self, board_repr: list[list[str]]):
         for bishop in self.bishops.sprites():
-            if bishop.is_player_piece:
-                board_coordinate = bishop.board_coordinate
-                for i in range(1, 8):
-                    possible_move: tuple[int, int]
-                    if (
-                        board_coordinate[0] + i < 8
-                        and board_coordinate[1] + i < 8
-                    ):
-                        possible_move = (
-                            board_coordinate[0] + i,
-                            board_coordinate[1] + i,
-                        )
-                        self.pin(bishop, board_repr, possible_move)
-                    if (
-                        board_coordinate[0] - i > -1
-                        and board_coordinate[1] - i > -1
-                    ):
-                        possible_move = (
-                            board_coordinate[0] - i,
-                            board_coordinate[1] - i,
-                        )
-                        self.pin(bishop, board_repr, possible_move)
-                    if (
-                        board_coordinate[0] + i < 8
-                        and board_coordinate[1] - i > -1
-                    ):
-                        possible_move = (
-                            board_coordinate[0] + i,
-                            board_coordinate[1] - i,
-                        )
-                        self.pin(bishop, board_repr, possible_move)
-                    if (
-                        board_coordinate[0] - i > -1
-                        and board_coordinate[1] + i < 8
-                    ):
-                        possible_move = (
-                            board_coordinate[0] - i,
-                            board_coordinate[1] + i,
-                        )
-                        self.pin(bishop, board_repr, possible_move)
+            if not bishop.is_player_piece:
+                continue
+            board_coordinate = bishop.board_coordinate
+            for i in range(1, 8):
+                possible_move: tuple[int, int]
+                if board_coordinate[0] + i < 8 and board_coordinate[1] + i < 8:
+                    possible_move = (
+                        board_coordinate[0] + i,
+                        board_coordinate[1] + i,
+                    )
+                    self.pin(bishop, board_repr, possible_move)
+                if (
+                    board_coordinate[0] - i > -1
+                    and board_coordinate[1] - i > -1
+                ):
+                    possible_move = (
+                        board_coordinate[0] - i,
+                        board_coordinate[1] - i,
+                    )
+                    self.pin(bishop, board_repr, possible_move)
+                if (
+                    board_coordinate[0] + i < 8
+                    and board_coordinate[1] - i > -1
+                ):
+                    possible_move = (
+                        board_coordinate[0] + i,
+                        board_coordinate[1] - i,
+                    )
+                    self.pin(bishop, board_repr, possible_move)
+                if (
+                    board_coordinate[0] - i > -1
+                    and board_coordinate[1] + i < 8
+                ):
+                    possible_move = (
+                        board_coordinate[0] - i,
+                        board_coordinate[1] + i,
+                    )
+                    self.pin(bishop, board_repr, possible_move)
 
-        # for rook in self.rooks.sprites():
-        #     if rook.is_player_piece:
-        #         pass
+        for rook in self.rooks.sprites():
+            if not rook.is_player_piece:
+                continue
+            board_coordinate = rook.board_coordinate
+            for i in range(1, 8):
+                possible_move: tuple[int, int]
+                if board_coordinate[0] + i < 8 and board_coordinate[1]:
+                    possible_move = (
+                        board_coordinate[0] + i,
+                        board_coordinate[1],
+                    )
+                    self.pin(rook, board_repr, possible_move)
+                if board_coordinate[0] - i > -1 and board_coordinate[1]:
+                    possible_move = (
+                        board_coordinate[0] - i,
+                        board_coordinate[1],
+                    )
+                    self.pin(rook, board_repr, possible_move)
+                if board_coordinate[0] and board_coordinate[1] + i < 8:
+                    possible_move = (
+                        board_coordinate[0],
+                        board_coordinate[1] + i,
+                    )
+                    self.pin(rook, board_repr, possible_move)
+                if board_coordinate[0] and board_coordinate[1] - i > -1:
+                    possible_move = (
+                        board_coordinate[0],
+                        board_coordinate[1] - i,
+                    )
+                    self.pin(rook, board_repr, possible_move)
 
-        # for queen in self.queens.sprites():
-        #     if queen.is_player_piece:
-        #         pass
+        for queen in self.queens.sprites():
+            if not queen.is_player_piece:
+                continue
+            for i in range(1, 8):
+                possible_move: tuple[int, int]
+                if board_coordinate[0] + i < 8 and board_coordinate[1] + i < 8:
+                    possible_move = (
+                        board_coordinate[0] + i,
+                        board_coordinate[1] + i,
+                    )
+                    self.pin(queen, board_repr, possible_move)
+                if (
+                    board_coordinate[0] - i > -1
+                    and board_coordinate[1] - i > -1
+                ):
+                    possible_move = (
+                        board_coordinate[0] - i,
+                        board_coordinate[1] - i,
+                    )
+                    self.pin(queen, board_repr, possible_move)
+                if (
+                    board_coordinate[0] + i < 8
+                    and board_coordinate[1] - i > -1
+                ):
+                    possible_move = (
+                        board_coordinate[0] + i,
+                        board_coordinate[1] - i,
+                    )
+                    self.pin(queen, board_repr, possible_move)
+                if (
+                    board_coordinate[0] - i > -1
+                    and board_coordinate[1] + i < 8
+                ):
+                    possible_move = (
+                        board_coordinate[0] - i,
+                        board_coordinate[1] + i,
+                    )
+                    self.pin(queen, board_repr, possible_move)
+                if board_coordinate[0] + i < 8 and board_coordinate[1]:
+                    possible_move = (
+                        board_coordinate[0] + i,
+                        board_coordinate[1],
+                    )
+                    self.pin(queen, board_repr, possible_move)
+                if board_coordinate[0] - i > -1 and board_coordinate[1]:
+                    possible_move = (
+                        board_coordinate[0] - i,
+                        board_coordinate[1],
+                    )
+                    self.pin(queen, board_repr, possible_move)
+                if board_coordinate[0] and board_coordinate[1] + i < 8:
+                    possible_move = (
+                        board_coordinate[0],
+                        board_coordinate[1] + i,
+                    )
+                    self.pin(queen, board_repr, possible_move)
+                if board_coordinate[0] and board_coordinate[1] - i > -1:
+                    possible_move = (
+                        board_coordinate[0],
+                        board_coordinate[1] - i,
+                    )
+                    self.pin(queen, board_repr, possible_move)
 
     def pin(
         self,
@@ -157,41 +277,104 @@ class Pieces:
         board_repr: list[list[str]],
         possible_move: tuple[int, int],
     ):
-        if board_repr[possible_move[1]][possible_move[0]] == "":
+        if (
+            board_repr[possible_move[1]][possible_move[0]] == ""
+            or possible_move[1] + 1 > 7
+            or possible_move[0] + 1 > 7
+        ):
             return
         pinned_piece = board_repr[possible_move[1]][possible_move[0]]
-        if (
-            (
-                board_repr[possible_move[1] + 1][possible_move[0] + 1]
-                == f"{'w' if piece.is_player_piece else 'b'}k"
-            )
-            or (
-                board_repr[possible_move[1] - 1][possible_move[0] - 1]
-                == f"{'w' if piece.is_player_piece else 'b'}k"
-            )
-            or (
-                board_repr[possible_move[1] + 1][possible_move[0] - 1]
-                == f"{'w' if piece.is_player_piece else 'b'}k"
-            )
-            or (
-                board_repr[possible_move[1] - 1][possible_move[0] + 1]
-                == f"{'w' if piece.is_player_piece else 'b'}k"
-            )
-        ):
-            pass
-        else:
-            return
+        if isinstance(piece, Bishop):
+            if (
+                (
+                    board_repr[possible_move[1] + 1][possible_move[0] + 1]
+                    == f"{'w' if piece.is_player_piece else 'b'}k"
+                )
+                or (
+                    board_repr[possible_move[1] - 1][possible_move[0] - 1]
+                    == f"{'w' if piece.is_player_piece else 'b'}k"
+                )
+                or (
+                    board_repr[possible_move[1] + 1][possible_move[0] - 1]
+                    == f"{'w' if piece.is_player_piece else 'b'}k"
+                )
+                or (
+                    board_repr[possible_move[1] - 1][possible_move[0] + 1]
+                    == f"{'w' if piece.is_player_piece else 'b'}k"
+                )
+            ):
+                pass
+            else:
+                return
+        elif isinstance(piece, Rook):
+            if (
+                (
+                    board_repr[possible_move[1] + 1][possible_move[0]]
+                    == f"{'w' if piece.is_player_piece else 'b'}k"
+                )
+                or (
+                    board_repr[possible_move[1] - 1][possible_move[0]]
+                    == f"{'w' if piece.is_player_piece else 'b'}k"
+                )
+                or (
+                    board_repr[possible_move[1]][possible_move[0] - 1]
+                    == f"{'w' if piece.is_player_piece else 'b'}k"
+                )
+                or (
+                    board_repr[possible_move[1]][possible_move[0] + 1]
+                    == f"{'w' if piece.is_player_piece else 'b'}k"
+                )
+            ):
+                pass
+            else:
+                return
+
+        elif isinstance(piece, Queen):
+            if (
+                (
+                    board_repr[possible_move[1] + 1][possible_move[0] + 1]
+                    == f"{'w' if piece.is_player_piece else 'b'}k"
+                )
+                or (
+                    board_repr[possible_move[1] - 1][possible_move[0] - 1]
+                    == f"{'w' if piece.is_player_piece else 'b'}k"
+                )
+                or (
+                    board_repr[possible_move[1] + 1][possible_move[0] - 1]
+                    == f"{'w' if piece.is_player_piece else 'b'}k"
+                )
+                or (
+                    board_repr[possible_move[1] - 1][possible_move[0] + 1]
+                    == f"{'w' if piece.is_player_piece else 'b'}k"
+                )
+                or (
+                    board_repr[possible_move[1] + 1][possible_move[0]]
+                    == f"{'w' if piece.is_player_piece else 'b'}k"
+                )
+                or (
+                    board_repr[possible_move[1] - 1][possible_move[0]]
+                    == f"{'w' if piece.is_player_piece else 'b'}k"
+                )
+                or (
+                    board_repr[possible_move[1]][possible_move[0] - 1]
+                    == f"{'w' if piece.is_player_piece else 'b'}k"
+                )
+                or (
+                    board_repr[possible_move[1]][possible_move[0] + 1]
+                    == f"{'w' if piece.is_player_piece else 'b'}k"
+                )
+            ):
+                pass
+            else:
+                return
         if pinned_piece[1] == "p":
             for pinned_pawn in self.pawns.sprites():
                 if pinned_pawn.board_coordinate == possible_move:
                     pinned_pawn.pinned = True
-        # elif pinned_piece[1] == "n":
-        #     for pinned_knight in self.knights.sprites():
-        #         if (
-        #             pinned_knight.board_coordinate
-        #             == board_coordinate
-        #         ):
-        #             pinned_knight.pinned = True
+        elif pinned_piece[1] == "n":
+            for pinned_knight in self.knights.sprites():
+                if pinned_knight.board_coordinate == possible_move:
+                    pinned_knight.pinned = True
         elif pinned_piece[1] == "b":
             for pinned_bishop in self.bishops.sprites():
                 if pinned_bishop.board_coordinate == possible_move:
@@ -200,11 +383,7 @@ class Pieces:
             for pinned_rook in self.rooks.sprites():
                 if pinned_rook.board_coordinate == possible_move:
                     pinned_rook.pinned = True
-        # elif pinned_piece[1] == "q":
-        #     for pinned_queen in self.queens.sprites():
-        #         if (
-        #             pinned_queen.board_coordinate
-        #             == board_coordinate
-        #         ):
-        #             pinned_queen.pinned = True
-        #
+        elif pinned_piece[1] == "q":
+            for pinned_queen in self.queens.sprites():
+                if pinned_queen.board_coordinate == possible_move:
+                    pinned_queen.pinned = True

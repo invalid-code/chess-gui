@@ -105,7 +105,7 @@ class KnightGroup(PieceGroup):
                 ],
             )
 
-    def sprites(self) -> list[Rook]:
+    def sprites(self) -> list[Knight]:
         return super().sprites()
 
 

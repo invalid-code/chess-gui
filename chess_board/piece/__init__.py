@@ -48,7 +48,7 @@ class Piece(BaseSprite):
         return f"{self.piece_color}"
 
     def __repr__(self) -> str:
-        return f"Piece(name={self.name}, board_coordinate={self.board_coordinate}, is_player_piece={self.is_player_piece})"
+        return f"Piece(name='{self.name}', board_coordinate={self.board_coordinate}, is_player_piece={self.is_player_piece})"
 
 
 class Pawn(Piece):
@@ -104,7 +104,7 @@ class Pawn(Piece):
         )
 
     def __repr__(self):
-        return f"Piece(name={self.name}, board_coordinate={self.board_coordinate}, is_player_piece={self.is_player_piece}, first_move={self.first_move}, en_passant={self.en_passant})"
+        return f"Piece(name='{self.name}', board_coordinate={self.board_coordinate}, is_player_piece={self.is_player_piece}, first_move={self.first_move}, en_passant={self.en_passant})"
 
     @property
     def name(self):
@@ -151,7 +151,7 @@ class Knight(Piece):
 
     @property
     def name(self):
-        return f"{self.piece_color}h"
+        return f"{self.piece_color}n"
 
 
 class Bishop(Piece):
@@ -218,9 +218,9 @@ class Queen(Rook, Bishop):
         )
 
     def allowed_move(self, x: int, y: int):
-        return super(Rook).allowed_move(x, y) or super(Bishop).allowed_move(
-            x, y
-        )
+        return super(Rook, self).allowed_move(x, y) or super(
+            Bishop, self
+        ).allowed_move(x, y)
 
     @property
     def name(self):

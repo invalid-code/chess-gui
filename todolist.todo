@@ -11,6 +11,7 @@ Todo:
    ☐ check if there are pieces obstructing
  ☐ handle pin
   ☐ handle pin for rook and queen
+  ☐ make opponent pin
  ☐ organize code @always
  ☐ fix not being able to take the piece thats checking you
  ☐ fix only moving the king when in check

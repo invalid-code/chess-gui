@@ -72,6 +72,10 @@ class Board(BaseGroup):
             self.board_repr[pawn.board_coordinate[1]][
                 pawn.board_coordinate[0]
             ] = pawn.name
+        for knight in pieces.knights.sprites():
+            self.board_repr[knight.board_coordinate[1]][
+                knight.board_coordinate[0]
+            ] = knight.name
         for bishop in pieces.bishops.sprites():
             self.board_repr[bishop.board_coordinate[1]][
                 bishop.board_coordinate[0]
