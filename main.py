@@ -122,10 +122,13 @@ class BlackKing(pg.sprite.Sprite):
         self.rect.left = 200
         self.rect.top = 350 if not white_pieces else 0
 
+Piece = WhitePawn | BlackPawn | WhiteKnight | BlackKnight | WhiteBishop | BlackBishop | WhiteRook | BlackRook | WhiteQueen | BlackQueen | WhiteKing | BlackKing
+
 def main(): 
     rand.seed(time.time())
     pg.init()
     screen = pg.display.set_mode((WIDTH, HEIGHT))
+    selected_piece: None | Piece = None
     white_pieces = bool(randint(0, 1))
     squares = [Square() for _ in range(32)]
     white_pawns = [WhitePawn(i, white_pieces) for i in range(8)]
@@ -144,7 +147,67 @@ def main():
     while game_running:
         for event in pg.event.get():
             if event.type == pg.MOUSEBUTTONDOWN:
-                pass
+                x, y = int(event.dict["pos"][0]), int(event.dict["pos"][1])
+                if selected_piece is not None:
+                    board_rank, board_file = round(x/50), round(y/50)
+                    selected_piece.rect.left = board_rank
+                    selected_piece.rect.top = board_file
+                    selected_piece = None
+                else:
+                    if white_pieces:
+                        for white_pawn in white_pawns:
+                            if white_pawn.rect.collidepoint(x, y):
+                                selected_piece = white_pawn
+                                break
+                        for white_knight in white_knights:
+                            if selected_piece is not None:
+                                break
+                            if white_knight.rect.collidepoint(x, y):
+                                selected_piece = white_knight
+                        for white_bishop in white_bishops:
+                            if selected_piece is not None:
+                                break
+                            if white_bishop.rect.collidepoint(x, y):
+                                selected_piece = white_bishop
+                        for white_rook in white_rooks:
+                            if selected_piece is not None:
+                                break
+                            if white_rook.rect.collidepoint(x, y):
+                                selected_piece = white_rook
+                        if selected_piece is None:
+                            if white_queen.rect.collidepoint(x, y):
+                                selected_piece = white_queen
+                            if selected_piece is not None:
+                                pass
+                            elif white_king.rect.collidepoint(x, y):
+                                selected_piece = white_king
+                    else:
+                        for black_pawn in black_pawns:
+                            if black_pawn.rect.collidepoint(x, y):
+                                selected_piece = black_pawn
+                                break
+                        for black_knight in black_knights:
+                            if selected_piece is not None:
+                                break
+                            if black_knight.rect.collidepoint(x, y):
+                                selected_piece = black_knight
+                        for black_bishop in black_bishops:
+                            if selected_piece is not None:
+                                break
+                            if black_bishop.rect.collidepoint(x, y):
+                                selected_piece = black_bishop
+                        for black_rook in black_rooks:
+                            if selected_piece is not None:
+                                break
+                            if black_rook.rect.collidepoint(x, y):
+                                selected_piece = black_rook
+                        if selected_piece is None:
+                            if black_queen.rect.collidepoint(x, y):
+                                selected_piece = black_queen
+                            if selected_piece is not None:
+                                pass
+                            elif black_king.rect.collidepoint(x, y):
+                                selected_piece = black_king
             if event.type == pg.QUIT:
                 game_running = False
         x_off = 0
