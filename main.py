@@ -97,7 +97,7 @@ class BlackKing(pg.sprite.Sprite):
 def main():
     pg.init()
     screen = pg.display.set_mode((WIDTH, HEIGHT))
-    square = Square()
+    squares = [Square() for _ in range(32)]
     white_pawns = [WhitePawn() for _ in range(8)]
     black_pawns = [BlackPawn() for _ in range(8)]
     white_knights = [WhiteKnight() for _ in range(2)]
@@ -111,10 +111,25 @@ def main():
     game_running = True
     while game_running:
         for event in pg.event.get():
+            if event.type == pg.MOUSEBUTTONDOWN:
+                pass
             if event.type == pg.QUIT:
                 game_running = False
-        for i in range(32):
-            screen.blit(square.surf, square.rect)
+        x_off = 0
+        y_off = 0
+        mirror = True
+        for i, square in enumerate(squares):
+            if i % 4 == 0:
+                y_off += 1
+                x_off = 0
+                mirror = not mirror
+            # print(x_off)
+            if mirror:
+                screen.blit(square.surf, (50 * (x_off * 2), y_off * 50))
+            else:
+                screen.blit(square.surf, ((50 * (x_off * 2)) + 50, y_off * 50))
+            x_off += 1
+        # break
         for white_pawn in white_pawns:
             screen.blit(white_pawn.surf, white_pawn.rect)
         for black_pawn in black_pawns:
