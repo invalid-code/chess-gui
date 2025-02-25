@@ -1,3 +1,7 @@
+import random as rand
+import time
+from random import randint
+
 import pygame as pg
 from pygame.locals import *
 
@@ -11,151 +15,131 @@ class Square(pg.sprite.Sprite):
         self.rect = self.surf.get_rect()
 
 class WhitePawn(pg.sprite.Sprite):
-    def __init__(self, i: int) -> None:
+    def __init__(self, i: int, white_pieces: bool) -> None:
         super(WhitePawn, self).__init__()
         self.surf = pg.image.load("assets/w_pawn_png_128px.png").convert_alpha()
         self.surf = pg.transform.scale(self.surf, (50, 50))
         self.rect = self.surf.get_rect()
         self.rect.left = i * 50
-        self.rect.top = 300
+        self.rect.top = 300 if white_pieces else 50
 
 class BlackPawn(pg.sprite.Sprite):
-    def __init__(self, i: int) -> None:
+    def __init__(self, i: int, white_pieces: bool) -> None:
         super(BlackPawn, self).__init__()
         self.surf = pg.image.load("assets/b_pawn_png_128px.png").convert_alpha()
         self.surf = pg.transform.scale(self.surf, (50, 50))
         self.rect = self.surf.get_rect()
         self.rect.left = i * 50
-        self.rect.top = 50
+        self.rect.top = 300 if not white_pieces else 50
 
 class WhiteKnight(pg.sprite.Sprite):
-    def __init__(self, i: int) -> None:
+    def __init__(self, i: int, white_pieces: bool) -> None:
         super(WhiteKnight, self).__init__()
         self.surf = pg.image.load("assets/w_knight_png_128px.png").convert_alpha()
         self.surf = pg.transform.scale(self.surf, (50, 50))
         self.rect = self.surf.get_rect()
-        if i == 0:
-            self.rect.left = 50
-            self.rect.top = 350
-        else:
-            self.rect.left = 300
-            self.rect.top = 350
+        self.rect.left = 50 if i == 0 else 300
+        self.rect.top = 350 if white_pieces else 0
 
 class BlackKnight(pg.sprite.Sprite):
-    def __init__(self, i: int) -> None:
+    def __init__(self, i: int, white_pieces: bool) -> None:
         super(BlackKnight, self).__init__()
         self.surf = pg.image.load("assets/b_knight_png_128px.png").convert_alpha()
         self.surf = pg.transform.scale(self.surf, (50, 50))
         self.rect = self.surf.get_rect()
-        if i == 0:
-            self.rect.left = 50
-            self.rect.top = 0
-        else:
-            self.rect.left = 300
-            self.rect.top = 0
+        self.rect.left = 50 if i == 0 else 300
+        self.rect.top = 350 if not white_pieces else 0
 
 class WhiteBishop(pg.sprite.Sprite):
-    def __init__(self, i: int) -> None:
+    def __init__(self, i: int, white_pieces: bool) -> None:
         super(WhiteBishop, self).__init__()
         self.surf = pg.image.load("assets/w_bishop_png_128px.png").convert_alpha()
         self.surf = pg.transform.scale(self.surf, (50, 50))
         self.rect = self.surf.get_rect()
-        if i == 0:
-            self.rect.left = 100
-            self.rect.top = 350
-        else:
-            self.rect.left = 250
-            self.rect.top = 350
+        self.rect.left = 100 if i == 0 else 250
+        self.rect.top = 350 if white_pieces else 0
 
 class BlackBishop(pg.sprite.Sprite):
-    def __init__(self, i: int) -> None:
+    def __init__(self, i: int, white_pieces: bool) -> None:
         super(BlackBishop, self).__init__()
         self.surf = pg.image.load("assets/b_bishop_png_128px.png").convert_alpha()
         self.surf = pg.transform.scale(self.surf, (50, 50))
         self.rect = self.surf.get_rect()
-        if i == 0:
-            self.rect.left = 100
-            self.rect.top = 0
-        else:
-            self.rect.left = 250
-            self.rect.top = 0
+        self.rect.left = 100 if i == 0 else 250
+        self.rect.top = 350 if not white_pieces else 0
 
 class WhiteRook(pg.sprite.Sprite):
-    def __init__(self, i: int) -> None:
+    def __init__(self, i: int, white_pieces: bool) -> None:
         super(WhiteRook, self).__init__()
         self.surf = pg.image.load("assets/w_rook_png_128px.png").convert_alpha()
         self.surf = pg.transform.scale(self.surf, (50, 50))
         self.rect = self.surf.get_rect()
-        if i == 0:
-            self.rect.left = 0
-            self.rect.top = 350
-        else:
-            self.rect.left = 350
-            self.rect.top = 350
+        self.rect.left = 0 if i == 0 else 350
+        self.rect.top = 350 if white_pieces else 0
 
 class BlackRook(pg.sprite.Sprite):
-    def __init__(self, i: int) -> None:
+    def __init__(self, i: int, white_pieces: bool) -> None:
         super(BlackRook, self).__init__()
         self.surf = pg.image.load("assets/b_rook_png_128px.png").convert_alpha()
         self.surf = pg.transform.scale(self.surf, (50, 50))
         self.rect = self.surf.get_rect()
-        if i == 0:
-            self.rect.left = 0
-            self.rect.top = 0
-        else:
-            self.rect.left = 350
-            self.rect.top = 0
+        self.rect.left = 0 if i == 0 else 350
+        self.rect.top = 350 if not white_pieces else 0
 
 class WhiteQueen(pg.sprite.Sprite):
-    def __init__(self) -> None:
+    def __init__(self, white_pieces: bool) -> None:
         super(WhiteQueen, self).__init__()
         self.surf = pg.image.load("assets/w_queen_png_128px.png").convert_alpha()
         self.surf = pg.transform.scale(self.surf, (50, 50))
         self.rect = self.surf.get_rect()
         self.rect.left = 150
-        self.rect.top = 350
+        self.rect.top = 350 if white_pieces else 0
 
 class BlackQueen(pg.sprite.Sprite):
-    def __init__(self) -> None:
+    def __init__(self, white_pieces: bool) -> None:
         super(BlackQueen, self).__init__()
         self.surf = pg.image.load("assets/b_queen_png_128px.png").convert_alpha()
         self.surf = pg.transform.scale(self.surf, (50, 50))
         self.rect = self.surf.get_rect()
         self.rect.left = 150
+        self.rect.top = 350 if not white_pieces else 0
 
 class WhiteKing(pg.sprite.Sprite):
-    def __init__(self) -> None:
+    def __init__(self, white_pieces: bool) -> None:
         super(WhiteKing, self).__init__()
         self.surf = pg.image.load("assets/w_king_png_128px.png").convert_alpha()
         self.surf = pg.transform.scale(self.surf, (50, 50))
         self.rect = self.surf.get_rect()
         self.rect.left = 200
-        self.rect.top = 350
+        self.rect.top = 350 if white_pieces else 0
 
 class BlackKing(pg.sprite.Sprite):
-    def __init__(self) -> None:
+    def __init__(self, white_pieces: bool) -> None:
         super(BlackKing, self).__init__()
         self.surf = pg.image.load("assets/b_king_png_128px.png").convert_alpha()
         self.surf = pg.transform.scale(self.surf, (50, 50))
         self.rect = self.surf.get_rect()
         self.rect.left = 200
+        self.rect.top = 350 if not white_pieces else 0
 
-def main():
+def main(): 
+    rand.seed(time.time())
     pg.init()
     screen = pg.display.set_mode((WIDTH, HEIGHT))
+    white_pieces = bool(randint(0, 1))
     squares = [Square() for _ in range(32)]
-    white_pawns = [WhitePawn(i) for i in range(8)]
-    black_pawns = [BlackPawn(i) for i in range(8)]
-    white_knights = [WhiteKnight(i) for i in range(2)]
-    black_knights = [BlackKnight(i) for i in range(2)]
-    white_bishops = [WhiteBishop(i) for i in range(2)]
-    black_bishops = [BlackBishop(i) for i in range(2)]
-    white_rooks = [WhiteRook(i) for i in range(2)]
-    black_rooks = [BlackRook(i) for i in range(2)]
-    white_queen = WhiteQueen()
-    black_queen = BlackQueen()
-    white_king = WhiteKing()
-    black_king = BlackKing()
+    white_pawns = [WhitePawn(i, white_pieces) for i in range(8)]
+    black_pawns = [BlackPawn(i, white_pieces) for i in range(8)]
+    white_knights = [WhiteKnight(i, white_pieces) for i in range(2)]
+    black_knights = [BlackKnight(i, white_pieces) for i in range(2)]
+    white_bishops = [WhiteBishop(i, white_pieces) for i in range(2)]
+    black_bishops = [BlackBishop(i, white_pieces) for i in range(2)]
+    white_rooks = [WhiteRook(i, white_pieces) for i in range(2)]
+    black_rooks = [BlackRook(i, white_pieces) for i in range(2)]
+    white_queen = WhiteQueen(white_pieces)
+    black_queen = BlackQueen(white_pieces)
+    white_king = WhiteKing(white_pieces)
+    black_king = BlackKing(white_pieces)
     game_running = True
     while game_running:
         for event in pg.event.get():
