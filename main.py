@@ -119,17 +119,15 @@ def main():
         y_off = 0
         mirror = True
         for i, square in enumerate(squares):
-            if i % 4 == 0:
+            if i % 4 == 0 and i != 0:
                 y_off += 1
                 x_off = 0
                 mirror = not mirror
-            # print(x_off)
             if mirror:
-                screen.blit(square.surf, (50 * (x_off * 2), y_off * 50))
+                screen.blit(square.surf, (50 * x_off * 2, y_off * 50))
             else:
-                screen.blit(square.surf, ((50 * (x_off * 2)) + 50, y_off * 50))
+                screen.blit(square.surf, ((50 * x_off * 2) + 50, y_off * 50))
             x_off += 1
-        # break
         for white_pawn in white_pawns:
             screen.blit(white_pawn.surf, white_pawn.rect)
         for black_pawn in black_pawns:
