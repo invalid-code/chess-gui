@@ -8,13 +8,6 @@ from pygame.locals import *
 
 WIDTH, HEIGHT = (900, 600)
 
-class Square(pg.sprite.Sprite):
-    def __init__(self) -> None:
-        super(Square, self).__init__()
-        self.surf = pg.Surface((50, 50))
-        self.surf.fill((255, 255, 255))
-        self.rect = self.surf.get_rect()
-
 class WhitePawn(pg.sprite.Sprite):
     def __init__(self, i: int, white_pieces: bool) -> None:
         super(WhitePawn, self).__init__()
@@ -163,7 +156,10 @@ def main():
     screen = pg.display.set_mode((WIDTH, HEIGHT))
     selected_piece: None | Piece = None
     white_pieces = bool(randint(0, 1))
-    squares = [Square() for _ in range(32)]
+    white_square = pg.Surface((50, 50))
+    white_square.fill((255, 255, 255))
+    black_square = pg.Surface((50, 50))
+    black_square.fill((0, 0, 0))
     white_pawns = WhitePawns()
     for i in range(8):
         white_pawns.add(WhitePawn(i, white_pieces))
@@ -259,19 +255,30 @@ def main():
                                 selected_piece = black_king
             if event.type == pg.QUIT:
                 game_running = False
-        x_off = 0
-        y_off = 0
-        mirror = True
-        for i, square in enumerate(squares):
-            if i % 4 == 0 and i != 0:
-                y_off += 1
-                x_off = 0
-                mirror = not mirror
-            x_off_act = 50 * x_off * 2
-            x_off += 1
-            square.rect.top = y_off * 50
-            square.rect.left = x_off_act if mirror else x_off_act + 50
-            screen.blit(square.surf, square.rect)
+        for i in range(8):
+            for j in range(8):
+                if white_pieces:
+                    if i % 2 == 0:
+                        if j % 2 == 0:
+                            screen.blit(white_square, (j*50, i*50))
+                        else:
+                            screen.blit(black_square, (j*50, i*50))
+                    else:
+                        if j % 2 == 0:
+                            screen.blit(black_square, (j*50, i*50))
+                        else:
+                            screen.blit(white_square, (j*50, i*50))
+                else:
+                    if i % 2 == 0:
+                        if j % 2 == 0:
+                            screen.blit(black_square, (j*50, i*50))
+                        else:
+                            screen.blit(white_square, (j*50, i*50))
+                    else:
+                        if j % 2 == 0:
+                            screen.blit(white_square, (j*50, i*50))
+                        else:
+                            screen.blit(black_square, (j*50, i*50))
         white_pawns.draw(screen)
         black_pawns.draw(screen)
         white_knights.draw(screen)
