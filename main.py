@@ -1,4 +1,3 @@
-import math
 import random as rand
 import time
 from random import randint
@@ -16,6 +15,11 @@ class WhitePawn(pg.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.rect.left = i * 50
         self.rect.top = 300 if white_pieces else 50
+        if white_pieces:
+            self.coordinate = (i + 1, 2)
+
+    def allowed_move(self, white_pieces: bool, move: tuple[int, int]) -> bool:
+        return move[1] == self.coordinate[1]-1 and white_pieces
 
 class BlackPawn(pg.sprite.Sprite):
     def __init__(self, i: int, white_pieces: bool) -> None:
@@ -25,6 +29,11 @@ class BlackPawn(pg.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.rect.left = i * 50
         self.rect.top = 300 if not white_pieces else 50
+        if not white_pieces:
+            self.coordinate = (i + 1, 7)
+
+    def allowed_move(self, white_pieces: bool, move: tuple[int, int]) -> bool:
+        return move[1] == self.coordinate[1]-1 and not white_pieces
 
 class WhiteKnight(pg.sprite.Sprite):
     def __init__(self, i: int, white_pieces: bool) -> None:
@@ -34,6 +43,11 @@ class WhiteKnight(pg.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.rect.left = 50 if i == 0 else 300
         self.rect.top = 350 if white_pieces else 0
+        if white_pieces:
+            self.coordinate = (2 if i == 0 else 7, 1)
+
+    def allowed_move(self, white_pieces: bool, move: tuple[int, int]) -> bool:
+        return white_pieces and self.coordinate[0] - 2 == move[0] and (self.coordinate[1] - 1 == move[1] or self.coordinate[1] + 1 == move[1])
 
 class BlackKnight(pg.sprite.Sprite):
     def __init__(self, i: int, white_pieces: bool) -> None:
@@ -43,6 +57,11 @@ class BlackKnight(pg.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.rect.left = 50 if i == 0 else 300
         self.rect.top = 350 if not white_pieces else 0
+        if not white_pieces:
+            self.coordinate = (7 if i == 0 else 2, 8)
+
+    def allowed_move(self, white_pieces: bool, move: tuple[int, int]) -> bool:
+        return not white_pieces
 
 class WhiteBishop(pg.sprite.Sprite):
     def __init__(self, i: int, white_pieces: bool) -> None:
@@ -52,6 +71,11 @@ class WhiteBishop(pg.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.rect.left = 100 if i == 0 else 250
         self.rect.top = 350 if white_pieces else 0
+        if white_pieces:
+            self.coordinate = (3 if i == 0 else 6, 1)
+
+    def allowed_move(self, white_pieces: bool, move: tuple[int, int]) -> bool:
+        return white_pieces
 
 class BlackBishop(pg.sprite.Sprite):
     def __init__(self, i: int, white_pieces: bool) -> None:
@@ -61,6 +85,11 @@ class BlackBishop(pg.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.rect.left = 100 if i == 0 else 250
         self.rect.top = 350 if not white_pieces else 0
+        if not white_pieces:
+            self.coordinate = (6 if i == 0 else 3, 8)
+
+    def allowed_move(self, white_pieces: bool, move: tuple[int, int]) -> bool:
+        return not white_pieces
 
 class WhiteRook(pg.sprite.Sprite):
     def __init__(self, i: int, white_pieces: bool) -> None:
@@ -70,6 +99,11 @@ class WhiteRook(pg.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.rect.left = 0 if i == 0 else 350
         self.rect.top = 350 if white_pieces else 0
+        if white_pieces:
+            self.coordinate = (1 if i == 0 else 8, 1)
+
+    def allowed_move(self, white_pieces: bool, move: tuple[int, int]) -> bool:
+        return white_pieces and (self.coordinate[0] == move[0] or self.coordinate[1] == move[1])
 
 class BlackRook(pg.sprite.Sprite):
     def __init__(self, i: int, white_pieces: bool) -> None:
@@ -79,6 +113,11 @@ class BlackRook(pg.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.rect.left = 0 if i == 0 else 350
         self.rect.top = 350 if not white_pieces else 0
+        if not white_pieces:
+            self.coordinate = (8 if i == 0 else 1, 8)
+
+    def allowed_move(self, white_pieces: bool, move: tuple[int, int]) -> bool:
+        return white_pieces and (self.coordinate[0] == move[0] or self.coordinate[1] == move[1])
 
 class WhiteQueen(pg.sprite.Sprite):
     def __init__(self, white_pieces: bool) -> None:
@@ -88,6 +127,11 @@ class WhiteQueen(pg.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.rect.left = 150
         self.rect.top = 350 if white_pieces else 0
+        if white_pieces:
+            self.coordinate = (4, 1)
+
+    def allowed_move(self, white_pieces: bool, move: tuple[int, int]) -> bool:
+        return white_pieces
 
 class BlackQueen(pg.sprite.Sprite):
     def __init__(self, white_pieces: bool) -> None:
@@ -97,6 +141,11 @@ class BlackQueen(pg.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.rect.left = 150
         self.rect.top = 350 if not white_pieces else 0
+        if not white_pieces:
+            self.coordinate = (4, 8)
+
+    def allowed_move(self, white_pieces: bool, move: tuple[int, int]) -> bool:
+        return white_pieces
 
 class WhiteKing(pg.sprite.Sprite):
     def __init__(self, white_pieces: bool) -> None:
@@ -106,6 +155,11 @@ class WhiteKing(pg.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.rect.left = 200
         self.rect.top = 350 if white_pieces else 0
+        if white_pieces:
+            self.coordinate = (5, 1)
+
+    def allowed_move(self, white_pieces: bool, move: tuple[int, int]) -> bool:
+        return white_pieces and ((self.coordinate[0] - 1 == move[0] or self.coordinate[0] + 1 == move[0]) or (self.coordinate[1] - 1 == move[1] or self.coordinate[1] + 1 == move[1]))
 
 class BlackKing(pg.sprite.Sprite):
     def __init__(self, white_pieces: bool) -> None:
@@ -115,6 +169,11 @@ class BlackKing(pg.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.rect.left = 200
         self.rect.top = 350 if not white_pieces else 0
+        if not white_pieces:
+            self.coordinate = (5, 8)
+
+    def allowed_move(self, white_pieces: bool, move: tuple[int, int]) -> bool:
+        return white_pieces and ((self.coordinate[0] - 1 == move[0] or self.coordinate[0] + 1 == move[0]) or (self.coordinate[1] - 1 == move[1] or self.coordinate[1] + 1 == move[1]))
 
 class WhitePawns(pg.sprite.Group):
     def __init__(self) -> None:
@@ -164,7 +223,7 @@ def main():
     for i in range(8):
         white_pawns.add(WhitePawn(i, white_pieces))
     black_pawns = BlackPawns()
-    for i in range(8):
+    for i in range(7, -1, -1):
         black_pawns.add(BlackPawn(i, white_pieces))
     white_knights = WhiteKnights()
     for i in range(2):
@@ -195,6 +254,11 @@ def main():
                 x, y = int(event.dict["pos"][0]), int(event.dict["pos"][1])
                 if selected_piece is not None:
                     board_rank, board_file = int(x/50), int(y/50)
+                    print(selected_piece.coordinate, (board_rank+1, board_file+1))
+                    if not selected_piece.allowed_move(white_pieces, (board_rank+1, board_file+1)):
+                        print("piece not allowed")
+                        selected_piece = None
+                        continue
                     selected_piece.rect.left = board_rank * 50
                     selected_piece.rect.top = board_file * 50
                     selected_piece = None
