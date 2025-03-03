@@ -22,7 +22,7 @@ class WhitePawn(pg.sprite.Sprite):
         return (move[1] == self.coordinate[1]+1 and move[0] == self.coordinate[0]) and white_pieces
 
     def allowed_take(self, white_pieces: bool, move: tuple[int, int]) -> bool:
-        return white_pieces
+        return white_pieces and (move[1] == self.coordinate[1]+1 and (move[0] == self.coordinate[0]+1 or move[0] == self.coordinate[0]-1))
 
 class BlackPawn(pg.sprite.Sprite):
     def __init__(self, i: int, white_pieces: bool) -> None:
@@ -39,7 +39,7 @@ class BlackPawn(pg.sprite.Sprite):
         return (move[1] == self.coordinate[1]-1 and move[0] == self.coordinate[0]) and not white_pieces
 
     def allowed_take(self, white_pieces: bool, move: tuple[int, int]) -> bool:
-        return white_pieces
+        return not white_pieces and (move[1] == self.coordinate[1]-1 and (move[0] == self.coordinate[0]+1 or move[0] == self.coordinate[0]-1))
 
 class WhiteKnight(pg.sprite.Sprite):
     def __init__(self, i: int, white_pieces: bool) -> None:
@@ -53,7 +53,15 @@ class WhiteKnight(pg.sprite.Sprite):
             self.coordinate = [2 if i == 0 else 7, 1]
 
     def allowed_move(self, white_pieces: bool, move: tuple[int, int]) -> bool:
-        return white_pieces and self.coordinate[0] - 2 == move[0] and (self.coordinate[1] - 1 == move[1] or self.coordinate[1] + 1 == move[1])
+        return (
+            white_pieces and
+            (
+                (self.coordinate[0]+2 == move[0] and (self.coordinate[1]+1 == move[1] or self.coordinate[1]-1 == move[1])) or
+                (self.coordinate[0]-2 == move[0] and (self.coordinate[1]+1 == move[1] or self.coordinate[1]-1 == move[1])) or
+                (self.coordinate[1]+2 == move[1] and (self.coordinate[0]+1 == move[0] or self.coordinate[0]-1 == move[0])) or
+                (self.coordinate[1]-2 == move[1] and (self.coordinate[0]+1 == move[0] or self.coordinate[0]-1 == move[0]))
+            )
+        )
 
     def allowed_take(self, white_pieces: bool, move: tuple[int, int]) -> bool:
         return self.allowed_move(white_pieces, move)
@@ -70,7 +78,15 @@ class BlackKnight(pg.sprite.Sprite):
             self.coordinate = [7 if i == 0 else 2, 8]
 
     def allowed_move(self, white_pieces: bool, move: tuple[int, int]) -> bool:
-        return not white_pieces
+        return (
+            not white_pieces and
+            (
+                (self.coordinate[0]+2 == move[0] and (self.coordinate[1]+1 == move[1] or self.coordinate[1]-1 == move[1])) or
+                (self.coordinate[0]-2 == move[0] and (self.coordinate[1]+1 == move[1] or self.coordinate[1]-1 == move[1])) or
+                (self.coordinate[1]+2 == move[1] and (self.coordinate[0]+1 == move[0] or self.coordinate[0]-1 == move[0])) or
+                (self.coordinate[1]-2 == move[1] and (self.coordinate[0]+1 == move[0] or self.coordinate[0]-1 == move[0]))
+            )
+        ) 
 
     def allowed_take(self, white_pieces: bool, move: tuple[int, int]) -> bool:
         return self.allowed_move(white_pieces, move)
@@ -138,7 +154,7 @@ class BlackRook(pg.sprite.Sprite):
             self.coordinate = [8 if i == 0 else 1, 8]
 
     def allowed_move(self, white_pieces: bool, move: tuple[int, int]) -> bool:
-        return white_pieces and (self.coordinate[0] == move[0] or self.coordinate[1] == move[1])
+        return not white_pieces and (self.coordinate[0] == move[0] or self.coordinate[1] == move[1])
 
     def allowed_take(self, white_pieces: bool, move: tuple[int, int]) -> bool:
         return self.allowed_move(white_pieces, move)
@@ -174,7 +190,7 @@ class BlackQueen(pg.sprite.Sprite):
         self.is_taken = False
 
     def allowed_move(self, white_pieces: bool, move: tuple[int, int]) -> bool:
-        return white_pieces
+        return not white_pieces
 
     def allowed_take(self, white_pieces: bool, move: tuple[int, int]) -> bool:
         return self.allowed_move(white_pieces, move)
@@ -191,7 +207,7 @@ class WhiteKing(pg.sprite.Sprite):
             self.coordinate = [5, 1]
 
     def allowed_move(self, white_pieces: bool, move: tuple[int, int]) -> bool:
-        return white_pieces and ((self.coordinate[0] - 1 == move[0] or self.coordinate[0] + 1 == move[0]) or (self.coordinate[1] - 1 == move[1] or self.coordinate[1] + 1 == move[1]))
+        return white_pieces and ((self.coordinate[0] - 1 == move[0] or self.coordinate[0] + 1 == move[0]) and (self.coordinate[1] - 1 == move[1] or self.coordinate[1] + 1 == move[1]))
 
     def allowed_take(self, white_pieces: bool, move: tuple[int, int]) -> bool:
         return self.allowed_move(white_pieces, move)
@@ -208,7 +224,7 @@ class BlackKing(pg.sprite.Sprite):
             self.coordinate = [5, 8]
 
     def allowed_move(self, white_pieces: bool, move: tuple[int, int]) -> bool:
-        return white_pieces and ((self.coordinate[0] - 1 == move[0] or self.coordinate[0] + 1 == move[0]) or (self.coordinate[1] - 1 == move[1] or self.coordinate[1] + 1 == move[1]))
+        return not white_pieces and ((self.coordinate[0] - 1 == move[0] or self.coordinate[0] + 1 == move[0]) and (self.coordinate[1] - 1 == move[1] or self.coordinate[1] + 1 == move[1]))
 
     def allowed_take(self, white_pieces: bool, move: tuple[int, int]) -> bool:
         return self.allowed_move(white_pieces, move)
@@ -334,10 +350,11 @@ def main():
                                 is_taking = True
                                 taken_piece = black_queen
                                 taken_piece_group = black_queen
-                            if not is_taking:
+                            if is_taking:
                                 pass
                             elif black_king.rect.collidepoint(x, y):
                                 print("Can't take king")
+                                selected_piece = None
                                 continue
                     else:
                         board_file_shadow = 8 - board_file
@@ -345,7 +362,7 @@ def main():
                             if white_pawn.rect.collidepoint(x, y):
                                 is_taking = True
                                 taken_piece = white_pawn
-                                taken_piece_group = white_pawn
+                                taken_piece_group = white_pawns
                                 break
                         for white_knight in white_knights:
                             if not is_taking:
@@ -353,7 +370,7 @@ def main():
                             if white_knight.rect.collidepoint(x, y):
                                 is_taking = True
                                 taken_piece = white_knight
-                                taken_piece_group = white_knight
+                                taken_piece_group = white_knights
                                 break
                         for white_bishop in white_bishops:
                             if not is_taking:
@@ -361,7 +378,7 @@ def main():
                             if white_bishop.rect.collidepoint(x, y):
                                 is_taking = True
                                 taken_piece = white_bishop
-                                taken_piece_group = white_bishop
+                                taken_piece_group = white_bishops
                                 break
                         for white_rook in white_rooks:
                             if not is_taking:
@@ -376,19 +393,19 @@ def main():
                                 is_taking = True
                                 taken_piece = white_queen
                                 taken_piece_group = white_queen
-                            if not is_taking:
+                            if is_taking:
                                 pass
                             elif white_king.rect.collidepoint(x, y):
                                 print("Can't take king")
+                                selected_piece = None
                                 continue
                     move = (board_file_shadow, board_rank_shadow)
                     if not selected_piece.allowed_move(white_pieces, move) and not is_taking:
-                        print("piece not allowed")
+                        print("piece not allowed move")
                         selected_piece = None
                         continue
                     elif not selected_piece.allowed_take(white_pieces, move) and is_taking:
-                        print(not selected_piece.allowed_take(white_pieces, move), is_taking)
-                        print("piece not allowed to take")
+                        print("piece not allowed take")
                         selected_piece = None
                         continue
                     selected_piece.rect.left = board_file * 50
