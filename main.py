@@ -294,8 +294,66 @@ def main():
                     is_taking = False
                     if white_pieces:
                         board_rank_shadow = 8 - board_rank
+                        for black_pawn in black_pawns:
+                            if black_pawn.rect.collidepoint(x, y):
+                                is_taking = True
+                                break
+                        for black_knight in black_knights:
+                            if not is_taking:
+                                break
+                            if black_knight.rect.collidepoint(x, y):
+                                is_taking = True
+                                break
+                        for black_bishop in black_bishops:
+                            if not is_taking:
+                                break
+                            if black_bishop.rect.collidepoint(x, y):
+                                is_taking = True
+                                break
+                        for black_rook in black_rooks:
+                            if not is_taking:
+                                break
+                            if black_rook.rect.collidepoint(x, y):
+                                is_taking = True
+                                break
+                        if not is_taking:
+                            if black_queen.rect.collidepoint(x, y):
+                                is_taking = True
+                            if not is_taking:
+                                pass
+                            elif black_king.rect.collidepoint(x, y):
+                                is_taking = True
                     else:
                         board_file_shadow = 8 - board_file
+                        for white_pawn in white_pawns:
+                            if white_pawn.rect.collidepoint(x, y):
+                                is_taking = True
+                                break
+                        for white_knight in white_knights:
+                            if not is_taking:
+                                break
+                            if white_knight.rect.collidepoint(x, y):
+                                is_taking = True
+                                break
+                        for white_bishop in white_bishops:
+                            if not is_taking:
+                                break
+                            if white_bishop.rect.collidepoint(x, y):
+                                is_taking = True
+                                break
+                        for white_rook in white_rooks:
+                            if not is_taking:
+                                break
+                            if white_rook.rect.collidepoint(x, y):
+                                is_taking = True
+                                break
+                        if not is_taking:
+                            if white_queen.rect.collidepoint(x, y):
+                                is_taking = True
+                            if not is_taking:
+                                pass
+                            elif white_king.rect.collidepoint(x, y):
+                                is_taking = True
                     move = (board_file_shadow, board_rank_shadow)
                     if not selected_piece.allowed_move(white_pieces, move) and not is_taking:
                         print("piece not allowed")
@@ -305,7 +363,7 @@ def main():
                         pass
                     selected_piece.rect.left = board_file * 50
                     selected_piece.rect.top = board_rank * 50
-                    selected_piece.coordinate = move
+                    selected_piece.coordinate = list(move)
                     selected_piece = None
                 else:
                     if white_pieces:
