@@ -21,7 +21,7 @@ class WhitePawn(pg.sprite.Sprite):
     def allowed_move(self, white_pieces: bool, move: tuple[int, int]) -> bool:
         return (move[1] == self.coordinate[1]+1 and move[0] == self.coordinate[0]) and white_pieces
 
-    def allowed_take(self, white_pieces: bool) -> bool:
+    def allowed_take(self, white_pieces: bool, move: tuple[int, int]) -> bool:
         return white_pieces
 
 class BlackPawn(pg.sprite.Sprite):
@@ -153,6 +153,7 @@ class WhiteQueen(pg.sprite.Sprite):
         self.rect.top = 350 if white_pieces else 0
         if white_pieces:
             self.coordinate = [4, 1]
+        self.is_taken = False
 
     def allowed_move(self, white_pieces: bool, move: tuple[int, int]) -> bool:
         return white_pieces
@@ -170,6 +171,7 @@ class BlackQueen(pg.sprite.Sprite):
         self.rect.top = 350 if not white_pieces else 0
         if not white_pieces:
             self.coordinate = [4, 8]
+        self.is_taken = False
 
     def allowed_move(self, white_pieces: bool, move: tuple[int, int]) -> bool:
         return white_pieces
@@ -244,6 +246,7 @@ class BlackRooks(pg.sprite.Group):
         super().__init__()
 
 Piece = WhitePawn | BlackPawn | WhiteKnight | BlackKnight | WhiteBishop | BlackBishop | WhiteRook | BlackRook | WhiteQueen | BlackQueen | WhiteKing | BlackKing
+PieceGroup = WhitePawns | BlackPawns | WhiteKnights | BlackKnights | WhiteBishops | BlackBishops | WhiteRooks | BlackRooks | WhiteQueen | BlackQueen | WhiteKing | BlackKing
 
 def main(): 
     rand.seed(time.time())
@@ -289,6 +292,8 @@ def main():
             if event.type == pg.MOUSEBUTTONDOWN:
                 x, y = int(event.dict["pos"][0]), int(event.dict["pos"][1])
                 if selected_piece is not None:
+                    taken_piece: Piece | None = None
+                    taken_piece_group: PieceGroup | None = None 
                     board_file, board_rank = int(x/50), int(y/50)
                     board_file_shadow, board_rank_shadow = board_file, board_rank+1
                     is_taking = False
@@ -297,74 +302,106 @@ def main():
                         for black_pawn in black_pawns:
                             if black_pawn.rect.collidepoint(x, y):
                                 is_taking = True
+                                taken_piece = black_pawn
+                                taken_piece_group = black_pawns
                                 break
                         for black_knight in black_knights:
                             if not is_taking:
                                 break
                             if black_knight.rect.collidepoint(x, y):
                                 is_taking = True
+                                taken_piece = black_knight
+                                taken_piece_group = black_knights
                                 break
                         for black_bishop in black_bishops:
                             if not is_taking:
                                 break
                             if black_bishop.rect.collidepoint(x, y):
                                 is_taking = True
+                                taken_piece = black_bishop
+                                taken_piece_group = black_bishops
                                 break
                         for black_rook in black_rooks:
                             if not is_taking:
                                 break
                             if black_rook.rect.collidepoint(x, y):
                                 is_taking = True
+                                taken_piece = black_rook
+                                taken_piece_group = black_rooks
                                 break
                         if not is_taking:
                             if black_queen.rect.collidepoint(x, y):
                                 is_taking = True
+                                taken_piece = black_queen
+                                taken_piece_group = black_queen
                             if not is_taking:
                                 pass
                             elif black_king.rect.collidepoint(x, y):
-                                is_taking = True
+                                print("Can't take king")
+                                continue
                     else:
                         board_file_shadow = 8 - board_file
                         for white_pawn in white_pawns:
                             if white_pawn.rect.collidepoint(x, y):
                                 is_taking = True
+                                taken_piece = white_pawn
+                                taken_piece_group = white_pawn
                                 break
                         for white_knight in white_knights:
                             if not is_taking:
                                 break
                             if white_knight.rect.collidepoint(x, y):
                                 is_taking = True
+                                taken_piece = white_knight
+                                taken_piece_group = white_knight
                                 break
                         for white_bishop in white_bishops:
                             if not is_taking:
                                 break
                             if white_bishop.rect.collidepoint(x, y):
                                 is_taking = True
+                                taken_piece = white_bishop
+                                taken_piece_group = white_bishop
                                 break
                         for white_rook in white_rooks:
                             if not is_taking:
                                 break
                             if white_rook.rect.collidepoint(x, y):
                                 is_taking = True
+                                taken_piece = white_rook
+                                taken_piece_group = white_rook
                                 break
                         if not is_taking:
                             if white_queen.rect.collidepoint(x, y):
                                 is_taking = True
+                                taken_piece = white_queen
+                                taken_piece_group = white_queen
                             if not is_taking:
                                 pass
                             elif white_king.rect.collidepoint(x, y):
-                                is_taking = True
+                                print("Can't take king")
+                                continue
                     move = (board_file_shadow, board_rank_shadow)
                     if not selected_piece.allowed_move(white_pieces, move) and not is_taking:
                         print("piece not allowed")
                         selected_piece = None
                         continue
                     elif not selected_piece.allowed_take(white_pieces, move) and is_taking:
-                        pass
+                        print(not selected_piece.allowed_take(white_pieces, move), is_taking)
+                        print("piece not allowed to take")
+                        selected_piece = None
+                        continue
                     selected_piece.rect.left = board_file * 50
                     selected_piece.rect.top = board_rank * 50
                     selected_piece.coordinate = list(move)
                     selected_piece = None
+                    if is_taking and taken_piece_group is not None and taken_piece is not None:
+                        if (isinstance(taken_piece_group, WhiteQueen) or isinstance(taken_piece_group, BlackQueen)) and (isinstance(taken_piece, WhiteQueen) or isinstance(taken_piece, BlackQueen)):
+                            taken_piece_group.is_taken = True
+                        elif (isinstance(taken_piece_group, WhiteKing) or isinstance(taken_piece_group, WhiteKing)) and (isinstance(taken_piece, WhiteKing) or isinstance(taken_piece, BlackKing)):
+                            pass
+                        else:
+                            taken_piece_group.remove(taken_piece)
                 else:
                     if white_pieces:
                         for white_pawn in white_pawns:
@@ -454,8 +491,10 @@ def main():
         black_bishops.draw(screen)
         white_rooks.draw(screen)
         black_rooks.draw(screen)
-        screen.blit(white_queen.image, white_queen.rect)
-        screen.blit(black_queen.image, black_queen.rect)
+        if not white_queen.is_taken:
+            screen.blit(white_queen.image, white_queen.rect)
+        if not black_queen.is_taken:
+            screen.blit(black_queen.image, black_queen.rect)
         screen.blit(white_king.image, white_king.rect)
         screen.blit(black_king.image, black_king.rect)
         pg.display.flip()
