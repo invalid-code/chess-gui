@@ -103,7 +103,7 @@ class WhiteBishop(pg.sprite.Sprite):
             self.coordinate = [3 if i == 0 else 6, 1]
 
     def allowed_move(self, white_pieces: bool, move: tuple[int, int]) -> bool:
-        return white_pieces
+        return white_pieces and abs(self.coordinate[0] - move[0]) == abs(self.coordinate[1] - move[1])
 
     def allowed_take(self, white_pieces: bool, move: tuple[int, int]) -> bool:
         return self.allowed_move(white_pieces, move)
@@ -120,7 +120,7 @@ class BlackBishop(pg.sprite.Sprite):
             self.coordinate = [6 if i == 0 else 3, 8]
 
     def allowed_move(self, white_pieces: bool, move: tuple[int, int]) -> bool:
-        return not white_pieces
+        return not white_pieces and abs(self.coordinate[0] - move[0]) == abs(self.coordinate[1] - move[1])
 
     def allowed_take(self, white_pieces: bool, move: tuple[int, int]) -> bool:
         return self.allowed_move(white_pieces, move)
