@@ -16,7 +16,7 @@ class WhitePawn(pg.sprite.Sprite):
         self.rect.left = i * 50
         self.rect.top = 300 if white_pieces else 50
         if white_pieces:
-            self.coordinate = [i, 2]
+            self.coordinate = [i+1, 2]
 
     def allowed_move(self, white_pieces: bool, move: tuple[int, int]) -> bool:
         return (move[1] == self.coordinate[1]+1 and move[0] == self.coordinate[0]) and white_pieces
@@ -311,10 +311,9 @@ def main():
                     taken_piece: Piece | None = None
                     taken_piece_group: PieceGroup | None = None 
                     board_file, board_rank = int(x/50), int(y/50)
-                    board_file_shadow, board_rank_shadow = board_file, board_rank+1
+                    board_file_shadow, board_rank_shadow = 8-board_file, 8-board_rank
                     is_taking = False
                     if white_pieces:
-                        board_rank_shadow = 8 - board_rank
                         for black_pawn in black_pawns:
                             if black_pawn.rect.collidepoint(x, y):
                                 is_taking = True
@@ -357,7 +356,6 @@ def main():
                                 selected_piece = None
                                 continue
                     else:
-                        board_file_shadow = 8 - board_file
                         for white_pawn in white_pawns:
                             if white_pawn.rect.collidepoint(x, y):
                                 is_taking = True
