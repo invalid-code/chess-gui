@@ -261,11 +261,17 @@ def check_horizontal(
                 is_moving_blocked = True
                 break
         for white_knight in white_knights:
-            if white_knight.rank == move_rank and (white_knight.file < move_file and selected_piece.file < white_knight.file):
+            if white_knight.rank == move_rank and (
+                white_knight.file < move_file
+                and selected_piece.file < white_knight.file
+            ):
                 is_moving_blocked = True
                 break
         for white_bishop in white_bishops:
-            if white_bishop.rank == move_rank and (white_bishop.file < move_file and selected_piece.file < white_bishop.file):
+            if white_bishop.rank == move_rank and (
+                white_bishop.file < move_file
+                and selected_piece.file < white_bishop.file
+            ):
                 is_moving_blocked = True
                 break
         for white_rook in white_rooks:
@@ -276,9 +282,13 @@ def check_horizontal(
             ):
                 is_moving_blocked = True
                 break
-        if white_queen.rank == move_rank and (white_queen.file < move_file and selected_piece.file < white_queen.file):
+        if white_queen.rank == move_rank and (
+            white_queen.file < move_file and selected_piece.file < white_queen.file
+        ):
             is_moving_blocked = True
-        if white_king.rank == move_rank and (white_king.file < move_file and selected_piece.file < white_king.file):
+        if white_king.rank == move_rank and (
+            white_king.file < move_file and selected_piece.file < white_king.file
+        ):
             is_moving_blocked = True
     else:
         # going left
@@ -289,11 +299,17 @@ def check_horizontal(
                 is_moving_blocked = True
                 break
         for white_knight in white_knights:
-            if white_knight.rank == move_rank and (white_knight.file > move_file and selected_piece.file > white_knight.file):
+            if white_knight.rank == move_rank and (
+                white_knight.file > move_file
+                and selected_piece.file > white_knight.file
+            ):
                 is_moving_blocked = True
                 break
         for white_bishop in white_bishops:
-            if white_bishop.rank == move_rank and (white_bishop.file > move_file and selected_piece.file > white_bishop.file):
+            if white_bishop.rank == move_rank and (
+                white_bishop.file > move_file
+                and selected_piece.file > white_bishop.file
+            ):
                 is_moving_blocked = True
                 break
         for white_rook in white_rooks:
@@ -304,9 +320,13 @@ def check_horizontal(
             ):
                 is_moving_blocked = True
                 break
-        if white_queen.rank == move_rank and (white_queen.file > move_file and selected_piece.file > white_queen.file):
+        if white_queen.rank == move_rank and (
+            white_queen.file > move_file and selected_piece.file > white_queen.file
+        ):
             is_moving_blocked = True
-        if white_king.rank == move_rank and (white_king.file > move_file and selected_piece.file > white_king.file):
+        if white_king.rank == move_rank and (
+            white_king.file > move_file and selected_piece.file > white_king.file
+        ):
             is_moving_blocked = True
     return is_moving_blocked
 
@@ -332,11 +352,17 @@ def check_vertical(
                 is_moving_blocked = True
                 break
         for white_knight in white_knights:
-            if white_knight.file == move_file and (white_knight.rank < move_rank and selected_piece.rank < white_knight.rank):
+            if white_knight.file == move_file and (
+                white_knight.rank < move_rank
+                and selected_piece.rank < white_knight.rank
+            ):
                 is_moving_blocked = True
                 break
         for white_bishop in white_bishops:
-            if white_bishop.file == move_file and (white_bishop.rank < move_rank and selected_piece.rank < whitewhite_bishop_pawn.rank):
+            if white_bishop.file == move_file and (
+                white_bishop.rank < move_rank
+                and selected_piece.rank < whitewhite_bishop_pawn.rank
+            ):
                 is_moving_blocked = True
                 break
         for white_rook in white_rooks:
@@ -347,9 +373,13 @@ def check_vertical(
             ):
                 is_moving_blocked = True
                 break
-        if white_queen.file == move_file and (white_queen.rank < move_rank and selected_piece.rank < white_queen.rank):
+        if white_queen.file == move_file and (
+            white_queen.rank < move_rank and selected_piece.rank < white_queen.rank
+        ):
             is_moving_blocked = True
-        if white_king.file == move_file and (white_king.rank < move_rank and selected_piece.rank < white_king.rank):
+        if white_king.file == move_file and (
+            white_king.rank < move_rank and selected_piece.rank < white_king.rank
+        ):
             is_moving_blocked = True
     else:
         # going down
@@ -360,11 +390,17 @@ def check_vertical(
                 is_moving_blocked = True
                 break
         for white_knight in white_knights:
-            if white_knight.file == move_file and (white_knight.rank > move_rank and selected_piece.rank > white_knight.rank):
+            if white_knight.file == move_file and (
+                white_knight.rank > move_rank
+                and selected_piece.rank > white_knight.rank
+            ):
                 is_moving_blocked = True
                 break
         for white_bishop in white_bishops:
-            if white_bishop.file == move_file and (white_bishop.rank > move_rank and selected_piece.rank > white_bishop.rank):
+            if white_bishop.file == move_file and (
+                white_bishop.rank > move_rank
+                and selected_piece.rank > white_bishop.rank
+            ):
                 is_moving_blocked = True
                 break
         for white_rook in white_rooks:
@@ -375,9 +411,13 @@ def check_vertical(
             ):
                 is_moving_blocked = True
                 break
-        if white_queen.file == move_file and (white_queen.rank > move_rank and selected_piece.rank > white_queen.rank):
+        if white_queen.file == move_file and (
+            white_queen.rank > move_rank and selected_piece.rank > white_queen.rank
+        ):
             is_moving_blocked = True
-        if white_king.file == move_file and (white_king.rank > move_rank and selected_piece.rank > white_king.rank):
+        if white_king.file == move_file and (
+            white_king.rank > move_rank and selected_piece.rank > white_king.rank
+        ):
             is_moving_blocked = True
     return is_moving_blocked
 
@@ -398,8 +438,8 @@ def main():
         for event in pg.event.get():
             if event.type == pg.MOUSEBUTTONDOWN:
                 if selected_piece:
-                    move_file = 0
-                    move_rank = 0
+                    move_file: int = 0
+                    move_rank: int = 0
                     for square in squares:
                         if square.rect.collidepoint(event.pos):
                             move_file = square.file
@@ -430,6 +470,7 @@ def main():
                             is_moving_occupied = True
                         if isinstance(selected_piece, Bishop):
                             pass
+
                         if isinstance(selected_piece, Rook):
                             if selected_piece.file == move_file:
                                 is_moving_blocked = check_vertical(
@@ -466,37 +507,41 @@ def main():
                                     continue
                                 if (
                                     white_pawn.file == move_file
-                                    or white_pawn.rank == move_rank
+                                    or white_pawn.rank > selected_piece.rank
                                 ):
-                                    pass
+                                    is_moving_blocked = True
+                                    break
                             for white_knight in white_knights:
                                 if (
                                     white_knight.file == move_file
-                                    or white_knight.rank == move_rank
+                                    and white_knight.rank > selected_piece.rank
                                 ):
-                                    pass
+                                    is_moving_blocked = True
+                                    break
                             for white_bishop in white_bishops:
                                 if (
                                     white_bishop.file == move_file
-                                    or white_bishop.rank == move_rank
+                                    and white_bishop.rank > selected_piece.rank
                                 ):
-                                    pass
+                                    is_moving_blocked = True
+                                    break
                             for white_rook in white_rooks:
                                 if (
                                     white_rook.file == move_file
-                                    or white_rook.rank == move_rank
+                                    and white_rook.rank > selected_piece.rank
                                 ):
-                                    pass
+                                    is_moving_blocked = True
+                                    break
                             if (
                                 white_queen.file == move_file
-                                or white_queen.rank == move_rank
+                                and white_queen.rank > selected_piece.rank
                             ):
-                                pass
+                                is_moving_blocked = True
                             if (
                                 white_king.file == move_file
-                                or white_king.rank == move_rank
+                                and white_king.rank > selected_piece.rank
                             ):
-                                pass
+                                is_moving_blocked = True
                         if is_moving_occupied:
                             print(
                                 f"piece ({selected_piece.file}, {selected_piece.rank}) tried to moved to occupied square ({white_pawn.file}, {white_pawn.rank})"
