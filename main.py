@@ -469,7 +469,251 @@ def main():
                         if white_king.rect.collidepoint(event.pos):
                             is_moving_occupied = True
                         if isinstance(selected_piece, Bishop):
-                            pass
+                            if (
+                                selected_piece.rank < move_rank
+                                and selected_piece.file < move_file
+                            ):
+                                for white_pawn in white_pawns:
+                                    if (
+                                        white_pawn.rank < move_rank
+                                        and white_pawn.file < move_file
+                                    ) and (
+                                        selected_piece.rank < white_pawn.rank
+                                        and selected_piece.file < white_pawn.file
+                                    ):
+                                        is_moving_blocked = True
+                                        break
+                                for white_knight in white_knights:
+                                    if (
+                                        white_knight.rank < move_rank
+                                        and white_knight.file < move_file
+                                    ) and (
+                                        selected_piece.rank < white_knight.rank
+                                        and selected_piece.file < white_knight.file
+                                    ):
+                                        is_moving_blocked = True
+                                        break
+                                for white_bishop in white_bishops:
+                                    if selected_piece == white_bishop:
+                                        continue
+                                    if (
+                                        white_bishop.rank < move_rank
+                                        and white_bishop.file < move_file
+                                    ) and (
+                                        selected_piece.rank < white_bishop.rank
+                                        and selected_piece.file < white_bishop.file
+                                    ):
+                                        is_moving_blocked = True
+                                        break
+                                for white_rook in white_rooks:
+                                    if (
+                                        white_rook.rank < move_rank
+                                        and white_rook.file < move_file
+                                    ) and (
+                                        selected_piece.rank < white_rook.rank
+                                        and selected_piece.file < white_rook.file
+                                    ):
+                                        is_moving_blocked = True
+                                        break
+                                if (
+                                    white_queen.rank < move_rank
+                                    and white_queen.file < move_file
+                                ) and (
+                                    selected_piece.rank < white_queen.rank
+                                    and selected_piece.file < white_queen.file
+                                ):
+                                    is_moving_blocked = True
+                                if (
+                                    white_king.rank < move_rank
+                                    and white_king.file < move_file
+                                ) and (
+                                    selected_piece.rank < white_king.rank
+                                    and selected_piece.file < white_king.file
+                                ):
+                                    is_moving_blocked = True
+                            elif (
+                                selected_piece.rank < move_rank
+                                and selected_piece.file > move_file
+                            ):
+                                for white_pawn in white_pawns:
+                                    if (
+                                        white_pawn.rank < move_rank
+                                        and white_pawn.file > move_file
+                                    ) and (
+                                        selected_piece.rank < white_pawn.rank
+                                        and selected_piece.file > white_pawn.file
+                                    ):
+                                        is_moving_blocked = True
+                                        break
+                                for white_knight in white_knights:
+                                    if (
+                                        white_knight.rank < move_rank
+                                        and white_knight.file > move_file
+                                    ) and (
+                                        selected_piece.rank < white_knight.rank
+                                        and selected_piece.file > white_knight.file
+                                    ):
+                                        is_moving_blocked = True
+                                        break
+                                for white_bishop in white_bishops:
+                                    if selected_piece == white_bishop:
+                                        continue
+                                    if (
+                                        white_bishop.rank < move_rank
+                                        and white_bishop.file > move_file
+                                    ) and (
+                                        selected_piece.rank < white_bishop.rank
+                                        and selected_piece.file > white_bishop.file
+                                    ):
+                                        is_moving_blocked = True
+                                        break
+                                for white_rook in white_rooks:
+                                    if (
+                                        white_rook.rank < move_rank
+                                        and white_rook.file > move_file
+                                    ) and (
+                                        selected_piece.rank < white_rook.rank
+                                        and selected_piece.file > white_rook.file
+                                    ):
+                                        is_moving_blocked = True
+                                        break
+                                if (
+                                    white_queen.rank < move_rank
+                                    and white_queen.file > move_file
+                                ) and (
+                                    selected_piece.rank < white_queen.rank
+                                    and selected_piece.file > white_queen.file
+                                ):
+                                    is_moving_blocked = True
+                                if (
+                                    white_king.rank < move_rank
+                                    and white_king.file > move_file
+                                ) and (
+                                    selected_piece.rank < white_king.rank
+                                    and selected_piece.file > white_king.file
+                                ):
+                                    is_moving_blocked = True
+                            elif (
+                                selected_piece.rank > move_rank
+                                and selected_piece.file > move_file
+                            ):
+                                for white_pawn in white_pawns:
+                                    if (
+                                        white_pawn.rank > move_rank
+                                        and white_pawn.file > move_file
+                                    ) and (
+                                        selected_piece.rank > white_pawn.rank
+                                        and selected_piece.file > white_pawn.file
+                                    ):
+                                        is_moving_blocked = True
+                                        break
+                                for white_knight in white_knights:
+                                    if (
+                                        white_knight.rank > move_rank
+                                        and white_knight.file > move_file
+                                    ) and (
+                                        selected_piece.rank > white_knight.rank
+                                        and selected_piece.file > white_knight.file
+                                    ):
+                                        is_moving_blocked = True
+                                        break
+                                for white_bishop in white_bishops:
+                                    if selected_piece == white_bishop:
+                                        continue
+                                    if (
+                                        white_bishop.rank > move_rank
+                                        and white_bishop.file > move_file
+                                    ) and (
+                                        selected_piece.rank > white_bishop.rank
+                                        and selected_piece.file > white_bishop.file
+                                    ):
+                                        is_moving_blocked = True
+                                        break
+                                for white_rook in white_rooks:
+                                    if (
+                                        white_rook.rank > move_rank
+                                        and white_rook.file > move_file
+                                    ) and (
+                                        selected_piece.rank > white_rook.rank
+                                        and selected_piece.file > white_rook.file
+                                    ):
+                                        is_moving_blocked = True
+                                        break
+                                if (
+                                    white_queen.rank > move_rank
+                                    and white_queen.file > move_file
+                                ) and (
+                                    selected_piece.rank > white_queen.rank
+                                    and selected_piece.file > white_queen.file
+                                ):
+                                    is_moving_blocked = True
+                                if (
+                                    white_king.rank > move_rank
+                                    and white_king.file > move_file
+                                ) and (
+                                    selected_piece.rank > white_king.rank
+                                    and selected_piece.file > white_king.file
+                                ):
+                                    is_moving_blocked = True
+                            else:
+                                for white_pawn in white_pawns:
+                                    if (
+                                        white_pawn.rank > move_rank
+                                        and white_pawn.file < move_file
+                                    ) and (
+                                        selected_piece.rank > white_pawn.rank
+                                        and selected_piece.file < white_pawn.file
+                                    ):
+                                        is_moving_blocked = True
+                                        break
+                                for white_knight in white_knights:
+                                    if (
+                                        white_knight.rank > move_rank
+                                        and white_knight.file < move_file
+                                    ) and (
+                                        selected_piece.rank > white_knight.rank
+                                        and selected_piece.file < white_knight.file
+                                    ):
+                                        is_moving_blocked = True
+                                        break
+                                for white_bishop in white_bishops:
+                                    if selected_piece == white_bishop:
+                                        continue
+                                    if (
+                                        white_bishop.rank > move_rank
+                                        and white_bishop.file < move_file
+                                    ) and (
+                                        selected_piece.rank > white_bishop.rank
+                                        and selected_piece.file < white_bishop.file
+                                    ):
+                                        is_moving_blocked = True
+                                        break
+                                for white_rook in white_rooks:
+                                    if (
+                                        white_rook.rank > move_rank
+                                        and white_rook.file < move_file
+                                    ) and (
+                                        selected_piece.rank > white_rook.rank
+                                        and selected_piece.file < white_rook.file
+                                    ):
+                                        is_moving_blocked = True
+                                        break
+                                if (
+                                    white_queen.rank > move_rank
+                                    and white_queen.file < move_file
+                                ) and (
+                                    selected_piece.rank > white_queen.rank
+                                    and selected_piece.file < white_queen.file
+                                ):
+                                    is_moving_blocked = True
+                                if (
+                                    white_king.rank > move_rank
+                                    and white_king.file < move_file
+                                ) and (
+                                    selected_piece.rank > white_king.rank
+                                    and selected_piece.file < white_king.file
+                                ):
+                                    is_moving_blocked = True
 
                         if isinstance(selected_piece, Rook):
                             if selected_piece.file == move_file:
