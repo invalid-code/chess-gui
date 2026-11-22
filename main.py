@@ -172,6 +172,7 @@ class Queen(Rook, Bishop):
         self.rect = self.image.get_rect()
         self.rect.left = (self.file - 1) * 50
         self.rect.top = (8 - self.rank) * 50
+        self.is_taken = False
 
     def allowed_move(self, move_file: int, move_rank: int) -> bool:
         return Rook.allowed_move(self, move_file, move_rank) or Bishop.allowed_move(
@@ -219,49 +220,57 @@ class King(Rook, Bishop):
 class WhitePawns(pg.sprite.Group):
     def __init__(self) -> None:
         super().__init__()
-        self.add(Pawn("assets/w_pawn_png_128px.png", 5, 2))
+        for file in range(1, 9):
+            self.add(Pawn("assets/w_pawn_png_128px.png", file, 2))
 
 
 class WhiteKnights(pg.sprite.Group):
     def __init__(self) -> None:
         super().__init__()
-        self.add(Knight("assets/w_knight_png_128px.png", 7, 1))
+        for file in [2, 7]:
+            self.add(Knight("assets/w_knight_png_128px.png", file, 1))
 
 
 class WhiteBishops(pg.sprite.Group):
     def __init__(self) -> None:
         super().__init__()
-        self.add(Bishop("assets/w_bishop_png_128px.png", 6, 1))
+        for file in [3, 6]:
+            self.add(Bishop("assets/w_bishop_png_128px.png", file, 1))
 
 
 class WhiteRooks(pg.sprite.Group):
     def __init__(self) -> None:
         super().__init__()
-        self.add(Rook("assets/w_rook_png_128px.png", 8, 1))
+        for file in [1, 8]:
+            self.add(Rook("assets/w_rook_png_128px.png", file, 1))
 
 
 class BlackPawns(pg.sprite.Group):
     def __init__(self) -> None:
         super().__init__()
-        self.add(Pawn("assets/b_pawn_png_128px.png", 5, 7))
+        for file in range(1, 9):
+            self.add(Pawn("assets/b_pawn_png_128px.png", file, 7))
 
 
 class BlackKnights(pg.sprite.Group):
     def __init__(self) -> None:
         super().__init__()
-        self.add(Knight("assets/b_knight_png_128px.png", 7, 8))
+        for file in [2, 7]:
+            self.add(Knight("assets/b_knight_png_128px.png", file, 8))
 
 
 class BlackBishops(pg.sprite.Group):
     def __init__(self) -> None:
         super().__init__()
-        self.add(Bishop("assets/b_bishop_png_128px.png", 6, 8))
+        for file in [3, 6]:
+            self.add(Bishop("assets/b_bishop_png_128px.png", file, 8))
 
 
 class BlackRooks(pg.sprite.Group):
     def __init__(self) -> None:
         super().__init__()
-        self.add(Rook("assets/b_rook_png_128px.png", 8, 8))
+        for file in [1, 8]:
+            self.add(Rook("assets/b_rook_png_128px.png", file, 8))
 
 
 Piece = Pawn | Knight | Bishop | Rook | Queen | King
@@ -712,30 +721,20 @@ def check_is_check(
         if white_pawn.allowed_take(black_king.file, black_king.rank):
             is_check = True
             break
-    else:
-        is_check = False
     for white_knight in white_knights:
         if white_knight.allowed_take(black_king.file, black_king.rank):
             is_check = True
             break
-    else:
-        is_check = False
     for white_bishop in white_bishops:
         if white_bishop.allowed_take(black_king.file, black_king.rank):
             is_check = True
             break
-    else:
-        is_check = False
     for white_rook in white_rooks:
         if white_rook.allowed_take(black_king.file, black_king.rank):
             is_check = True
             break
-    else:
-        is_check = False
     if white_queen.allowed_take(black_king.file, black_king.rank):
         is_check = True
-    else:
-        is_check = False
     return is_check
 
 
@@ -816,8 +815,10 @@ def check_taken(
     black_queen: Queen,
     move_file: int,
     move_rank: int,
-) -> tuple[bool, TakeablePiece, TakeablePieceGroup]:
+) -> tuple[bool, TakeablePiece | None, TakeablePieceGroup | None]:
     is_taking = False
+    taken_piece: TakeablePiece | None = None
+    taken_piece_group: TakeablePieceGroup | None = None
     for black_pawn in black_pawns:
         if black_pawn.file == move_file and black_pawn.rank == move_rank:
             taken_piece = black_pawn
@@ -838,8 +839,8 @@ def check_taken(
             taken_piece = black_rook
             taken_piece_group = black_rooks
             is_taking = True
-    if black_rook.file == move_file and black_rook.rank == move_rank:
-        taken_piece = black_rook
+    if black_queen.file == move_file and black_queen.rank == move_rank:
+        taken_piece = black_queen
         is_taking = True
     return is_taking, taken_piece, taken_piece_group
 
@@ -863,6 +864,7 @@ def main():
     black_king = King("assets/b_king_png_128px.png", 5, 8)
     game_running = True
     is_check = False
+    is_checkmate = False
     while game_running:
         for event in pg.event.get():
             if event.type == pg.MOUSEBUTTONDOWN:
@@ -884,7 +886,10 @@ def main():
                         move_rank,
                     )
                     if is_taking and selected_piece.allowed_take(move_file, move_rank):
-                        taken_piece_group.remove(taken_piece)
+                        if taken_piece_group is not None:
+                            taken_piece_group.remove(taken_piece)
+                        if isinstance(taken_piece, Queen):
+                            taken_piece.is_taken = True
                         selected_piece.move(move_file, move_rank)
                     elif selected_piece.allowed_move(move_file, move_rank):
                         is_moving_blocked = False
@@ -1026,6 +1031,874 @@ def main():
                         white_queen,
                         black_king,
                     )
+                    if is_check:
+                        if black_king.file == 1 and black_king.rank == 1:
+                            no_escape_squares = 3
+                            for possible_move_file, possible_move_rank in [
+                                (0, 1),
+                                (1, 0),
+                                (1, 1),
+                            ]:
+                                should_continue = False
+                                for black_pawn in black_pawns:
+                                    if (
+                                        black_pawn.file
+                                        == black_king.file + possible_move_file
+                                        and black_pawn.rank
+                                        == black_king.rank + possible_move_rank
+                                    ):
+                                        no_escape_squares -= 1
+                                        should_continue = True
+                                        break
+                                if should_continue:
+                                    continue
+                                for black_knight in black_knights:
+                                    if (
+                                        black_knight.file
+                                        == black_king.file + possible_move_file
+                                        and black_knight.rank
+                                        == black_king.rank + possible_move_rank
+                                    ):
+                                        no_escape_squares -= 1
+                                        should_continue = True
+                                        break
+                                if should_continue:
+                                    continue
+                                for black_bishop in black_bishops:
+                                    if (
+                                        black_bishop.file
+                                        == black_king.file + possible_move_file
+                                        and black_bishop.rank
+                                        == black_king.rank + possible_move_rank
+                                    ):
+                                        no_escape_squares -= 1
+                                        should_continue = True
+                                        break
+                                if should_continue:
+                                    continue
+                                for black_rook in black_rooks:
+                                    if (
+                                        black_rook.file
+                                        == black_king.file + possible_move_file
+                                        and black_rook.rank
+                                        == black_king.rank + possible_move_rank
+                                    ):
+                                        no_escape_squares -= 1
+                                        should_continue = True
+                                        break
+                                if should_continue:
+                                    continue
+                                if (
+                                    black_queen.file
+                                    == black_king.file + possible_move_file
+                                    and black_queen.rank
+                                    == black_king.rank + possible_move_rank
+                                ):
+                                    no_escape_squares -= 1
+                                    continue
+                            if no_escape_squares == 0:
+                                is_checkmate = True
+                        elif black_king.file == 1 and black_king.rank == 8:
+                            no_escape_squares = 3
+                            for possible_move_file, possible_move_rank in [
+                                (0, 1),
+                                (1, 0),
+                                (1, 1),
+                            ]:
+                                should_continue = False
+                                for black_pawn in black_pawns:
+                                    if (
+                                        black_pawn.file
+                                        == black_king.file + possible_move_file
+                                        and black_pawn.rank
+                                        == black_king.rank - possible_move_rank
+                                    ):
+                                        no_escape_squares -= 1
+                                        should_continue = True
+                                        break
+                                if should_continue:
+                                    continue
+                                for black_knight in black_knights:
+                                    if (
+                                        black_knight.file
+                                        == black_king.file + possible_move_file
+                                        and black_knight.rank
+                                        == black_king.rank - possible_move_rank
+                                    ):
+                                        no_escape_squares -= 1
+                                        should_continue = True
+                                        break
+                                if should_continue:
+                                    continue
+                                for black_bishop in black_bishops:
+                                    if (
+                                        black_bishop.file
+                                        == black_king.file + possible_move_file
+                                        and black_bishop.rank
+                                        == black_king.rank - possible_move_rank
+                                    ):
+                                        no_escape_squares -= 1
+                                        should_continue = True
+                                        break
+                                if should_continue:
+                                    continue
+                                for black_rook in black_rooks:
+                                    if (
+                                        black_rook.file
+                                        == black_king.file + possible_move_file
+                                        and black_rook.rank
+                                        == black_king.rank - possible_move_rank
+                                    ):
+                                        no_escape_squares -= 1
+                                        should_continue = True
+                                        break
+                                if should_continue:
+                                    continue
+                                if (
+                                    black_queen.file
+                                    == black_king.file + possible_move_file
+                                    and black_queen.rank
+                                    == black_king.rank - possible_move_rank
+                                ):
+                                    no_escape_squares -= 1
+                                    continue
+                            if no_escape_squares == 0:
+                                is_checkmate = True
+                        elif black_king.file == 8 and black_king.rank == 1:
+                            no_escape_squares = 3
+                            for possible_move_file, possible_move_rank in [
+                                (0, 1),
+                                (1, 0),
+                                (1, 1),
+                            ]:
+                                should_continue = False
+                                for black_pawn in black_pawns:
+                                    if (
+                                        black_pawn.file
+                                        == black_king.file - possible_move_file
+                                        and black_pawn.rank
+                                        == black_king.rank + possible_move_rank
+                                    ):
+                                        no_escape_squares -= 1
+                                        should_continue = True
+                                        break
+                                if should_continue:
+                                    continue
+                                for black_knight in black_knights:
+                                    if (
+                                        black_knight.file
+                                        == black_king.file - possible_move_file
+                                        and black_knight.rank
+                                        == black_king.rank + possible_move_rank
+                                    ):
+                                        no_escape_squares -= 1
+                                        should_continue = True
+                                        break
+                                if should_continue:
+                                    continue
+                                for black_bishop in black_bishops:
+                                    if (
+                                        black_bishop.file
+                                        == black_king.file - possible_move_file
+                                        and black_bishop.rank
+                                        == black_king.rank + possible_move_rank
+                                    ):
+                                        no_escape_squares -= 1
+                                        should_continue = True
+                                        break
+                                if should_continue:
+                                    continue
+                                for black_rook in black_rooks:
+                                    if (
+                                        black_rook.file
+                                        == black_king.file - possible_move_file
+                                        and black_rook.rank
+                                        == black_king.rank + possible_move_rank
+                                    ):
+                                        no_escape_squares -= 1
+                                        should_continue = True
+                                        break
+                                if should_continue:
+                                    continue
+                                if (
+                                    black_queen.file
+                                    == black_king.file - possible_move_file
+                                    and black_queen.rank
+                                    == black_king.rank + possible_move_rank
+                                ):
+                                    no_escape_squares -= 1
+                                    continue
+                            if no_escape_squares == 0:
+                                is_checkmate = True
+                        elif black_king.file == 8 and black_king.rank == 8:
+                            no_escape_squares = 3
+                            for possible_move_file, possible_move_rank in [
+                                (0, 1),
+                                (1, 0),
+                                (1, 1),
+                            ]:
+                                should_continue = False
+                                for black_pawn in black_pawns:
+                                    if (
+                                        black_pawn.file
+                                        == black_king.file - possible_move_file
+                                        and black_pawn.rank
+                                        == black_king.rank - possible_move_rank
+                                    ):
+                                        no_escape_squares -= 1
+                                        should_continue = True
+                                        break
+                                if should_continue:
+                                    continue
+                                for black_knight in black_knights:
+                                    if (
+                                        black_knight.file
+                                        == black_king.file - possible_move_file
+                                        and black_knight.rank
+                                        == black_king.rank - possible_move_rank
+                                    ):
+                                        no_escape_squares -= 1
+                                        should_continue = True
+                                        break
+                                if should_continue:
+                                    continue
+                                for black_bishop in black_bishops:
+                                    if (
+                                        black_bishop.file
+                                        == black_king.file - possible_move_file
+                                        and black_bishop.rank
+                                        == black_king.rank - possible_move_rank
+                                    ):
+                                        no_escape_squares -= 1
+                                        should_continue = True
+                                        break
+                                if should_continue:
+                                    continue
+                                for black_rook in black_rooks:
+                                    if (
+                                        black_rook.file
+                                        == black_king.file - possible_move_file
+                                        and black_rook.rank
+                                        == black_king.rank - possible_move_rank
+                                    ):
+                                        no_escape_squares -= 1
+                                        should_continue = True
+                                        break
+                                if should_continue:
+                                    continue
+                                if (
+                                    black_queen.file
+                                    == black_king.file - possible_move_file
+                                    and black_queen.rank
+                                    == black_king.rank - possible_move_rank
+                                ):
+                                    no_escape_squares -= 1
+                                    continue
+                            if no_escape_squares == 0:
+                                is_checkmate = True
+                        elif black_king.file == 1:
+                            no_escape_squares = 5
+                            for possible_move_file, possible_move_rank in [
+                                (0, 1),
+                                (1, 0),
+                                (1, 1),
+                            ]:
+                                should_continue = False
+                                first_occupied = False
+                                second_occupied = False
+                                for black_pawn in black_pawns:
+                                    if not first_occupied and (
+                                        black_pawn.file
+                                        == black_king.file + possible_move_file
+                                        and black_pawn.rank
+                                        == black_king.rank + possible_move_rank
+                                    ):
+                                        no_escape_squares -= 1
+                                        if possible_move_rank > 0:
+                                            first_occupied = True
+                                        else:
+                                            should_continue = True
+                                            break
+                                    if (
+                                        not second_occupied
+                                        and possible_move_rank > 0
+                                        and (
+                                            black_pawn.file
+                                            == black_king.file - possible_move_file
+                                            and black_pawn.rank
+                                            == black_king.rank - possible_move_rank
+                                        )
+                                    ):
+                                        no_escape_squares -= 1
+                                        second_occupied = True
+                                        if first_occupied:
+                                            should_continue = True
+                                            break
+                                if should_continue:
+                                    continue
+                                for black_knight in black_knights:
+                                    if not first_occupied and (
+                                        black_knight.file
+                                        == black_king.file + possible_move_file
+                                        and black_knight.rank
+                                        == black_king.rank + possible_move_rank
+                                    ):
+                                        no_escape_squares -= 1
+                                        if possible_move_rank > 0:
+                                            first_occupied = True
+                                        else:
+                                            should_continue = True
+                                            break
+                                    if (
+                                        not second_occupied
+                                        and possible_move_rank > 0
+                                        and (
+                                            black_knight.file
+                                            == black_king.file - possible_move_file
+                                            and black_knight.rank
+                                            == black_king.rank - possible_move_rank
+                                        )
+                                    ):
+                                        no_escape_squares -= 1
+                                        second_occupied = True
+                                        if first_occupied:
+                                            should_continue = True
+                                            break
+                                if should_continue:
+                                    continue
+                                for black_bishop in black_bishops:
+                                    if not first_occupied and (
+                                        black_bishop.file
+                                        == black_king.file + possible_move_file
+                                        and black_bishop.rank
+                                        == black_king.rank + possible_move_rank
+                                    ):
+                                        no_escape_squares -= 1
+                                        if possible_move_rank > 0:
+                                            first_occupied = True
+                                        else:
+                                            should_continue = True
+                                            break
+                                    if (
+                                        not second_occupied
+                                        and possible_move_rank > 0
+                                        and (
+                                            black_bishop.file
+                                            == black_king.file - possible_move_file
+                                            and black_bishop.rank
+                                            == black_king.rank - possible_move_rank
+                                        )
+                                    ):
+                                        no_escape_squares -= 1
+                                        second_occupied = True
+                                        if first_occupied:
+                                            should_continue = True
+                                            break
+                                if should_continue:
+                                    continue
+                                for black_rook in black_rooks:
+                                    if not first_occupied and (
+                                        black_rook.file
+                                        == black_king.file + possible_move_file
+                                        and black_rook.rank
+                                        == black_king.rank + possible_move_rank
+                                    ):
+                                        no_escape_squares -= 1
+                                        if possible_move_rank > 0:
+                                            first_occupied = True
+                                        else:
+                                            should_continue = True
+                                            break
+                                    if (
+                                        not second_occupied
+                                        and possible_move_rank > 0
+                                        and (
+                                            black_rook.file
+                                            == black_king.file - possible_move_file
+                                            and black_rook.rank
+                                            == black_king.rank - possible_move_rank
+                                        )
+                                    ):
+                                        no_escape_squares -= 1
+                                        second_occupied = True
+                                        if first_occupied:
+                                            should_continue = True
+                                            break
+                                if should_continue:
+                                    continue
+                                if not first_occupied and (
+                                    black_queen.file
+                                    == black_king.file + possible_move_file
+                                    and black_queen.rank
+                                    == black_king.rank + possible_move_rank
+                                ):
+                                    no_escape_squares -= 1
+                                if (
+                                    not second_occupied
+                                    and possible_move_rank > 0
+                                    and (
+                                        black_queen.file
+                                        == black_king.file - possible_move_file
+                                        and black_queen.rank
+                                        == black_king.rank - possible_move_rank
+                                    )
+                                ):
+                                    no_escape_squares -= 1
+                            if no_escape_squares == 0:
+                                is_checkmate = True
+                        elif black_king.file == 8:
+                            no_escape_squares = 5
+                            for possible_move_file, possible_move_rank in [
+                                (0, 1),
+                                (1, 0),
+                                (1, 1),
+                            ]:
+                                should_continue = False
+                                first_occupied = False
+                                second_occupied = False
+                                for black_pawn in black_pawns:
+                                    if not first_occupied and (
+                                        black_pawn.file
+                                        == black_king.file - possible_move_file
+                                        and black_pawn.rank
+                                        == black_king.rank + possible_move_rank
+                                    ):
+                                        no_escape_squares -= 1
+                                        if possible_move_rank > 0:
+                                            first_occupied = True
+                                        else:
+                                            should_continue = True
+                                            break
+                                    if (
+                                        not second_occupied
+                                        and possible_move_rank > 0
+                                        and (
+                                            black_pawn.file
+                                            == black_king.file - possible_move_file
+                                            and black_pawn.rank
+                                            == black_king.rank - possible_move_rank
+                                        )
+                                    ):
+                                        no_escape_squares -= 1
+                                        second_occupied = True
+                                        if first_occupied:
+                                            should_continue = True
+                                            break
+                                if should_continue:
+                                    continue
+                                for black_knight in black_knights:
+                                    if not first_occupied and (
+                                        black_knight.file
+                                        == black_king.file - possible_move_file
+                                        and black_knight.rank
+                                        == black_king.rank + possible_move_rank
+                                    ):
+                                        no_escape_squares -= 1
+                                        if possible_move_rank > 0:
+                                            first_occupied = True
+                                        else:
+                                            should_continue = True
+                                            break
+                                    if (
+                                        not second_occupied
+                                        and possible_move_rank > 0
+                                        and (
+                                            black_knight.file
+                                            == black_king.file - possible_move_file
+                                            and black_knight.rank
+                                            == black_king.rank - possible_move_rank
+                                        )
+                                    ):
+                                        no_escape_squares -= 1
+                                        second_occupied = True
+                                        if first_occupied:
+                                            should_continue = True
+                                            break
+                                if should_continue:
+                                    continue
+                                for black_bishop in black_bishops:
+                                    if not first_occupied and (
+                                        black_bishop.file
+                                        == black_king.file - possible_move_file
+                                        and black_bishop.rank
+                                        == black_king.rank + possible_move_rank
+                                    ):
+                                        no_escape_squares -= 1
+                                        if possible_move_rank > 0:
+                                            first_occupied = True
+                                        else:
+                                            should_continue = True
+                                            break
+                                    if (
+                                        not second_occupied
+                                        and possible_move_rank > 0
+                                        and (
+                                            black_bishop.file
+                                            == black_king.file - possible_move_file
+                                            and black_bishop.rank
+                                            == black_king.rank - possible_move_rank
+                                        )
+                                    ):
+                                        no_escape_squares -= 1
+                                        second_occupied = True
+                                        if first_occupied:
+                                            should_continue = True
+                                            break
+                                if should_continue:
+                                    continue
+                                for black_rook in black_rooks:
+                                    if not first_occupied and (
+                                        black_rook.file
+                                        == black_king.file - possible_move_file
+                                        and black_rook.rank
+                                        == black_king.rank + possible_move_rank
+                                    ):
+                                        no_escape_squares -= 1
+                                        if possible_move_rank > 0:
+                                            first_occupied = True
+                                        else:
+                                            should_continue = True
+                                            break
+                                    if (
+                                        not second_occupied
+                                        and possible_move_rank > 0
+                                        and (
+                                            black_rook.file
+                                            == black_king.file - possible_move_file
+                                            and black_rook.rank
+                                            == black_king.rank - possible_move_rank
+                                        )
+                                    ):
+                                        no_escape_squares -= 1
+                                        second_occupied = True
+                                        if first_occupied:
+                                            should_continue = True
+                                            break
+                                if should_continue:
+                                    continue
+                                if not first_occupied and (
+                                    black_queen.file
+                                    == black_king.file - possible_move_file
+                                    and black_queen.rank
+                                    == black_king.rank + possible_move_rank
+                                ):
+                                    no_escape_squares -= 1
+                                if (
+                                    not second_occupied
+                                    and possible_move_rank > 0
+                                    and (
+                                        black_queen.file
+                                        == black_king.file - possible_move_file
+                                        and black_queen.rank
+                                        == black_king.rank - possible_move_rank
+                                    )
+                                ):
+                                    no_escape_squares -= 1
+                            if no_escape_squares == 0:
+                                is_checkmate = True
+                        elif black_king.rank == 1:
+                            no_escape_squares = 5
+                            for possible_move_file, possible_move_rank in [
+                                (0, 1),
+                                (1, 0),
+                                (1, 1),
+                            ]:
+                                should_continue = False
+                                first_occupied = False
+                                second_occupied = False
+                                for black_pawn in black_pawns:
+                                    if not first_occupied and (
+                                        black_pawn.file
+                                        == black_king.file + possible_move_file
+                                        and black_pawn.rank
+                                        == black_king.rank + possible_move_rank
+                                    ):
+                                        no_escape_squares -= 1
+                                        if possible_move_file > 0:
+                                            first_occupied = True
+                                        else:
+                                            should_continue = True
+                                            break
+                                    if (
+                                        not second_occupied
+                                        and possible_move_file > 0
+                                        and (
+                                            black_pawn.file
+                                            == black_king.file - possible_move_file
+                                            and black_pawn.rank
+                                            == black_king.rank + possible_move_rank
+                                        )
+                                    ):
+                                        no_escape_squares -= 1
+                                        second_occupied = True
+                                        if first_occupied:
+                                            should_continue = True
+                                            break
+                                if should_continue:
+                                    continue
+                                for black_knight in black_knights:
+                                    if not first_occupied and (
+                                        black_knight.file
+                                        == black_king.file + possible_move_file
+                                        and black_knight.rank
+                                        == black_king.rank + possible_move_rank
+                                    ):
+                                        no_escape_squares -= 1
+                                        if possible_move_file > 0:
+                                            first_occupied = True
+                                        else:
+                                            should_continue = True
+                                            break
+                                    if (
+                                        not second_occupied
+                                        and possible_move_file > 0
+                                        and (
+                                            black_knight.file
+                                            == black_king.file - possible_move_file
+                                            and black_knight.rank
+                                            == black_king.rank + possible_move_rank
+                                        )
+                                    ):
+                                        no_escape_squares -= 1
+                                        second_occupied = True
+                                        if first_occupied:
+                                            should_continue = True
+                                            break
+                                if should_continue:
+                                    continue
+                                for black_bishop in black_bishops:
+                                    if not first_occupied and (
+                                        black_bishop.file
+                                        == black_king.file + possible_move_file
+                                        and black_bishop.rank
+                                        == black_king.rank + possible_move_rank
+                                    ):
+                                        no_escape_squares -= 1
+                                        if possible_move_file > 0:
+                                            first_occupied = True
+                                        else:
+                                            should_continue = True
+                                            break
+                                    if (
+                                        not second_occupied
+                                        and possible_move_file > 0
+                                        and (
+                                            black_bishop.file
+                                            == black_king.file - possible_move_file
+                                            and black_bishop.rank
+                                            == black_king.rank + possible_move_rank
+                                        )
+                                    ):
+                                        no_escape_squares -= 1
+                                        second_occupied = True
+                                        if first_occupied:
+                                            should_continue = True
+                                            break
+                                if should_continue:
+                                    continue
+                                for black_rook in black_rooks:
+                                    if not first_occupied and (
+                                        black_rook.file
+                                        == black_king.file + possible_move_file
+                                        and black_rook.rank
+                                        == black_king.rank + possible_move_rank
+                                    ):
+                                        no_escape_squares -= 1
+                                        if possible_move_file > 0:
+                                            first_occupied = True
+                                        else:
+                                            should_continue = True
+                                            break
+                                    if (
+                                        not second_occupied
+                                        and possible_move_file > 0
+                                        and (
+                                            black_rook.file
+                                            == black_king.file - possible_move_file
+                                            and black_rook.rank
+                                            == black_king.rank + possible_move_rank
+                                        )
+                                    ):
+                                        no_escape_squares -= 1
+                                        second_occupied = True
+                                        if first_occupied:
+                                            should_continue = True
+                                            break
+                                if should_continue:
+                                    continue
+                                if not first_occupied and (
+                                    black_queen.file
+                                    == black_king.file + possible_move_file
+                                    and black_queen.rank
+                                    == black_king.rank + possible_move_rank
+                                ):
+                                    no_escape_squares -= 1
+                                if (
+                                    not second_occupied
+                                    and possible_move_file > 0
+                                    and (
+                                        black_queen.file
+                                        == black_king.file - possible_move_file
+                                        and black_queen.rank
+                                        == black_king.rank + possible_move_rank
+                                    )
+                                ):
+                                    no_escape_squares -= 1
+                            if no_escape_squares == 0:
+                                is_checkmate = True
+                        elif black_king.rank == 8:
+                            no_escape_squares = 5
+                            for possible_move_file, possible_move_rank in [
+                                (0, 1),
+                                (1, 0),
+                                (1, 1),
+                            ]:
+                                should_continue = False
+                                first_occupied = False
+                                second_occupied = False
+                                for black_pawn in black_pawns:
+                                    if not first_occupied and (
+                                        black_pawn.file
+                                        == black_king.file + possible_move_file
+                                        and black_pawn.rank
+                                        == black_king.rank - possible_move_rank
+                                    ):
+                                        no_escape_squares -= 1
+                                        if possible_move_file > 0:
+                                            first_occupied = True
+                                        else:
+                                            should_continue = True
+                                            break
+                                    if (
+                                        not second_occupied
+                                        and possible_move_file > 0
+                                        and (
+                                            black_pawn.file
+                                            == black_king.file - possible_move_file
+                                            and black_pawn.rank
+                                            == black_king.rank - possible_move_rank
+                                        )
+                                    ):
+                                        no_escape_squares -= 1
+                                        second_occupied = True
+                                        if first_occupied:
+                                            should_continue = True
+                                            break
+                                if should_continue:
+                                    continue
+                                for black_knight in black_knights:
+                                    if not first_occupied and (
+                                        black_knight.file
+                                        == black_king.file + possible_move_file
+                                        and black_knight.rank
+                                        == black_king.rank - possible_move_rank
+                                    ):
+                                        no_escape_squares -= 1
+                                        if possible_move_file > 0:
+                                            first_occupied = True
+                                        else:
+                                            should_continue = True
+                                            break
+                                    if (
+                                        not second_occupied
+                                        and possible_move_file > 0
+                                        and (
+                                            black_knight.file
+                                            == black_king.file - possible_move_file
+                                            and black_knight.rank
+                                            == black_king.rank - possible_move_rank
+                                        )
+                                    ):
+                                        no_escape_squares -= 1
+                                        second_occupied = True
+                                        if first_occupied:
+                                            should_continue = True
+                                            break
+                                if should_continue:
+                                    continue
+                                for black_bishop in black_bishops:
+                                    if not first_occupied and (
+                                        black_bishop.file
+                                        == black_king.file + possible_move_file
+                                        and black_bishop.rank
+                                        == black_king.rank - possible_move_rank
+                                    ):
+                                        no_escape_squares -= 1
+                                        if possible_move_file > 0:
+                                            first_occupied = True
+                                        else:
+                                            should_continue = True
+                                            break
+                                    if (
+                                        not second_occupied
+                                        and possible_move_file > 0
+                                        and (
+                                            black_bishop.file
+                                            == black_king.file - possible_move_file
+                                            and black_bishop.rank
+                                            == black_king.rank - possible_move_rank
+                                        )
+                                    ):
+                                        no_escape_squares -= 1
+                                        second_occupied = True
+                                        if first_occupied:
+                                            should_continue = True
+                                            break
+                                if should_continue:
+                                    continue
+                                for black_rook in black_rooks:
+                                    if not first_occupied and (
+                                        black_rook.file
+                                        == black_king.file + possible_move_file
+                                        and black_rook.rank
+                                        == black_king.rank - possible_move_rank
+                                    ):
+                                        no_escape_squares -= 1
+                                        if possible_move_file > 0:
+                                            first_occupied = True
+                                        else:
+                                            should_continue = True
+                                            break
+                                    if (
+                                        not second_occupied
+                                        and possible_move_file > 0
+                                        and (
+                                            black_rook.file
+                                            == black_king.file - possible_move_file
+                                            and black_rook.rank
+                                            == black_king.rank - possible_move_rank
+                                        )
+                                    ):
+                                        no_escape_squares -= 1
+                                        second_occupied = True
+                                        if first_occupied:
+                                            should_continue = True
+                                            break
+                                if should_continue:
+                                    continue
+                                if not first_occupied and (
+                                    black_queen.file
+                                    == black_king.file + possible_move_file
+                                    and black_queen.rank
+                                    == black_king.rank - possible_move_rank
+                                ):
+                                    no_escape_squares -= 1
+                                if (
+                                    not second_occupied
+                                    and possible_move_file > 0
+                                    and (
+                                        black_queen.file
+                                        == black_king.file - possible_move_file
+                                        and black_queen.rank
+                                        == black_king.rank - possible_move_rank
+                                    )
+                                ):
+                                    no_escape_squares -= 1
+                            if no_escape_squares == 0:
+                                is_checkmate = True
+
+                        if is_checkmate:
+                            print("you won")
                 else:
                     selected_piece = select_piece(
                         white_pawns,
@@ -1054,7 +1927,8 @@ def main():
         white_bishops.draw(screen)
         white_rooks.update()
         white_rooks.draw(screen)
-        screen.blit(white_queen.image, white_queen.rect)
+        if not white_queen.is_taken:
+            screen.blit(white_queen.image, white_queen.rect)
         screen.blit(white_king.image, white_king.rect)
         black_pawns.update()
         black_pawns.draw(screen)
@@ -1064,7 +1938,8 @@ def main():
         black_bishops.draw(screen)
         black_rooks.update()
         black_rooks.draw(screen)
-        screen.blit(black_queen.image, black_queen.rect)
+        if not black_queen.is_taken:
+            screen.blit(black_queen.image, black_queen.rect)
         screen.blit(black_king.image, black_king.rect)
         pg.display.flip()
     print("Goodbye!")
