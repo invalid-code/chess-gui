@@ -1,3 +1,5 @@
+from typing import Any
+
 import pygame as pg
 from pygame.event import Event
 
@@ -5,8 +7,14 @@ WIDTH, HEIGHT = (900, 600)
 
 
 class Square(pg.sprite.Sprite):
-    def __init__(self, fill: tuple[int, int, int], rank: int, file: int) -> None:
-        super().__init__()
+    def __init__(
+        self,
+        *groups: pg.sprite.AbstractGroup[Any],
+        fill: tuple[int, int, int] = (0, 0, 0),
+        rank: int = 1,
+        file: int = 1,
+    ) -> None:
+        super().__init__(*groups)
         self.image = pg.Surface((50, 50))
         self.image.fill(fill)
         self.rect = self.image.get_rect()
@@ -16,26 +24,36 @@ class Square(pg.sprite.Sprite):
         self.rank = 9 - rank
 
 
-class Squares(pg.sprite.Group):
+class Squares(pg.sprite.Group[Square]):
     def __init__(self) -> None:
         super().__init__()
         for rank in range(1, 9):
             for file in range(1, 9):
                 if rank % 2 == 0:
                     if file % 2 == 0:
-                        self.add(Square((255, 255, 255), file, rank))
+                        self.add(
+                            Square(self, fill=(255, 255, 255), file=file, rank=rank)
+                        )
                     else:
-                        self.add(Square((0, 0, 0), file, rank))
+                        self.add(Square(self, fill=(0, 0, 0), file=file, rank=rank))
                 else:
                     if file % 2 == 0:
-                        self.add(Square((0, 0, 0), file, rank))
+                        self.add(Square(self, fill=(0, 0, 0), file=file, rank=rank))
                     else:
-                        self.add(Square((255, 255, 255), file, rank))
+                        self.add(
+                            Square(self, fill=(255, 255, 255), file=file, rank=rank)
+                        )
 
 
 class Pawn(pg.sprite.Sprite):
-    def __init__(self, image_file: str, file: int, rank: int) -> None:
-        super().__init__()
+    def __init__(
+        self,
+        *groups: pg.sprite.AbstractGroup[Any],
+        image_file: str = "",
+        file: int = 1,
+        rank: int = 1,
+    ) -> None:
+        super().__init__(*groups)
         self.file = file
         self.rank = rank
         self.first_move = True
@@ -66,8 +84,14 @@ class Pawn(pg.sprite.Sprite):
 
 
 class Knight(pg.sprite.Sprite):
-    def __init__(self, image_file: str, file: int, rank: int) -> None:
-        super().__init__()
+    def __init__(
+        self,
+        *groups: pg.sprite.AbstractGroup[Any],
+        image_file: str = "",
+        file: int = 1,
+        rank: int = 1,
+    ) -> None:
+        super().__init__(*groups)
         self.file = file
         self.rank = rank
         self.image = pg.image.load(image_file).convert_alpha()
@@ -107,8 +131,14 @@ class Knight(pg.sprite.Sprite):
 
 
 class Bishop(pg.sprite.Sprite):
-    def __init__(self, image_file: str, file: int, rank: int) -> None:
-        super().__init__()
+    def __init__(
+        self,
+        *groups: pg.sprite.AbstractGroup[Any],
+        image_file: str = "",
+        file: int = 1,
+        rank: int = 1,
+    ) -> None:
+        super().__init__(*groups)
         self.file = file
         self.rank = rank
         self.image = pg.image.load(image_file).convert_alpha()
@@ -140,8 +170,14 @@ class Bishop(pg.sprite.Sprite):
 
 
 class Rook(pg.sprite.Sprite):
-    def __init__(self, image_file: str, file: int, rank: int) -> None:
-        super().__init__()
+    def __init__(
+        self,
+        *groups: pg.sprite.AbstractGroup[Any],
+        image_file: str = "",
+        file: int = 1,
+        rank: int = 1,
+    ) -> None:
+        super().__init__(*groups)
         self.file = file
         self.rank = rank
         self.image = pg.image.load(image_file).convert_alpha()
@@ -217,60 +253,84 @@ class King(Rook, Bishop):
         return self.allowed_move(move_file, move_rank)
 
 
-class WhitePawns(pg.sprite.Group):
+class WhitePawns(pg.sprite.Group[Pawn]):
     def __init__(self) -> None:
         super().__init__()
         for file in range(1, 9):
-            self.add(Pawn("assets/w_pawn_png_128px.png", file, 2))
+            self.add(
+                Pawn(self, image_file="assets/w_pawn_png_128px.png", file=file, rank=2)
+            )
 
 
-class WhiteKnights(pg.sprite.Group):
+class WhiteKnights(pg.sprite.Group[Knight]):
     def __init__(self) -> None:
         super().__init__()
         for file in [2, 7]:
-            self.add(Knight("assets/w_knight_png_128px.png", file, 1))
+            self.add(
+                Knight(
+                    self, image_file="assets/w_knight_png_128px.png", file=file, rank=1
+                )
+            )
 
 
-class WhiteBishops(pg.sprite.Group):
+class WhiteBishops(pg.sprite.Group[Bishop]):
     def __init__(self) -> None:
         super().__init__()
         for file in [3, 6]:
-            self.add(Bishop("assets/w_bishop_png_128px.png", file, 1))
+            self.add(
+                Bishop(
+                    self, image_file="assets/w_bishop_png_128px.png", file=file, rank=1
+                )
+            )
 
 
-class WhiteRooks(pg.sprite.Group):
+class WhiteRooks(pg.sprite.Group[Rook]):
     def __init__(self) -> None:
         super().__init__()
         for file in [1, 8]:
-            self.add(Rook("assets/w_rook_png_128px.png", file, 1))
+            self.add(
+                Rook(self, image_file="assets/w_rook_png_128px.png", file=file, rank=1)
+            )
 
 
-class BlackPawns(pg.sprite.Group):
+class BlackPawns(pg.sprite.Group[Pawn]):
     def __init__(self) -> None:
         super().__init__()
         for file in range(1, 9):
-            self.add(Pawn("assets/b_pawn_png_128px.png", file, 7))
+            self.add(
+                Pawn(self, image_file="assets/b_pawn_png_128px.png", file=file, rank=7)
+            )
 
 
-class BlackKnights(pg.sprite.Group):
+class BlackKnights(pg.sprite.Group[Knight]):
     def __init__(self) -> None:
         super().__init__()
         for file in [2, 7]:
-            self.add(Knight("assets/b_knight_png_128px.png", file, 8))
+            self.add(
+                Knight(
+                    self, image_file="assets/b_knight_png_128px.png", file=file, rank=8
+                )
+            )
 
 
-class BlackBishops(pg.sprite.Group):
+class BlackBishops(pg.sprite.Group[Bishop]):
     def __init__(self) -> None:
         super().__init__()
         for file in [3, 6]:
-            self.add(Bishop("assets/b_bishop_png_128px.png", file, 8))
+            self.add(
+                Bishop(
+                    self, image_file="assets/b_bishop_png_128px.png", file=file, rank=8
+                )
+            )
 
 
-class BlackRooks(pg.sprite.Group):
+class BlackRooks(pg.sprite.Group[Rook]):
     def __init__(self) -> None:
         super().__init__()
         for file in [1, 8]:
-            self.add(Rook("assets/b_rook_png_128px.png", file, 8))
+            self.add(
+                Rook(self, image_file="assets/b_rook_png_128px.png", file=file, rank=8)
+            )
 
 
 Piece = Pawn | Knight | Bishop | Rook | Queen | King
@@ -399,7 +459,7 @@ def check_vertical(
         for white_bishop in white_bishops:
             if white_bishop.file == move_file and (
                 white_bishop.rank < move_rank
-                and selected_piece.rank < whitewhite_bishop_pawn.rank
+                and selected_piece.rank < white_bishop.rank
             ):
                 is_moving_blocked = True
                 break
@@ -684,7 +744,8 @@ def select_piece(
     white_queen: Queen,
     white_king: King,
     event: Event,
-) -> Piece:
+) -> Piece | None:
+    selected_piece = None
     for white_pawn in white_pawns:
         if white_pawn.rect.collidepoint(event.pos):
             selected_piece = white_pawn
@@ -887,7 +948,17 @@ def main():
                     )
                     if is_taking and selected_piece.allowed_take(move_file, move_rank):
                         if taken_piece_group is not None:
-                            taken_piece_group.remove(taken_piece)
+                            match (taken_piece_group, taken_piece):
+                                case (BlackPawns(), Pawn()):
+                                    taken_piece_group.remove(taken_piece)
+                                case (BlackKnights(), Knight()):
+                                    taken_piece_group.remove(taken_piece)
+                                case (BlackBishops(), Bishop()):
+                                    taken_piece_group.remove(taken_piece)
+                                case (BlackRooks(), Rook()):
+                                    taken_piece_group.remove(taken_piece)
+                                case _:
+                                    pass
                         if isinstance(taken_piece, Queen):
                             taken_piece.is_taken = True
                         selected_piece.move(move_file, move_rank)
@@ -902,6 +973,12 @@ def main():
                             white_king,
                             event,
                         )
+                        if is_moving_occupied:
+                            print(
+                                f"piece ({selected_piece.file}, {selected_piece.rank}) tried to moved to occupied square ({move_file}, {move_rank})"
+                            )
+                            selected_piece = None
+                            continue
                         if isinstance(selected_piece, (Bishop, Queen)):
                             if (
                                 selected_piece.rank < move_rank
@@ -1002,12 +1079,6 @@ def main():
                                 white_king,
                                 move_file,
                             )
-                        if is_moving_occupied:
-                            print(
-                                f"piece ({selected_piece.file}, {selected_piece.rank}) tried to moved to occupied square ({white_pawn.file}, {white_pawn.rank})"
-                            )
-                            selected_piece = None
-                            continue
                         if is_moving_blocked:
                             print(
                                 f"piece ({selected_piece.file}, {selected_piece.rank}) tried to across pieces"
@@ -1033,7 +1104,7 @@ def main():
                     )
                     if is_check:
                         if black_king.file == 1 and black_king.rank == 1:
-                            no_escape_squares = 3
+                            no_escape_squares: int = 3
                             for possible_move_file, possible_move_rank in [
                                 (0, 1),
                                 (1, 0),
