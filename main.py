@@ -48,7 +48,7 @@ class Pawn(pg.sprite.Sprite):
         return (
             (self.first_move and move_rank == self.rank + 2)
             or move_rank == self.rank + 1
-        ) and (move_file == self.file or move_file - 1 == self.file or move_file + 1 == self.file)
+        ) and move_file == self.file
 
     def move(self, move_file: int, move_rank: int) -> None:
         if self.first_move:
@@ -59,7 +59,9 @@ class Pawn(pg.sprite.Sprite):
         self.rect.top = (8 - self.rank) * 50
 
     def allowed_take(self, move: tuple[int, int]) -> bool:
-        return True  # TODO
+        return move_rank == self.rank + 1 and (
+            move_file - 1 == self.file or move_file + 1 == self.file
+        )
 
 
 class Knight(pg.sprite.Sprite):
@@ -237,11 +239,36 @@ class WhiteRooks(pg.sprite.Group):
         self.add(Rook("assets/w_rook_png_128px.png", 8, 1))
 
 
-Piece = Pawn | Knight | Bishop | Rook | Queen | King
+class BlackPawns(pg.sprite.Group):
+    def __init__(self) -> None:
+        super().__init__()
+        self.add(Pawn("assets/b_pawn_png_128px.png", 5, 7))
 
+
+class BlackKnights(pg.sprite.Group):
+    def __init__(self) -> None:
+        super().__init__()
+        self.add(Knight("assets/b_knight_png_128px.png", 7, 8))
+
+
+class BlackBishops(pg.sprite.Group):
+    def __init__(self) -> None:
+        super().__init__()
+        self.add(Bishop("assets/b_bishop_png_128px.png", 6, 8))
+
+
+class BlackRooks(pg.sprite.Group):
+    def __init__(self) -> None:
+        super().__init__()
+        self.add(Rook("assets/b_rook_png_128px.png", 8, 8))
+
+
+Piece = Pawn | Knight | Bishop | Rook | Queen | King
+TakeablePiece = Pawn | Knight | Bishop | Rook | Queen
+TakeablePieceGroup = BlackPawns | BlackKnights | BlackBishops | BlackRooks
 
 def check_horizontal(
-    selected_piece: Rook,
+    selected_piece: Rook | Queen,
     white_pawns: WhitePawns,
     white_knights: WhiteKnights,
     white_bishops: WhiteBishops,
@@ -332,7 +359,7 @@ def check_horizontal(
 
 
 def check_vertical(
-    selected_piece: Rook,
+    selected_piece: Rook | Queen,
     white_pawns: WhitePawns,
     white_knights: WhiteKnights,
     white_bishops: WhiteBishops,
@@ -433,6 +460,7 @@ def check_lower_left(
     move_file: int,
     move_rank: int,
 ):
+    is_moving_blocked = False
     for white_pawn in white_pawns:
         if (white_pawn.rank < move_rank and white_pawn.file > move_file) and (
             selected_piece.rank < white_pawn.rank
@@ -486,6 +514,7 @@ def check_upper_left(
     move_file: int,
     move_rank: int,
 ):
+    is_moving_blocked = False
     for white_pawn in white_pawns:
         if (white_pawn.rank > move_rank and white_pawn.file < move_file) and (
             selected_piece.rank > white_pawn.rank
@@ -539,6 +568,7 @@ def check_lower_right(
     move_file: int,
     move_rank: int,
 ):
+    is_moving_blocked = False
     for white_pawn in white_pawns:
         if (white_pawn.rank > move_rank and white_pawn.file > move_file) and (
             selected_piece.rank > white_pawn.rank
@@ -592,6 +622,7 @@ def check_upper_right(
     move_file: int,
     move_rank: int,
 ):
+    is_moving_blocked = False
     for white_pawn in white_pawns:
         if (white_pawn.rank < move_rank and white_pawn.file < move_file) and (
             selected_piece.rank < white_pawn.rank
@@ -643,6 +674,10 @@ def main():
     white_knights = WhiteKnights()
     white_bishops = WhiteBishops()
     white_rooks = WhiteRooks()
+    black_pawns = BlackPawns()
+    black_knights = BlackKnights()
+    black_bishops = BlackBishops()
+    black_rooks = BlackRooks()
     white_queen = Queen("assets/w_queen_png_128px.png", 4, 1)
     white_king = King("assets/w_king_png_128px.png", 5, 1)
     game_running = True
@@ -652,12 +687,38 @@ def main():
                 if selected_piece:
                     move_file: int = 0
                     move_rank: int = 0
+                    is_taking = False
+                    taken_piece: TakeablePiece
+                    taken_piece_group: TakeablePieceGroup
                     for square in squares:
                         if square.rect.collidepoint(event.pos):
                             move_file = square.file
                             move_rank = square.rank
                             break
-                    if selected_piece.allowed_move(move_file, move_rank):
+                    for black_pawn in black_pawns:
+                        if black_pawn.file == move_file and black_pawn.rank == move_rank:
+                            taken_piece = black_pawn
+                            taken_piece_group = black_pawns
+                            is_taking = True
+                    for black_knight in black_knights:
+                        if black_knight.file == move_file and black_knight.rank == move_rank:
+                            taken_piece = black_knight
+                            taken_piece_group = black_knights
+                            is_taking = True
+                    for black_bishop in black_bishops:
+                        if black_bishop.file == move_file and black_bishop.rank == move_rank:
+                            taken_piece = black_bishop
+                            taken_piece_group = black_bishops
+                            is_taking = True
+                    for black_rook in black_rooks:
+                        if black_rook.file == move_file and black_rook.rank == move_rank:
+                            taken_piece = black_rook
+                            taken_piece_group = black_rooks
+                            is_taking = True
+                    if is_taking and selected_piece.allowed_take(move_file, move_rank):
+                        taken_piece_group.remove(taken_piece)
+                        selected_piece.move(move_file, move_rank)
+                    elif selected_piece.allowed_move(move_file, move_rank):
                         is_moving_occupied = False
                         is_moving_blocked = False
                         for white_pawn in white_pawns:
@@ -680,7 +741,7 @@ def main():
                             is_moving_occupied = True
                         if white_king.rect.collidepoint(event.pos):
                             is_moving_occupied = True
-                        if isinstance(selected_piece, Bishop):
+                        if isinstance(selected_piece, [Bishop, Queen]):
                             if (
                                 selected_piece.rank < move_rank
                                 and selected_piece.file < move_file
@@ -739,7 +800,7 @@ def main():
                                     move_rank,
                                 )
 
-                        if isinstance(selected_piece, Rook):
+                        if isinstance(selected_piece, [Rook, Queen]):
                             if selected_piece.file == move_file:
                                 is_moving_blocked = check_vertical(
                                     selected_piece,
@@ -872,6 +933,14 @@ def main():
         white_rooks.draw(screen)
         screen.blit(white_queen.image, white_queen.rect)
         screen.blit(white_king.image, white_king.rect)
+        black_pawns.update()
+        black_pawns.draw(screen)
+        black_knights.update()
+        black_knights.draw(screen)
+        black_bishops.update()
+        black_bishops.draw(screen)
+        black_rooks.update()
+        black_rooks.draw(screen)
         pg.display.flip()
     print("Goodbye!")
     pg.quit()
